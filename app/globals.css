@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 25% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 9%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 215 25% 9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 243 75% 96%;
+    --accent-foreground: 243 75% 40%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 243 75% 59%;
+    --radius: 0.625rem;
+    --mx: 50%;
+    --my: 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply text-slate-900 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background: #eef0f8;
+    min-height: 100dvh;
+  }
+
+  /* Ambient gradient mesh — vivid, layered */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 10% -10%, rgba(99,102,241,0.28) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 90% 110%, rgba(139,92,246,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,210,255,0.35) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 35% at 75% 20%, rgba(167,139,250,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 35% 30% at 20% 80%, rgba(99,102,241,0.12) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Mouse spotlight — warm, vivid */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(600px circle at var(--mx) var(--my), rgba(99,102,241,0.13), rgba(139,92,246,0.05) 40%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+    transition: background 0.05s ease;
+  }
+}
+
+@layer utilities {
+
+  /* ── Glass morphism ──────────────────────────────── */
+  .glass {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 8px 32px rgba(99,102,241,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+  }
+
+  .glass-card {
+    background: rgba(255,255,255,0.62);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1px solid rgba(255,255,255,0.75);
+    box-shadow:
+      0 4px 24px rgba(99,102,241,0.08),
+      0 1px 3px rgba(99,102,241,0.06),
+      0 1px 0 rgba(255,255,255,1) inset,
+      0 -1px 0 rgba(99,102,241,0.03) inset;
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.2s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow:
+      0 16px 48px rgba(99,102,241,0.16),
+      0 4px 12px rgba(99,102,241,0.08),
+      0 1px 0 rgba(255,255,255,1) inset;
+    border-color: rgba(200,210,255,0.8);
+    transform: translateY(-2px);
+  }
+
+  .glass-nav {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border-bottom: 1px solid rgba(200,210,255,0.4);
+    box-shadow: 0 1px 32px rgba(99,102,241,0.08);
+  }
+
+  .glass-input {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(203,213,225,0.7) !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .glass-input:focus,
+  .glass-input:focus-within {
+    border-color: rgba(99,102,241,0.55) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
+    outline: none;
+  }
+
+  /* Subtle iridescent card (for featured/hero cards) */
+  .glass-card-vivid {
+    background: linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(240,238,255,0.68) 100%);
+    backdrop-filter: blur(28px) saturate(220%);
+    -webkit-backdrop-filter: blur(28px) saturate(220%);
+    border: 1px solid rgba(200,210,255,0.7);
+    box-shadow:
+      0 8px 32px rgba(99,102,241,0.12),
+      0 2px 8px rgba(139,92,246,0.08),
+      0 1px 0 rgba(255,255,255,1) inset;
+  }
+
+  /* ── Animations ──────────────────────────────────── */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50%       { opacity: 0.6;  transform: scale(1.08); }
+  }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: scale(0.96) translateY(14px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+
+  .animate-float        { animation: float 4s ease-in-out infinite; }
+  .animate-fade-up      { animation: fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both; }
+  .animate-fade-up-1    { animation: fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.09s both; }
+  .animate-fade-up-2    { animation: fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.18s both; }
+  .animate-fade-up-3    { animation: fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.27s both; }
+  .animate-pulse-glow   { animation: pulse-glow 2.5s ease-in-out infinite; }
+  .animate-slide-in     { animation: slide-in 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+}
