@@ -136,14 +136,19 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   }, [onClose]);
 
   function handlePrint() {
-    // Open a clean, dedicated window — zero interference from React/Tailwind/browser chrome
-    const win = window.open("", "_blank", "width=900,height=700");
+    // Open a clean, dedicated window — no size constraints so Safari paginates by CSS @page, not viewport
+    const win = window.open("", "_blank");
     if (!win) { alert("Please allow pop-ups for this site to print."); return; }
     win.document.open();
     win.document.write(buildPrintHTML(uids, qrDataUrls));
     win.document.close();
-    // Wait for images to load before triggering print
-    win.addEventListener("load", () => setTimeout(() => { win.print(); win.close(); }, 400));
+    // Close window after print dialog is dismissed (onafterprint) rather than on a timer
+    win.addEventListener("load", () => {
+      setTimeout(() => {
+        win.onafterprint = () => win.close();
+        win.print();
+      }, 400);
+    });
   }
 
   const sheetCount = Math.ceil(uids.length / CFG.labelsPerSheet);
