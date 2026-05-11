@@ -39,7 +39,16 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
 <div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:row;overflow:hidden;">
   <!-- brand column -->
   <div style="width:40%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.8).toFixed(1)}mm;border-right:0.25mm solid #e2e8f0;">
-    <div style="width:${logoBoxMm}mm;height:${logoBoxMm}mm;background:linear-gradient(135deg,#6366f1 0%,#7c3aed 100%);border-radius:${logoRadMm}mm;display:flex;align-items:center;justify-content:center;padding:${+(logoBoxMm*0.1).toFixed(1)}mm;box-sizing:border-box;">${QR_ICON}</div>
+    <svg width="${logoBoxMm}mm" height="${logoBoxMm}mm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <rect width="100" height="100" rx="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" ry="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" fill="#6366f1"/>
+      <g transform="translate(16,16) scale(2.8)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/>
+        <rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+        <path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/>
+        <path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/>
+        <path d="M21 12v.01"/><path d="M12 21v-1"/>
+      </g>
+    </svg>
     <span style="font-size:7pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span>
     <p style="margin:0;font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.01em;">Scan it. Solve it.</p>
   </div>
@@ -54,7 +63,7 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   function sheet(sheetUids: string[], isLast: boolean) {
     const pageBreak = isLast ? "" : "page-break-after:always;break-after:page;";
     return `
-<div style="width:${pageW}mm;min-height:${pageH}mm;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}">
+<div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}">
   <div style="display:grid;grid-template-columns:${labelW}mm ${labelW}mm;grid-template-rows:${labelH}mm ${labelH}mm ${labelH}mm ${labelH}mm;gap:0;">
     ${sheetUids.map(label).join("")}
   </div>
@@ -75,8 +84,8 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   <title>ScanSolve Labels</title>
   <style>
     @page { size: A4 portrait; margin: 0; }
-    html, body { margin: 0; padding: 0; background: white; }
-    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: white; width: ${pageW}mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   </style>
 </head>
 <body>
