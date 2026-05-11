@@ -56,7 +56,7 @@ function AuthForm() {
             <div>
               <h2 className="text-xl font-bold text-slate-900">Check your inbox</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Magic link + 6-digit code sent to<br />
+                Magic link + 8-digit code sent to<br />
                 <strong className="text-slate-700">{email}</strong>
               </p>
             </div>
@@ -64,7 +64,7 @@ function AuthForm() {
 
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="otp" className="text-xs font-semibold text-slate-600 uppercase tracking-wide">6-digit code</Label>
+              <Label htmlFor="otp" className="text-xs font-semibold text-slate-600 uppercase tracking-wide">8-digit code</Label>
               <Input
                 id="otp"
                 type="text"
