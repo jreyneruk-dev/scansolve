@@ -61,7 +61,9 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   }
 
   function sheet(sheetUids: string[], isLast: boolean) {
-    const pageBreak = isLast ? "" : "page-break-after:always;break-after:page;";
+    const pageBreak = isLast
+      ? "page-break-after:avoid;break-after:avoid;"
+      : "page-break-after:always;break-after:page;";
     return `
 <div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}">
   <div style="display:grid;grid-template-columns:${labelW}mm ${labelW}mm;grid-template-rows:${labelH}mm ${labelH}mm ${labelH}mm ${labelH}mm;gap:0;">
@@ -85,8 +87,8 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   <title>ScanSolve Labels</title>
   <style>
     @page { size: A4 portrait; margin: 0; }
-    html { margin: 0; padding: 0; }
-    body { margin: 0; padding: 0; background: white; width: ${pageW}mm; height: ${totalH}mm; overflow: hidden; font-size: 0; line-height: 0; }
+    html, body { margin: 0; padding: 0; width: ${pageW}mm; height: ${totalH}mm; overflow: hidden; font-size: 0; line-height: 0; }
+    body { background: white; }
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   </style>
 </head>
