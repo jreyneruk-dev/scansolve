@@ -69,20 +69,20 @@ function AuthForm() {
                 id="otp"
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                placeholder="000000"
+                pattern="[0-9]{6,8}"
+                maxLength={8}
+                placeholder="00000000"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                 required
                 autoFocus
-                className="text-center text-2xl tracking-[0.6em] font-mono h-14 glass-input rounded-xl"
+                className="text-center text-2xl tracking-[0.5em] font-mono h-14 glass-input rounded-xl"
               />
             </div>
             {error && <p className="text-xs text-red-600 bg-red-50/80 rounded-xl px-3 py-2">{error}</p>}
             <button
               type="submit"
-              disabled={loading || otp.length < 6}
+              disabled={loading || otp.length < 6 || otp.length > 8}
               className="flex items-center justify-center gap-2 w-full min-h-[48px] rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all duration-200"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & Sign In"}
