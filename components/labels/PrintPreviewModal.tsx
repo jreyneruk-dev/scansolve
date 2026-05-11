@@ -22,78 +22,33 @@ const QR_ICON = `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
   <path d="M21 12v.01"/><path d="M12 21v-1"/>
 </svg>`;
 
-// ── Build a complete, self-contained HTML document for printing ────────────
-function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): string {
+// ── Build sheet divs (used for both inject-print and preview) ─────────────
+function buildSheetsHTML(uids: string[], qrDataUrls: Record<string, string>): { html: string; sheetCount: number } {
   const { pageW, pageH, marginTop, marginLeft, labelW, labelH, labelsPerSheet } = CFG;
-  const pad = 3; // mm padding inside each label
+  const pad = 3;
 
-  // Left column metrics (40% of labelW minus padding)
   const leftAvailMm = labelW * 0.4 - pad * 2;
   const logoBoxMm   = +(leftAvailMm * 0.68).toFixed(1);
-  const iconMm      = +(logoBoxMm  * 0.60).toFixed(1);
   const logoRadMm   = +(logoBoxMm  * 0.22).toFixed(1);
 
   function label(uid: string) {
     if (!uid) return `<div style="width:${labelW}mm;height:${labelH}mm;border:0.25mm dashed #e2e8f0;box-sizing:border-box;"></div>`;
-    return `
-<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:row;overflow:hidden;">
-  <!-- brand column -->
-  <div style="width:40%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.8).toFixed(1)}mm;border-right:0.25mm solid #e2e8f0;">
-    <svg width="${logoBoxMm}mm" height="${logoBoxMm}mm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-      <rect width="100" height="100" rx="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" ry="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" fill="#6366f1"/>
-      <g transform="translate(16,16) scale(2.8)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
-        <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/>
-        <rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-        <path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/>
-        <path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/>
-        <path d="M21 12v.01"/><path d="M12 21v-1"/>
-      </g>
-    </svg>
-    <span style="font-size:7pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span>
-    <p style="margin:0;font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.01em;">Scan it. Solve it.</p>
-  </div>
-  <!-- qr column -->
-  <div style="width:60%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.4).toFixed(1)}mm;">
-    <img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:${+(labelH - pad*2 - 5).toFixed(1)}mm;width:auto;height:auto;display:block;" />
-    <p style="margin:0;font-size:5.5pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;">${uid}</p>
-  </div>
-</div>`;
+    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:row;overflow:hidden;"><div style="width:40%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.8).toFixed(1)}mm;border-right:0.25mm solid #e2e8f0;"><svg width="${logoBoxMm}mm" height="${logoBoxMm}mm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><rect width="100" height="100" rx="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" ry="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" fill="#6366f1"/><g transform="translate(16,16) scale(2.8)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></g></svg><span style="font-size:7pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span><p style="margin:0;font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.01em;">Scan it. Solve it.</p></div><div style="width:60%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.4).toFixed(1)}mm;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:${+(labelH - pad*2 - 5).toFixed(1)}mm;width:auto;height:auto;display:block;" /><p style="margin:0;font-size:5.5pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;">${uid}</p></div></div>`;
   }
 
   function sheet(sheetUids: string[], isLast: boolean) {
     const pageBreak = isLast
       ? "page-break-after:avoid;break-after:avoid;"
       : "page-break-after:always;break-after:page;";
-    return `
-<div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}">
-  <div style="display:grid;grid-template-columns:${labelW}mm ${labelW}mm;grid-template-rows:${labelH}mm ${labelH}mm ${labelH}mm ${labelH}mm;gap:0;">
-    ${sheetUids.map(label).join("")}
-  </div>
-</div>`;
+    return `<div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}"><div style="display:grid;grid-template-columns:${labelW}mm ${labelW}mm;grid-template-rows:${labelH}mm ${labelH}mm ${labelH}mm ${labelH}mm;gap:0;">${sheetUids.map(label).join("")}</div></div>`;
   }
 
-  // Pad to full sheets
   const all = [...uids];
   while (all.length % labelsPerSheet !== 0) all.push("");
-
   const sheets: string[][] = [];
   for (let i = 0; i < all.length; i += labelsPerSheet) sheets.push(all.slice(i, i + labelsPerSheet));
 
-  const totalH = sheets.length * pageH;
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>ScanSolve Labels</title>
-  <style>
-    @page { size: A4 portrait; margin: 0; }
-    html, body { margin: 0; padding: 0; width: ${pageW}mm; height: ${totalH}mm; overflow: hidden; font-size: 0; line-height: 0; }
-    body { background: white; }
-    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  </style>
-</head>
-<body>${sheets.map((s, i) => sheet(s, i === sheets.length - 1)).join("")}</body>
-</html>`;
+  return { html: sheets.map((s, i) => sheet(s, i === sheets.length - 1)).join(""), sheetCount: sheets.length };
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -136,19 +91,38 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   }, [onClose]);
 
   function handlePrint() {
-    // Open a clean, dedicated window — no size constraints so Safari paginates by CSS @page, not viewport
-    const win = window.open("", "_blank");
-    if (!win) { alert("Please allow pop-ups for this site to print."); return; }
-    win.document.open();
-    win.document.write(buildPrintHTML(uids, qrDataUrls));
-    win.document.close();
-    // Close window after print dialog is dismissed (onafterprint) rather than on a timer
-    win.addEventListener("load", () => {
-      setTimeout(() => {
-        win.onafterprint = () => win.close();
-        win.print();
-      }, 400);
-    });
+    const { html, sheetCount } = buildSheetsHTML(uids, qrDataUrls);
+    const { pageW, pageH } = CFG;
+    const totalH = sheetCount * pageH;
+
+    // Inject print styles — hide everything on the page except our print root
+    const styleEl = document.createElement("style");
+    styleEl.id = "ss-print-style";
+    styleEl.textContent = `
+      @media print {
+        @page { size: A4 portrait; margin: 0; }
+        body > *:not(#ss-print-root) { display: none !important; visibility: hidden !important; }
+        #ss-print-root { display: block !important; visibility: visible !important; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    // Inject print content as a fixed overlay
+    const rootEl = document.createElement("div");
+    rootEl.id = "ss-print-root";
+    rootEl.style.cssText = `position:fixed;top:0;left:0;width:${pageW}mm;height:${totalH}mm;overflow:hidden;background:white;z-index:99999;font-size:0;line-height:0;`;
+    rootEl.innerHTML = html;
+    document.body.appendChild(rootEl);
+
+    const cleanup = () => {
+      document.getElementById("ss-print-style")?.remove();
+      document.getElementById("ss-print-root")?.remove();
+    };
+
+    window.onafterprint = cleanup;
+    // Small delay to let the DOM settle before triggering print
+    setTimeout(() => window.print(), 300);
   }
 
   const sheetCount = Math.ceil(uids.length / CFG.labelsPerSheet);
