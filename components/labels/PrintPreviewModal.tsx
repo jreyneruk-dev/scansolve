@@ -77,6 +77,7 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   const sheets: string[][] = [];
   for (let i = 0; i < all.length; i += labelsPerSheet) sheets.push(all.slice(i, i + labelsPerSheet));
 
+  const totalH = sheets.length * pageH;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,13 +85,12 @@ function buildPrintHTML(uids: string[], qrDataUrls: Record<string, string>): str
   <title>ScanSolve Labels</title>
   <style>
     @page { size: A4 portrait; margin: 0; }
-    html, body { margin: 0; padding: 0; background: white; width: ${pageW}mm; }
+    html { margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; background: white; width: ${pageW}mm; height: ${totalH}mm; overflow: hidden; font-size: 0; line-height: 0; }
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   </style>
 </head>
-<body>
-${sheets.map((s, i) => sheet(s, i === sheets.length - 1)).join("\n")}
-</body>
+<body>${sheets.map((s, i) => sheet(s, i === sheets.length - 1)).join("")}</body>
 </html>`;
 }
 
