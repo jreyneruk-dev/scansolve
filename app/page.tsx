@@ -1,59 +1,215 @@
 import Link from "next/link";
-import { QrCode, ClipboardList, Zap, ArrowRight } from "lucide-react";
+import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm space-y-7">
+    <main className="min-h-dvh bg-slate-50 text-slate-900">
 
-        {/* Logo */}
-        <div className="flex flex-col items-center space-y-4 animate-fade-up">
+      {/* ── Navbar ──────────────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600">
+              <QrCode className="h-4 w-4 text-white" />
+            </div>
+            <span className="font-bold text-slate-900">ScanSolve</span>
+          </div>
+          <Link
+            href="/auth"
+            className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+          >
+            Sign in <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </nav>
+
+      {/* ── Hero ────────────────────────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+        <div className="flex justify-center mb-8">
           <div className="relative">
             <div className="absolute inset-0 rounded-3xl bg-indigo-500 blur-xl opacity-40 animate-pulse-glow" />
             <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-2xl shadow-indigo-500/30 animate-float">
               <QrCode className="h-9 w-9 text-white drop-shadow" />
             </div>
           </div>
-          <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">ScanSolve</h1>
-            <p className="mt-1.5 text-sm text-slate-500 leading-relaxed">
-              Scan any QR code to report a facilities issue instantly — no app needed.
+        </div>
+
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-600 mb-6">
+          <Sparkles className="h-3 w-3" />
+          Scan it. Solve it. Get stuff done.
+        </div>
+
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 leading-tight mb-5">
+          Stop missing problems.<br />Start solving them.
+        </h1>
+
+        <p className="text-lg text-slate-500 max-w-xl mx-auto leading-relaxed mb-10">
+          Place a QR code anywhere. Anyone can report an issue in seconds — no app download, no account needed. You get instant visibility and full control from day one.
+        </p>
+
+        <Link
+          href="/auth"
+          className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+        >
+          Join as a Founding Member
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
+        <p className="mt-4 text-xs text-slate-400">
+          Free for your first year · No card required · No time pressure
+        </p>
+      </section>
+
+      {/* ── How it works ────────────────────────────────────────────── */}
+      <section className="bg-white border-y border-slate-100 py-16">
+        <div className="max-w-5xl mx-auto px-6">
+          <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest text-center mb-3">
+            How it works
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-12">
+            Up and running in under 10 minutes
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-10">
+            {[
+              {
+                step: "1",
+                icon: QrCode,
+                title: "Print your QR labels",
+                body: "Generate labels in the dashboard and print them on standard Avery sheets. Peel and stick — anywhere an issue might arise.",
+                color: "bg-indigo-50 text-indigo-500",
+              },
+              {
+                step: "2",
+                icon: MapPin,
+                title: "Place them where problems happen",
+                body: "Toilets, plant rooms, gym equipment, retail floors, train carriages. If something can go wrong there, put a label on it.",
+                color: "bg-violet-50 text-violet-500",
+              },
+              {
+                step: "3",
+                icon: CheckCircle,
+                title: "Issues get reported and resolved",
+                body: "Anyone scans, fills a quick form, and the right person gets notified. Track it through to completion — all in one place.",
+                color: "bg-emerald-50 text-emerald-500",
+              },
+            ].map(({ step, icon: Icon, title, body, color }) => (
+              <div key={step} className="flex flex-col gap-4">
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${color}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Step {step}</p>
+                  <h3 className="font-bold text-slate-900 mb-2">{title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Two perspectives ────────────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-6 py-16">
+        <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest text-center mb-3">
+          Built for everyone on site
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-10">
+          Two sides of the same problem.<br />One solution.
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-5">
+          {/* Reporter */}
+          <div className="rounded-3xl bg-white border border-slate-100 p-8 shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 mb-5">
+              <Zap className="h-5 w-5 text-amber-500" />
+            </div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">For people on site</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">"Finally, a way to get things fixed."</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Spot something broken? Scan the QR code on the wall, fill in a quick form, and optionally leave your email for updates. No app, no account, no chasing anyone. It&apos;s the fastest route from problem to solution.
+            </p>
+          </div>
+          {/* Manager */}
+          <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-8 shadow-lg shadow-indigo-500/20">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 mb-5">
+              <BarChart3 className="h-5 w-5 text-white" />
+            </div>
+            <p className="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-2">For managers</p>
+            <h3 className="text-xl font-bold text-white mb-3">"Finally, I know what&apos;s actually happening."</h3>
+            <p className="text-sm text-indigo-100 leading-relaxed">
+              Know about every issue the moment it&apos;s reported — without doing a site tour. Assign it, track it, close it. Keep tenants happy, make costs visible, and protect your reputation before small problems become big ones.
             </p>
           </div>
         </div>
+      </section>
 
-        {/* Feature cards */}
-        <div className="flex flex-col gap-2.5 animate-fade-up-1">
-          {[
-            { icon: Zap, text: "Reporters scan & submit in seconds", color: "text-amber-500", bg: "bg-amber-50" },
-            { icon: ClipboardList, text: "Managers track & assign from a dashboard", color: "text-indigo-500", bg: "bg-indigo-50" },
-          ].map(({ icon: Icon, text, color, bg }) => (
-            <div key={text} className="glass-card flex items-center gap-3.5 rounded-2xl px-4 py-3.5">
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${bg}`}>
-                <Icon className={`h-4.5 w-4.5 ${color}`} />
-              </div>
-              <span className="text-sm font-medium text-slate-700">{text}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="space-y-3 animate-fade-up-2">
-          <Link
-            href="/auth"
-            className="group relative flex items-center justify-center w-full min-h-[52px] rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 overflow-hidden"
-          >
-            <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-200" />
-            Manager Sign In
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-
-          <p className="text-center text-xs text-slate-400">
-            Reporters: scan the QR code at your location to get started.
+      {/* ── Works everywhere ────────────────────────────────────────── */}
+      <section className="bg-white border-y border-slate-100 py-14">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest mb-3">
+            Works everywhere
           </p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">
+            If you manage a site, ScanSolve is for you
+          </h2>
+          <p className="text-sm text-slate-500 mb-8 max-w-md mx-auto">
+            One system for every type of venue. Especially powerful for multi-site groups who need consistent standards across locations.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              "🏢 Offices", "🏋️ Gyms & Leisure", "🛍️ Retail", "🏨 Hotels",
+              "🚂 Rail", "🏫 Schools", "🏗️ Serviced Offices", "🏘️ Residential Blocks", "🔧 FM Companies",
+            ].map((label) => (
+              <span
+                key={label}
+                className="px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
+      </section>
 
-      </div>
+      {/* ── Founding member CTA ─────────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-6 py-20 text-center">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-semibold text-emerald-600 mb-6">
+          <Sparkles className="h-3 w-3" />
+          Founding Member
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+          Get in early.<br />Shape what we build.
+        </h2>
+        <p className="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
+          ScanSolve is free for founding members — no card required, no time pressure. You&apos;re getting in at the start, and your feedback will directly shape the product.
+        </p>
+        <Link
+          href="/auth"
+          className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+        >
+          Start Free — No Card Needed
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+        <p className="mt-4 text-xs text-slate-400">
+          Free for your first year · No pressure · Help build something better
+        </p>
+      </section>
+
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <footer className="border-t border-slate-100 py-8">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-600">
+              <QrCode className="h-3 w-3 text-white" />
+            </div>
+            <span className="font-semibold text-slate-600">ScanSolve</span>
+          </div>
+          <p>© {new Date().getFullYear()} ScanSolve. All rights reserved.</p>
+          <Link href="/auth" className="hover:text-slate-600 transition-colors">
+            Manager Sign In →
+          </Link>
+        </div>
+      </footer>
+
     </main>
   );
 }
