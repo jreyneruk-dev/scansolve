@@ -54,6 +54,14 @@ export async function POST(
   if (invite.accepted_at) return NextResponse.json({ error: "This invite has already been used" }, { status: 410 });
   if (new Date(invite.expires_at) < new Date()) return NextResponse.json({ error: "This invite has expired" }, { status: 410 });
 
+  // Verify the signed-in user's email matches the invite — prevents link hijacking
+  if (user.email?.toLowerCase() !== invite.email.toLowerCase()) {
+    return NextResponse.json(
+      { error: "This invite was sent to a different email address. Please sign in with the invited email." },
+      { status: 403 }
+    );
+  }
+
   // Add user to org
   const { error: memberError } = await service.from("org_members").insert({
     org_id: invite.org_id,

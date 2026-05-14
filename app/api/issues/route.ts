@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdapter } from "@/lib/db";
 import { getLocationByOrgAndUID } from "@/lib/locations";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const CreateIssueSchema = z.object({
@@ -13,6 +14,19 @@ const CreateIssueSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 10 submissions per IP per 60 seconds
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+  const rl = await checkRateLimit(`issues:ip:${ip}`, 10, 60);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment before submitting again." },
+      {
+        status: 429,
+        headers: { "Retry-After": "60", "X-RateLimit-Limit": String(rl.limit) },
+      }
+    );
+  }
+
   let body: unknown;
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
@@ -36,7 +50,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid category" }, { status: 422 });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const reporter_meta = {
     ua: req.headers.get("user-agent"),
     ip_hash: Buffer.from(ip).toString("base64").slice(0, 12),

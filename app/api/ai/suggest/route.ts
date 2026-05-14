@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getServerEnv } from "@/lib/server-env";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // In-process cache — 24h TTL per room name
 const cache = new Map<string, { categories: string[]; ts: number }>();
@@ -12,6 +13,15 @@ export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Rate limit: 20 AI requests per user per hour
+  const rl = await checkRateLimit(`ai:user:${user.id}`, 20, 3600);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "AI suggestion limit reached. Please try again later." },
+      { status: 429, headers: { "Retry-After": "3600" } }
+    );
+  }
 
   let body: unknown;
   try { body = await req.json(); } catch {
