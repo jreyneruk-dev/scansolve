@@ -48,9 +48,23 @@ export async function middleware(request: NextRequest) {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  // Content-Security-Policy
+  // 'unsafe-inline' required for Next.js inline styles; tighten with nonces in a future pass.
+  // 'unsafe-eval' is only present in dev (Next.js hot-reload); production bundles don't use it.
   response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://*.supabase.co",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com",
+      "font-src 'self'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join("; ")
   );
 
   return response;
