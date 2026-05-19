@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const BUCKET = "issue-photos";
-const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 7; // 7 days in seconds
+const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 365; // 1 year in seconds
 
 function getServiceClient() {
   return createClient(
@@ -35,6 +35,24 @@ export async function getSignedUrl(path: string): Promise<string> {
     .createSignedUrl(path, SIGNED_URL_EXPIRY);
   if (error || !data) throw new Error(error?.message ?? "Failed to sign URL");
   return data.signedUrl;
+}
+
+/**
+ * Given a photo_url from the database (which may be an expired signed URL),
+ * extract the storage path and return a fresh signed URL.
+ * Falls back to the original value if it can't be parsed (e.g. external URL).
+ */
+export async function refreshPhotoUrl(storedUrl: string): Promise<string> {
+  // Supabase signed URL format:
+  // https://{project}.supabase.co/storage/v1/object/sign/{bucket}/{path}?token=...
+  const match = storedUrl.match(/\/storage\/v1\/object\/sign\/[^/]+\/(.+?)(?:\?|$)/);
+  if (!match) return storedUrl; // not a Supabase storage URL — return as-is
+  const path = decodeURIComponent(match[1]);
+  try {
+    return await getSignedUrl(path);
+  } catch {
+    return storedUrl; // if re-signing fails, return original (better than blank)
+  }
 }
 
 export async function uploadFloorPlan(
