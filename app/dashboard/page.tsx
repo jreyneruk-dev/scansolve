@@ -4,6 +4,15 @@ import { redirect } from "next/navigation";
 import { IssueList } from "@/components/dashboard/IssueList";
 import { CheckCircle2 } from "lucide-react";
 import type { IssueStatus } from "@/types/schema";
+import { createClient } from "@supabase/supabase-js";
+
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+}
 
 interface PageProps {
   searchParams: Promise<{ status?: string; commissioned?: string }>;
@@ -22,7 +31,26 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const user = await requireAuth("/dashboard");
   const org = await getOrgForUser(user.id);
 
-  if (!org) redirect("/onboarding");
+  if (!org) {
+    // Before sending to onboarding (which creates a new org), check for a
+    // pending invite for this user's email. If one exists, send them to accept it.
+    if (user.email) {
+      const service = getServiceClient();
+      const { data: invite } = await service
+        .from("org_invites")
+        .select("token")
+        .eq("email", user.email.toLowerCase())
+        .is("accepted_at", null)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      if (invite?.token) {
+        redirect(`/invite/${invite.token}`);
+      }
+    }
+    redirect("/onboarding");
+  }
 
   const adapter = await getAdapter(org.id);
   const issues = await adapter.getIssuesByOrg(org.id, {

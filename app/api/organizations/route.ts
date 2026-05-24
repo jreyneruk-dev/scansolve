@@ -13,7 +13,12 @@ function getServiceClient() {
   );
 }
 
-const UpdateOrgSchema = z.discriminatedUnion("backend", [
+// Org name update (standalone — no backend field required)
+const UpdateOrgNameSchema = z.object({
+  name: z.string().min(1).max(80),
+});
+
+const UpdateOrgBackendSchema = z.discriminatedUnion("backend", [
   z.object({ backend: z.literal("supabase") }),
   z.object({
     backend: z.literal("sheets"),
@@ -58,7 +63,25 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = UpdateOrgSchema.safeParse(body);
+  // Detect which kind of update this is by the presence of a "name" key
+  const bodyObj = body as Record<string, unknown>;
+
+  if ("name" in bodyObj) {
+    // ── Org name update ──────────────────────────────────────────────────────
+    const parsed = UpdateOrgNameSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
+    }
+    const { error } = await getServiceClient()
+      .from("organizations")
+      .update({ name: parsed.data.name })
+      .eq("id", org.id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ name: parsed.data.name });
+  }
+
+  // ── Backend/credentials update ─────────────────────────────────────────────
+  const parsed = UpdateOrgBackendSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
   }

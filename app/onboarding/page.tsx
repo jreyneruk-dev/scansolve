@@ -2,6 +2,15 @@ import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { OrgSetupForm } from "@/components/onboarding/OrgSetupForm";
 import { QrCode } from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
+
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+}
 
 export default async function OnboardingPage() {
   const user = await requireAuth("/onboarding");
@@ -9,6 +18,23 @@ export default async function OnboardingPage() {
   // Skip onboarding if org already exists
   const org = await getOrgForUser(user.id);
   if (org) redirect("/dashboard");
+
+  // If the user has a pending invite, send them there instead of creating a new org
+  if (user.email) {
+    const service = getServiceClient();
+    const { data: invite } = await service
+      .from("org_invites")
+      .select("token")
+      .eq("email", user.email.toLowerCase())
+      .is("accepted_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    if (invite?.token) {
+      redirect(`/invite/${invite.token}`);
+    }
+  }
 
   return (
     <main className="min-h-dvh flex items-center justify-center p-6">

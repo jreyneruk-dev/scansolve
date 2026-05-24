@@ -54,6 +54,16 @@ export async function POST(
   if (invite.accepted_at) return NextResponse.json({ error: "This invite has already been used" }, { status: 410 });
   if (new Date(invite.expires_at) < new Date()) return NextResponse.json({ error: "This invite has expired" }, { status: 410 });
 
+  // Check if email has been banned
+  const { data: banned } = await service
+    .from("banned_emails")
+    .select("id")
+    .eq("email", (user.email ?? "").toLowerCase())
+    .maybeSingle();
+  if (banned) {
+    return NextResponse.json({ error: "This account has been suspended." }, { status: 403 });
+  }
+
   // Verify the signed-in user's email matches the invite — prevents link hijacking
   if (user.email?.toLowerCase() !== invite.email.toLowerCase()) {
     return NextResponse.json(
@@ -69,7 +79,8 @@ export async function POST(
     role: "member",
   });
 
-  if (memberError && !memberError.message.includes("duplicate")) {
+  // 23505 = PostgreSQL unique_violation — user is already a member, which is fine
+  if (memberError && memberError.code !== "23505") {
     return NextResponse.json({ error: "Failed to join organization" }, { status: 500 });
   }
 

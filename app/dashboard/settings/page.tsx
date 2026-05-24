@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { BackendSettings } from "@/components/dashboard/BackendSettings";
 import { TeamSettings } from "@/components/dashboard/TeamSettings";
+import { OrgNameSettings } from "@/components/dashboard/OrgNameSettings";
 
 function getServiceClient() {
   return createClient(
@@ -38,6 +39,10 @@ export default async function SettingsPage() {
       <div>
         <h1 className="text-xl font-bold text-slate-900">Settings</h1>
         <p className="text-xs text-slate-400 mt-0.5">{orgName}</p>
+      </div>
+
+      <div className="border-t border-slate-100 pt-6">
+        <OrgNameSettings initialName={orgName} />
       </div>
 
       <div className="border-t border-slate-100 pt-6">

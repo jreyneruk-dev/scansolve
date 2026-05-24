@@ -13,16 +13,38 @@ function AuthForm() {
   const next = searchParams.get("next") ?? "/dashboard";
   const supabase = createSupabaseBrowserClient();
 
+  const errorParam = searchParams.get("error");
+  const initialError =
+    errorParam === "banned"
+      ? "This account has been suspended. Please contact support."
+      : errorParam === "auth_failed"
+      ? "The sign-in link expired or was opened in a different browser. Enter your email below to get a fresh one."
+      : null;
+
   const [step, setStep] = useState<AuthStep>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
 
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Check if this email is banned before sending anything
+    const checkRes = await fetch("/api/auth/check-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    if (!checkRes.ok) {
+      const data = await checkRes.json().catch(() => ({}));
+      setError(data.message ?? "Unable to send sign-in link. Please try again.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {

@@ -21,6 +21,15 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Check if email has been banned
+  const service = getServiceClient();
+  const { data: banned } = await service
+    .from("banned_emails")
+    .select("id")
+    .eq("email", (user.email ?? "").toLowerCase())
+    .maybeSingle();
+  if (banned) return NextResponse.json({ error: "This account has been suspended." }, { status: 403 });
+
   // Prevent creating a second org
   const existing = await getOrgForUser(user.id);
   if (existing) return NextResponse.json({ error: "Organization already exists" }, { status: 409 });
@@ -34,8 +43,6 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
   }
-
-  const service = getServiceClient();
 
   const { data: org, error: orgError } = await service
     .from("organizations")
