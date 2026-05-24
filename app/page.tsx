@@ -105,6 +105,22 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          {/* Video demo */}
+          <div className="mt-14">
+            <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-slate-200/80 border border-slate-100 bg-slate-900">
+              <video
+                className="w-full"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+              >
+                <source src="/how-it-works.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
         </div>
       </section>
 
