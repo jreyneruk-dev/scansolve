@@ -11,6 +11,8 @@ type AuthStep = "email" | "sent";
 function AuthForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/dashboard";
+  const mode = searchParams.get("mode"); // "signup" when coming from landing page CTAs
+  const isSignup = mode === "signup";
   const supabase = createSupabaseBrowserClient();
 
   const errorParam = searchParams.get("error");
@@ -132,8 +134,14 @@ function AuthForm() {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
-          <p className="mt-1 text-sm text-slate-500">Sign in with a magic link — no password needed.</p>
+          <h2 className="text-2xl font-bold text-slate-900">
+            {isSignup ? "Create your account" : "Welcome back"}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {isSignup
+              ? "Enter your email and we'll send you a link to get started — no password needed."
+              : "Sign in with a magic link — no password needed."}
+          </p>
         </div>
       </div>
 
@@ -166,7 +174,7 @@ function AuthForm() {
             ) : (
               <>
                 <KeyRound className="h-4 w-4" />
-                Send Magic Link
+                {isSignup ? "Create Account" : "Send Magic Link"}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </>
             )}
