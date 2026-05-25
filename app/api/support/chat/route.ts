@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[support/chat] Gemini error:", String(err).slice(0, 400));
     return NextResponse.json(
-      { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
+      { error: "DEBUG2: " + String(err).slice(0,400) },
       { status: 500 }
     );
   }
