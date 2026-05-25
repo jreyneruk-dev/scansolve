@@ -13,18 +13,21 @@ const MAX_INPUT_CHARS = 1000;
  * legitimately in support answers ("no password needed", "sign-in token", etc.)
  * and must NOT be blocked.
  */
+/**
+ * Patterns that block AI replies containing actual credential leakage.
+ * Keep these NARROW — only match strings that would never appear in a
+ * legitimate support answer. Broad patterns (e.g. /token/i, /[a-f0-9]{64}/)
+ * cause false positives and block valid answers.
+ */
 const SENSITIVE_PATTERNS = [
-  /service[_-]role[_-]key/i,        // Supabase service_role_key
-  /SUPABASE_SERVICE/i,               // env var name
-  /ANTHROPIC_API_KEY/i,              // env var name
-  /GOOGLE_AI_API_KEY/i,              // env var name
-  /RESEND_API_KEY/i,                 // env var name
-  /ENCRYPTION_KEY/i,                 // env var name
-  /process\.env/i,                   // code referencing env vars
-  /\.env\.local/i,                   // .env file reference
-  /eyJ[A-Za-z0-9_-]{20,}/,          // JWT / bearer token strings
-  /sk-[A-Za-z0-9]{20,}/,            // OpenAI-style API keys
-  /[a-f0-9]{64}/,                    // 64-char hex secrets (encryption keys)
+  /service[_-]role[_-]key/i,   // Supabase service_role_key (underscores required)
+  /SUPABASE_SERVICE_ROLE/i,     // env var name (underscores required)
+  /ANTHROPIC_API_KEY/i,         // env var name
+  /GOOGLE_AI_API_KEY/i,         // env var name
+  /RESEND_API_KEY/i,            // env var name
+  /process\.env\s*\[/i,         // process.env["..."] code
+  /eyJ[A-Za-z0-9_-]{30,}/,     // JWT tokens (ey + 30+ base64url chars)
+  /sk-[A-Za-z0-9]{30,}/,       // OpenAI-style secret keys
 ];
 
 // ── System prompt ─────────────────────────────────────────────────────────────
@@ -713,21 +716,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No user message found." }, { status: 400 });
   }
 
-  const contents = filtered.slice(startIdx).map((m, i) => {
-    const role = m.role === "assistant" ? "model" : "user";
-    // Inject system prompt into the very first user message
-    const text =
-      i === 0 && role === "user"
-        ? `${SYSTEM_PROMPT}\n\n---\n\n${m.content}`
-        : m.content;
-    return { role, parts: [{ text }] };
-  });
+  // Map conversation turns — no system prompt injection needed here;
+  // it goes in system_instruction below so Gemini treats it as authoritative.
+  const contents = filtered.slice(startIdx).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
 
   try {
     const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents }),
+      body: JSON.stringify({
+        // system_instruction is the correct Gemini API field for system prompts.
+        // It is treated as authoritative and cannot be overridden by the model's
+        // own training data — unlike stuffing it into the first user message.
+        system_instruction: {
+          parts: [{ text: SYSTEM_PROMPT }],
+        },
+        contents,
+      }),
     });
 
     if (!res.ok) {
