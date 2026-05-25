@@ -52,6 +52,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: APP_URL,
   },
+  verification: {
+    google: "617cc2ba29225e97",
+  },
 };
 
 export const viewport: Viewport = {
