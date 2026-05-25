@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getServerEnv } from "@/lib/server-env";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -41,28 +41,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ categories: cached.categories });
   }
 
-  const apiKey = getServerEnv("ANTHROPIC_API_KEY");
+  const apiKey = getServerEnv("GOOGLE_AI_API_KEY");
   if (!apiKey) {
-    return NextResponse.json({ error: "AI not configured — add ANTHROPIC_API_KEY to .env.local" }, { status: 503 });
+    return NextResponse.json({ error: "AI not configured — add GOOGLE_AI_API_KEY to .env.local" }, { status: 503 });
   }
 
   try {
-    const client = new Anthropic({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const message = await client.messages.create({
-      model: "claude-haiku-4-5",
-      max_tokens: 256,
-      messages: [
-        {
-          role: "user",
-          content: `Generate 6-8 concise maintenance issue categories for a facilities location named "${roomName.trim()}". Return ONLY a JSON array of short strings (2-4 words each), nothing else. Example: ["Leak", "Cleaning Required", "Broken Fixture", "No Paper"]`,
-        },
-      ],
-    });
+    const result = await model.generateContent(
+      `Generate 6-8 concise maintenance issue categories for a facilities location named "${roomName.trim()}". Return ONLY a JSON array of short strings (2-4 words each), nothing else. Example: ["Leak", "Cleaning Required", "Broken Fixture", "No Paper"]`
+    );
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "[]";
+    const text = result.response.text();
 
-    // Strip markdown code fences if Claude wraps the JSON
+    // Strip markdown code fences if Gemini wraps the JSON
     const cleaned = text.replace(/```(?:json)?\n?/gi, "").trim();
     const categories: string[] = JSON.parse(cleaned);
 
