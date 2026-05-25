@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getServerEnv } from "@/lib/server-env";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -25,6 +24,10 @@ Tone guidelines:
 - Be concise. Most answers should be 1-3 sentences.
 - If you do not know something specific, say so and suggest emailing support@scansolve.co.
 - Never make up features not described above.`;
+
+// Use Gemini 2.5 Flash via direct REST (most capable free model available)
+const GEMINI_MODEL = "models/gemini-2.5-flash";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent`;
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
@@ -53,39 +56,49 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No messages provided." }, { status: 400 });
   }
 
+  // Build contents: only user/assistant, starting with a user turn
   const filtered = messages.filter((m) => m.role === "user" || m.role === "assistant");
   const startIdx = filtered.findIndex((m) => m.role === "user");
   if (startIdx === -1) {
     return NextResponse.json({ error: "No user message found." }, { status: 400 });
   }
 
-  const contents = filtered.slice(startIdx).map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
-
-  // Inject system prompt into first user message
-  const contentsWithSystem = contents.map((c, i) => {
-    if (i === 0 && c.role === "user") {
-      return { ...c, parts: [{ text: `${SYSTEM_PROMPT}\n\n---\n\nUser: ${c.parts[0].text}` }] };
-    }
-    return c;
+  const contents = filtered.slice(startIdx).map((m, i) => {
+    const role = m.role === "assistant" ? "model" : "user";
+    // Inject system prompt into the very first user message
+    const text = i === 0 && role === "user"
+      ? `${SYSTEM_PROMPT}\n\n---\n\n${m.content}`
+      : m.content;
+    return { role, parts: [{ text }] };
   });
 
-  // DEBUG: List available models first
   try {
-    const listRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}&pageSize=20`
-    );
-    const listData = await listRes.json() as { models?: { name: string; supportedGenerationMethods?: string[] }[]; error?: unknown };
-    if (!listRes.ok || !listData.models) {
-      return NextResponse.json({ error: `DEBUG-LIST: keyLen=${apiKey.length} resp=${JSON.stringify(listData).slice(0,300)}` }, { status: 500 });
+    const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("[support/chat] Gemini error:", res.status, errText.slice(0, 300));
+      return NextResponse.json(
+        { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
+        { status: 500 }
+      );
     }
-    const generateModels = listData.models
-      .filter(m => m.supportedGenerationMethods?.includes("generateContent"))
-      .map(m => m.name);
-    return NextResponse.json({ error: `DEBUG-MODELS: keyLen=${apiKey.length} models=${generateModels.join(",")}` }, { status: 500 });
+
+    type GeminiResponse = {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
+    const data = await res.json() as GeminiResponse;
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I could not generate a response.";
+    return NextResponse.json({ reply });
   } catch (err) {
-    return NextResponse.json({ error: "DEBUG-LIST-ERR: " + String(err).slice(0,200) }, { status: 500 });
+    console.error("[support/chat] fetch error:", String(err).slice(0, 300));
+    return NextResponse.json(
+      { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
+      { status: 500 }
+    );
   }
 }
