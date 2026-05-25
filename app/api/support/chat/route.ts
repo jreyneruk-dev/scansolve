@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       systemInstruction: SYSTEM_PROMPT,
     });
 
@@ -75,9 +75,10 @@ export async function POST(req: NextRequest) {
     const reply = result.response.text();
     return NextResponse.json({ reply });
   } catch (err) {
-    const msg = String(err).slice(0, 400);
-    console.error("[support/chat] Gemini error:", msg);
-    // Temp debug: return actual error
-    return NextResponse.json({ error: "DEBUG: " + msg }, { status: 500 });
+    console.error("[support/chat] Gemini error:", String(err).slice(0, 400));
+    return NextResponse.json(
+      { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
+      { status: 500 }
+    );
   }
 }
