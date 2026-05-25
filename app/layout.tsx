@@ -76,7 +76,10 @@ const jsonLd = {
         "@type": "ImageObject",
         url: `${APP_URL}/icon.png`,
       },
-      sameAs: [],
+      sameAs: [
+        "https://www.linkedin.com/company/scansolveco",
+        "https://www.crunchbase.com/organization/scansolve",
+      ],
     },
     {
       "@type": "WebSite",
