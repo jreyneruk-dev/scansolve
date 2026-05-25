@@ -66,19 +66,17 @@ export async function POST(req: NextRequest) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: SYSTEM_PROMPT,
-    });
+    const model = genAI.getGenerativeModel(
+      { model: "gemini-1.5-flash", systemInstruction: SYSTEM_PROMPT },
+      { apiVersion: "v1" }
+    );
 
     const result = await model.generateContent({ contents });
     const reply = result.response.text();
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("[support/chat] Gemini error:", String(err).slice(0, 400));
-    return NextResponse.json(
-      { error: "DEBUG2: " + String(err).slice(0,400) },
-      { status: 500 }
-    );
+    const msg = String(err).slice(0, 400);
+    console.error("[support/chat] Gemini error:", msg);
+    return NextResponse.json({ error: "DEBUG3: " + msg }, { status: 500 });
   }
 }
