@@ -80,9 +80,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("[support/chat] Anthropic error:", String(err));
+    const msg = String(err).slice(0, 300);
+    console.error("[support/chat] Anthropic error:", msg);
     return NextResponse.json(
-      { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
+      { error: "DEBUG: " + msg },
       { status: 500 }
     );
   }
