@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getServerEnv } from "@/lib/server-env";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const SYSTEM_PROMPT = `You are the ScanSolve support assistant. You are friendly, concise, and helpful.
@@ -12,7 +13,7 @@ Key features:
 - Managers: Dashboard showing all issues, with filters by location, status, and date. Can assign issues to a team member by email, and update the status (Reported → Assigned → In Progress → Resolved). Email notifications sent at each step.
 - QR labels: Managers generate and print QR label sheets from the dashboard (Avery-compatible). Each label has a unique ID tied to a specific location.
 - Commissioning: New (unclaimed) QR labels show an "Activate" screen when scanned. Only authenticated managers can activate/commission a label, giving it a name and configuring the survey categories.
-- AI suggestions: When commissioning a label, managers can get AI-suggested issue categories based on the room name (e.g. "Restroom" → "No Paper", "Blocked Drain", "Broken Lock", etc.).
+- AI suggestions: When commissioning a label, managers can get AI-suggested issue categories based on the room name.
 
 Pricing:
 ScanSolve is currently in a founding member phase — completely free, no credit card required, no time pressure. Founding members get full access and their feedback shapes what gets built next.
@@ -20,14 +21,10 @@ ScanSolve is currently in a founding member phase — completely free, no credit
 Authentication:
 Managers sign in via a magic link sent to their email — no password needed.
 
-Contact:
-For complex issues, direct users to email support@scansolve.co or use the "Email Us" tab in this support widget.
-
 Tone guidelines:
 - Be concise. Most answers should be 1-3 sentences.
 - If you don't know something specific, say so and suggest emailing support@scansolve.co.
-- Never make up features that haven't been described above.
-- If asked about pricing, always emphasise it's currently free for founding members.`;
+- Never make up features not described above.`;
 
 export async function POST(req: NextRequest) {
   // Rate limit: 20 messages per IP per hour
@@ -40,7 +37,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = getServerEnv("GOOGLE_AI_API_KEY");
   if (!apiKey) {
     return NextResponse.json({ error: "AI support is not configured." }, { status: 503 });
   }
@@ -57,31 +54,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No messages provided." }, { status: 400 });
   }
 
-  // Filter to only user messages (exclude the welcome assistant message)
-  const anthropicMessages = messages
-    .filter((m) => m.role === "user" || m.role === "assistant")
-    .map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    }));
-
-  if (anthropicMessages.length === 0 || anthropicMessages[anthropicMessages.length - 1].role !== "user") {
-    return NextResponse.json({ error: "Last message must be from the user." }, { status: 400 });
+  // Build Gemini content array — must start with a user turn and alternate user/model
+  // Filter out any leading assistant messages (e.g. the synthetic welcome message)
+  const filtered = messages.filter((m) => m.role === "user" || m.role === "assistant");
+  // Drop leading assistant messages so the first turn is always "user"
+  const startIdx = filtered.findIndex((m) => m.role === "user");
+  if (startIdx === -1) {
+    return NextResponse.json({ error: "No user message found." }, { status: 400 });
   }
 
+  const contents = filtered.slice(startIdx).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
   try {
-    const client = new Anthropic({ apiKey });
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5",
-      max_tokens: 512,
-      system: SYSTEM_PROMPT,
-      messages: anthropicMessages,
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: SYSTEM_PROMPT,
     });
 
-    const reply = response.content[0]?.type === "text" ? response.content[0].text : "";
+    const result = await model.generateContent({ contents });
+    const reply = result.response.text();
+
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("[support/chat] Anthropic error:", err);
+    console.error("[support/chat] Gemini error:", err);
     return NextResponse.json(
       { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
       { status: 500 }
