@@ -216,7 +216,7 @@ function AuthForm() {
         <button
           type="button"
           onClick={() => { setUseRecovery((r) => !r); setError(null); }}
-          className="w-full text-xs text-slate-400 hover:text-indigo-600 transition-colors py-1"
+          className="w-full text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors py-2"
         >
           {useRecovery
             ? "← Back to sending to primary email"
