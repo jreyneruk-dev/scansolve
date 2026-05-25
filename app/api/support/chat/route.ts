@@ -72,28 +72,20 @@ export async function POST(req: NextRequest) {
     return c;
   });
 
-  // Use REST API directly — more reliable than SDK version mismatches
+  // DEBUG: List available models first
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: contentsWithSystem }),
-      }
+    const listRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}&pageSize=20`
     );
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("[support/chat] Gemini REST error:", res.status, errText.slice(0, 300));
-      return NextResponse.json({ error: `DEBUG5: ${res.status} ${errText.slice(0, 300)}` }, { status: 500 });
+    const listData = await listRes.json() as { models?: { name: string; supportedGenerationMethods?: string[] }[]; error?: unknown };
+    if (!listRes.ok || !listData.models) {
+      return NextResponse.json({ error: `DEBUG-LIST: keyLen=${apiKey.length} resp=${JSON.stringify(listData).slice(0,300)}` }, { status: 500 });
     }
-
-    const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I could not generate a response.";
-    return NextResponse.json({ reply });
+    const generateModels = listData.models
+      .filter(m => m.supportedGenerationMethods?.includes("generateContent"))
+      .map(m => m.name);
+    return NextResponse.json({ error: `DEBUG-MODELS: keyLen=${apiKey.length} models=${generateModels.join(",")}` }, { status: 500 });
   } catch (err) {
-    console.error("[support/chat] fetch error:", String(err).slice(0, 300));
-    return NextResponse.json({ error: "DEBUG5b: " + String(err).slice(0, 300) }, { status: 500 });
+    return NextResponse.json({ error: "DEBUG-LIST-ERR: " + String(err).slice(0,200) }, { status: 500 });
   }
 }
