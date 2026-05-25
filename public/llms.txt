@@ -46,4 +46,10 @@ The facility manager receives a notification and can assign the issue to a team 
 
 ## Contact
 
-For support or enquiries: https://scansolve.co/auth
+- Support email: support@scansolve.co
+- LinkedIn: https://www.linkedin.com/company/scansolveco
+- Crunchbase: https://www.crunchbase.com/organization/scansolve
+
+## Content Licensing
+
+© ScanSolve 2025. AI search and citation tools (GPTBot, PerplexityBot, ClaudeBot, OAI-SearchBot) are permitted to index and cite this content for search and answer generation. Training-data scraping is not permitted without prior written consent.

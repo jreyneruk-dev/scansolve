@@ -57,6 +57,13 @@ export const metadata: Metadata = {
   verification: {
     google: "iCPMwKAjlmlj-KdcjgemHRTseJ-mIZ1rejTYE7dqUHc",
   },
+  other: {
+    "theme-color": "#4f46e5",
+  },
+  alternates: {
+    canonical: APP_URL,
+    languages: { "en-GB": APP_URL },
+  },
 };
 
 export const viewport: Viewport = {
@@ -71,10 +78,22 @@ const jsonLd = {
       "@type": "Organization",
       "@id": `${APP_URL}/#organization`,
       name: "ScanSolve",
+      description:
+        "ScanSolve provides QR code-based facility issue reporting software that lets staff report problems by scanning a label — no app or login required. Managers track and resolve every issue from a central dashboard.",
       url: APP_URL,
+      foundingDate: "2025",
       logo: {
         "@type": "ImageObject",
+        "@id": `${APP_URL}/#logo`,
         url: `${APP_URL}/icon.png`,
+        width: 512,
+        height: 512,
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "support@scansolve.co",
+        availableLanguage: "English",
       },
       sameAs: [
         "https://www.linkedin.com/company/scansolveco",

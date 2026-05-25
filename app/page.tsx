@@ -7,27 +7,82 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 export const metadata: Metadata = {
   title: "ScanSolve — QR Code Facility Issue Reporting",
   description:
-    "Place QR codes anywhere in your facility. Staff scan and report issues in seconds — no app or account needed. Managers get instant visibility and track every issue to resolution. Free for founding members.",
+    "Place QR codes anywhere. Staff scan to report issues in seconds — no app or login needed. Managers track every issue to resolution. Free for founding members.",
   alternates: {
     canonical: APP_URL,
   },
 };
 
-const videoJsonLd = {
+const homepageJsonLd = {
   "@context": "https://schema.org",
-  "@type": "VideoObject",
-  name: "How ScanSolve Works — QR Code Facility Issue Reporting",
-  description:
-    "See how ScanSolve works: place a QR code at any location, staff scan to report issues instantly with no app or account needed, and managers track every issue through to resolution from one dashboard.",
-  thumbnailUrl: `${APP_URL}/how-it-works-thumb.png`,
-  uploadDate: "2026-05-24",
-  contentUrl: `${APP_URL}/how-it-works.mp4`,
-  duration: "PT1M",
-  publisher: {
-    "@type": "Organization",
-    name: "ScanSolve",
-    url: APP_URL,
-  },
+  "@graph": [
+    {
+      "@type": "VideoObject",
+      "@id": `${APP_URL}/#video-how-it-works`,
+      name: "How ScanSolve Works — QR Code Facility Issue Reporting",
+      description:
+        "See how ScanSolve works: place a QR code at any location, staff scan to report issues instantly with no app or account needed, and managers track every issue through to resolution from one dashboard.",
+      thumbnailUrl: `${APP_URL}/how-it-works-thumb.png`,
+      uploadDate: "2026-05-24",
+      contentUrl: `${APP_URL}/how-it-works.mp4`,
+      duration: "PT1M",
+      publisher: { "@id": `${APP_URL}/#organization` },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${APP_URL}/#faq`,
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is ScanSolve?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ScanSolve is a QR code facility issue reporting tool. Facility managers generate and print QR code labels, place them at locations around their building, and anyone on site can scan a label to report a maintenance issue — no app download or account required. Managers receive real-time notifications and track every report from open to resolved in one dashboard.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How does ScanSolve work?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ScanSolve works in three steps. First, a facility manager signs up, creates their locations, and prints QR code labels from the dashboard onto standard Avery label sheets. Second, those labels are placed on walls, equipment, or doors at locations where issues might arise. Third, when someone spots a problem — a leak, broken equipment, a cleaning issue — they scan the label with their phone camera, fill in a short form, and submit. The report appears instantly in the manager's dashboard.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Does ScanSolve require an app download?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "No. ScanSolve requires no app download and no account for the person reporting the issue. The reporter simply scans the QR code label with their phone's built-in camera, which opens a web page. They fill in a short form and submit. The whole process takes under a minute. Only the facility manager needs an account.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What types of facilities use ScanSolve?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ScanSolve is used by offices, gyms and leisure centres, hotels and serviced accommodation, retail stores, schools, railway carriages and stations, serviced offices, residential apartment blocks, and facilities management companies overseeing multiple sites.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is ScanSolve free?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ScanSolve is currently free for founding members — no credit card required and no time pressure. Founding members get full access during the early access period and their feedback directly shapes the product roadmap.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What happens after an issue is reported?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Once an issue is submitted via a ScanSolve QR code, it appears immediately in the facility manager's dashboard with the location, category, description, and any photo attached. The manager can assign the issue to a team member, update the status through Assigned, In Progress, and Resolved stages, and receive email notifications at each step.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 export default function HomePage() {
@@ -35,7 +90,7 @@ export default function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
       />
     <main className="min-h-dvh bg-slate-50 text-slate-900">
 
@@ -147,12 +202,13 @@ export default function HomePage() {
           <div className="mt-14">
             <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-slate-200/80 border border-slate-100 bg-slate-900">
               <video
-                className="w-full"
+                className="w-full aspect-video"
                 autoPlay
                 loop
                 muted
                 playsInline
                 preload="metadata"
+                poster="/how-it-works-thumb.png"
                 aria-label="ScanSolve product walkthrough — QR code facility issue reporting"
               >
                 <source src="/how-it-works.mp4" type="video/mp4" />

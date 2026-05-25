@@ -5,7 +5,10 @@ import { QrCode } from "lucide-react";
 export const metadata: Metadata = {
   title: "Privacy Policy — ScanSolve",
   description: "ScanSolve privacy policy — how we collect, use, and protect your data.",
-  robots: { index: true, follow: false },
+  robots: { index: true, follow: true },
+  openGraph: {
+    url: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/privacy`,
+  },
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/privacy`,
   },

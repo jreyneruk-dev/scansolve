@@ -5,7 +5,10 @@ import { QrCode, ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "About ScanSolve — QR Code Facility Issue Reporting",
   description:
-    "ScanSolve is a QR code facility issue reporting platform built in 2025. Learn how we help facilities managers, property teams, and FM companies track and resolve issues faster.",
+    "ScanSolve is a QR code facility issue reporting tool founded in 2025. Place a label, staff scan to report, managers track to resolution — no app needed.",
+  openGraph: {
+    url: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/about`,
+  },
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/about`,
   },
