@@ -1,0 +1,49 @@
+# ScanSolve
+
+> ScanSolve is a QR code facility issue reporting platform. Place a QR code label anywhere in your building — staff scan it to report maintenance issues instantly, no app or login required. Facility managers get real-time visibility and track every issue through to resolution.
+
+## Product
+
+- **Homepage**: https://scansolve.co
+- **Sign up**: https://scansolve.co/auth?mode=signup
+- **Manager login**: https://scansolve.co/auth
+
+## What ScanSolve Does
+
+ScanSolve lets facility managers print QR code labels and place them anywhere a problem might occur — toilets, plant rooms, gym equipment, retail floors, hotel rooms, train carriages. When someone notices an issue, they scan the code with their phone camera, fill in a short form (category, optional description, optional photo), and submit. No app download needed, no account required.
+
+The facility manager receives a notification and can assign the issue to a team member, track its status through Assigned → In Progress → Resolved, and view all open issues across every location from a single dashboard.
+
+## Who It's For
+
+- Facilities managers and building managers
+- Office managers
+- Hotel and hospitality operations teams
+- Gym and leisure centre operators
+- Retail and shop floor managers
+- Schools and educational facilities
+- Rail and transport operators
+- Residential block management companies
+- FM (facilities management) companies
+
+## Key Features
+
+- QR code label generation and printing
+- Zero-friction issue reporting (no app, no login for reporters)
+- Real-time dashboard with issue tracking
+- Photo uploads with issue reports
+- Email notifications and assignment workflow
+- AI-powered issue category suggestions
+- Multi-location support
+- Free for founding members
+
+## Company
+
+- **Name**: ScanSolve
+- **Website**: https://scansolve.co
+- **Founded**: 2025
+- **Category**: Facilities Management SaaS, QR Code Software
+
+## Contact
+
+For support or enquiries: https://scansolve.co/auth

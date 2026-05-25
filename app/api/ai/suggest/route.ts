@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const result = await model.generateContent(
       `Generate 6-8 concise maintenance issue categories for a facilities location named "${roomName.trim()}". Return ONLY a JSON array of short strings (2-4 words each), nothing else. Example: ["Leak", "Cleaning Required", "Broken Fixture", "No Paper"]`

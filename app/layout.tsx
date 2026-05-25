@@ -41,13 +41,14 @@ export const metadata: Metadata = {
     title: "ScanSolve — QR Code Facility Issue Reporting",
     description:
       "Place QR codes anywhere. Staff scan to report issues in seconds. Managers track and resolve everything from one dashboard — no app download required.",
+    images: [{ url: `${APP_URL}/og-image.png`, width: 1200, height: 630, alt: "ScanSolve — QR Code Facility Issue Reporting" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ScanSolve — QR Code Facility Issue Reporting",
     description:
       "Place QR codes anywhere. Staff scan to report issues in seconds. Managers track and resolve everything from one dashboard.",
-    site: "@scansolve",
+    images: [`${APP_URL}/og-image.png`],
   },
   alternates: {
     canonical: APP_URL,
@@ -60,7 +61,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 const jsonLd = {
@@ -85,14 +85,6 @@ const jsonLd = {
       description:
         "QR code facility issue reporting — place a code anywhere, staff report problems in seconds, managers track everything.",
       publisher: { "@id": `${APP_URL}/#organization` },
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${APP_URL}/dashboard?q={search_term_string}`,
-        },
-        "query-input": "required name=search_term_string",
-      },
     },
     {
       "@type": "SoftwareApplication",
