@@ -14,10 +14,15 @@ export async function createSupabaseServerClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet: CookieToSet[]) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            cookieStore.set(name, value, options as any)
-          );
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              cookieStore.set(name, value, options as any)
+            );
+          } catch {
+            // Called from a Server Component — cookie mutation is not allowed here.
+            // Session refresh is handled by middleware; this is safe to ignore.
+          }
         },
       },
     }
