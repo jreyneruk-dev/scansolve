@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "ScanSolve — QR Code Facility Issue Reporting",
+  description:
+    "Place QR codes anywhere in your facility. Staff scan and report issues in seconds — no app or account needed. Managers get instant visibility and track every issue to resolution. Free for founding members.",
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co",
+  },
+};
 
 export default function HomePage() {
   return (
@@ -40,7 +50,10 @@ export default function HomePage() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 leading-tight mb-5">
-          Stop missing problems.<br />Start solving them.
+          QR code facility reporting.<br />
+          <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            Issues fixed, not forgotten.
+          </span>
         </h1>
 
         <p className="text-lg text-slate-500 max-w-xl mx-auto leading-relaxed mb-10">
