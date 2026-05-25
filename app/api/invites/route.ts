@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrgForUser } from "@/lib/auth";
 import { sendInviteEmail } from "@/lib/email";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 function getServiceClient() {
@@ -14,7 +15,7 @@ function getServiceClient() {
 }
 
 const InviteSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email().max(254),
 });
 
 export async function POST(req: NextRequest) {
@@ -22,11 +23,22 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // ── Rate limit: 5 invites per user per hour ───────────────────────────────
+  const rl = await checkRateLimit(`invites:user:${user.id}`, 5, 3600);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many invites sent. Please wait before sending more." },
+      { status: 429, headers: { "Retry-After": "3600" } }
+    );
+  }
+
   const org = await getOrgForUser(user.id);
   if (!org) return NextResponse.json({ error: "No organization found" }, { status: 403 });
 
   let body: unknown;
-  try { body = await req.json(); } catch {
+  try {
+    body = await req.json();
+  } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
@@ -43,18 +55,21 @@ export async function POST(req: NextRequest) {
     .from("org_invites")
     .select("id")
     .eq("org_id", org.id)
-    .eq("email", email)
+    .eq("email", email.toLowerCase())
     .is("accepted_at", null)
     .gt("expires_at", new Date().toISOString())
     .single();
 
   if (existing) {
-    return NextResponse.json({ error: "An active invite already exists for this email" }, { status: 409 });
+    return NextResponse.json(
+      { error: "An active invite already exists for this email" },
+      { status: 409 }
+    );
   }
 
   const { data: invite, error } = await service
     .from("org_invites")
-    .insert({ org_id: org.id, email, invited_by: user.id })
+    .insert({ org_id: org.id, email: email.toLowerCase(), invited_by: user.id })
     .select()
     .single();
 
@@ -72,8 +87,8 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     // Roll back the invite so the user can retry
     await service.from("org_invites").delete().eq("id", invite.id);
-    const msg = err instanceof Error ? err.message : "Unknown email error";
-    return NextResponse.json({ error: `Failed to send invite email: ${msg}` }, { status: 500 });
+    console.error("[invites] email send failed:", err instanceof Error ? err.message : "unknown");
+    return NextResponse.json({ error: "Failed to send invite email." }, { status: 500 });
   }
 
   return NextResponse.json({ message: `Invite sent to ${email}` }, { status: 201 });

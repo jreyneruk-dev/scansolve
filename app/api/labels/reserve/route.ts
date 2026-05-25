@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrgForUser } from "@/lib/auth";
 import { SHEET_TYPES, formatUID } from "@/lib/labels";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 function getServiceClient() {
@@ -24,6 +25,15 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // ── Rate limit: 5 label reservations per user per hour ───────────────────
+  const rl = await checkRateLimit(`labels:reserve:user:${user.id}`, 5, 3600);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many label reservation requests. Please wait before trying again." },
+      { status: 429, headers: { "Retry-After": "3600" } }
+    );
+  }
 
   const org = await getOrgForUser(user.id);
   if (!org) return NextResponse.json({ error: "No organisation found" }, { status: 403 });

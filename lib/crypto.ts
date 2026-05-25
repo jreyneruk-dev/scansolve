@@ -5,10 +5,18 @@ const ALGORITHM = "aes-256-gcm";
 function getKey(): Buffer {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) throw new Error("ENCRYPTION_KEY env var not set");
-  // Accept 32-byte hex string (64 chars) or 32-char raw string
-  if (key.length === 64) return Buffer.from(key, "hex");
-  if (key.length === 32) return Buffer.from(key, "utf8");
-  throw new Error("ENCRYPTION_KEY must be 32 chars (raw) or 64 chars (hex)");
+  // Only accept a 64-character hex string (= 32 bytes for AES-256).
+  // Raw UTF-8 strings are rejected — they have unpredictable byte lengths and
+  // lower entropy. Generate a key with: openssl rand -hex 32
+  if (key.length !== 64) {
+    throw new Error(
+      "ENCRYPTION_KEY must be a 64-character hex string (32 bytes). " +
+      "Generate one with: openssl rand -hex 32"
+    );
+  }
+  const buf = Buffer.from(key, "hex");
+  if (buf.length !== 32) throw new Error("ENCRYPTION_KEY hex decodes to wrong length");
+  return buf;
 }
 
 export function encrypt(plaintext: string): string {

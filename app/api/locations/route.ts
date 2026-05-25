@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getOrgForUser } from "@/lib/auth";
 import { getLocationByOrgAndUID, createLocation } from "@/lib/locations";
+import { sanitizeCategory } from "@/lib/sanitize";
 import { z } from "zod";
 
 const SurveyFieldSchema = z.object({
@@ -57,8 +58,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "This QR code has already been commissioned" }, { status: 409 });
   }
 
+  // Sanitize each category string to strip tags and normalise whitespace
+  const sanitizedConfig = {
+    ...parsed.data.survey_config,
+    categories: parsed.data.survey_config.categories.map(sanitizeCategory),
+  };
+
   const location = await createLocation({
     ...parsed.data,
+    survey_config: sanitizedConfig,
     org_id: orgId,
     claimed_by: user.id,
   });
