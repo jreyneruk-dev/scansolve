@@ -53,16 +53,13 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: APP_URL,
+    languages: { "en-GB": APP_URL },
   },
   verification: {
     google: "iCPMwKAjlmlj-KdcjgemHRTseJ-mIZ1rejTYE7dqUHc",
   },
   other: {
     "theme-color": "#4f46e5",
-  },
-  alternates: {
-    canonical: APP_URL,
-    languages: { "en-GB": APP_URL },
   },
 };
 
