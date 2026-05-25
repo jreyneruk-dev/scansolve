@@ -7,18 +7,24 @@ import { checkRateLimit } from "@/lib/rate-limit";
 /** Max characters accepted per user message */
 const MAX_INPUT_CHARS = 1000;
 
-/** Patterns that should never appear in AI replies */
+/**
+ * Patterns that block AI replies containing actual credential leakage.
+ * Intentionally narrow — broad words like "password", "token", "secret" appear
+ * legitimately in support answers ("no password needed", "sign-in token", etc.)
+ * and must NOT be blocked.
+ */
 const SENSITIVE_PATTERNS = [
-  /api[_\s-]?key/i,
-  /password/i,
-  /secret/i,
-  /token/i,
-  /supabase/i,
-  /service[_\s-]?role/i,
-  /ANTHROPIC/i,
-  /GOOGLE_AI/i,
-  /\.env/i,
-  /process\.env/i,
+  /service[_-]role[_-]key/i,        // Supabase service_role_key
+  /SUPABASE_SERVICE/i,               // env var name
+  /ANTHROPIC_API_KEY/i,              // env var name
+  /GOOGLE_AI_API_KEY/i,              // env var name
+  /RESEND_API_KEY/i,                 // env var name
+  /ENCRYPTION_KEY/i,                 // env var name
+  /process\.env/i,                   // code referencing env vars
+  /\.env\.local/i,                   // .env file reference
+  /eyJ[A-Za-z0-9_-]{20,}/,          // JWT / bearer token strings
+  /sk-[A-Za-z0-9]{20,}/,            // OpenAI-style API keys
+  /[a-f0-9]{64}/,                    // 64-char hex secrets (encryption keys)
 ];
 
 // ── System prompt ─────────────────────────────────────────────────────────────
