@@ -67,16 +67,27 @@ export async function POST(req: NextRequest) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel(
-      { model: "gemini-1.5-flash", systemInstruction: SYSTEM_PROMPT },
+      { model: "gemini-1.5-flash" },
       { apiVersion: "v1" }
     );
 
-    const result = await model.generateContent({ contents });
+    // Inject system prompt into first user message (v1 API workaround)
+    const contentsWithSystem = contents.map((c, i) => {
+      if (i === 0 && c.role === "user") {
+        return {
+          ...c,
+          parts: [{ text: `${SYSTEM_PROMPT}\n\n---\n\nUser: ${c.parts[0].text}` }],
+        };
+      }
+      return c;
+    });
+
+    const result = await model.generateContent({ contents: contentsWithSystem });
     const reply = result.response.text();
     return NextResponse.json({ reply });
   } catch (err) {
     const msg = String(err).slice(0, 400);
     console.error("[support/chat] Gemini error:", msg);
-    return NextResponse.json({ error: "DEBUG3: " + msg }, { status: 500 });
+    return NextResponse.json({ error: "DEBUG4: " + msg }, { status: 500 });
   }
 }
