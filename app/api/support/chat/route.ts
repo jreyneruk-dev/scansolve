@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 import { getServerEnv } from "@/lib/server-env";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -23,7 +23,7 @@ Managers sign in via a magic link sent to their email — no password needed.
 
 Tone guidelines:
 - Be concise. Most answers should be 1-3 sentences.
-- If you don't know something specific, say so and suggest emailing support@scansolve.co.
+- If you do not know something specific, say so and suggest emailing support@scansolve.co.
 - Never make up features not described above.`;
 
 export async function POST(req: NextRequest) {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = getServerEnv("GOOGLE_AI_API_KEY");
+  const apiKey = getServerEnv("ANTHROPIC_API_KEY");
   if (!apiKey) {
     return NextResponse.json({ error: "AI support is not configured." }, { status: 503 });
   }
@@ -54,33 +54,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No messages provided." }, { status: 400 });
   }
 
-  // Build Gemini content array — must start with a user turn and alternate user/model
-  // Filter out any leading assistant messages (e.g. the synthetic welcome message)
-  const filtered = messages.filter((m) => m.role === "user" || m.role === "assistant");
-  // Drop leading assistant messages so the first turn is always "user"
+  // Build message list: only user/assistant turns, starting with a user turn
+  const filtered = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+
+  // Drop any leading assistant messages
   const startIdx = filtered.findIndex((m) => m.role === "user");
   if (startIdx === -1) {
     return NextResponse.json({ error: "No user message found." }, { status: 400 });
   }
-
-  const contents = filtered.slice(startIdx).map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
+  const anthropicMessages = filtered.slice(startIdx);
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: SYSTEM_PROMPT,
+    const client = new Anthropic({ apiKey });
+    const response = await client.messages.create({
+      model: "claude-3-5-haiku-20241022",
+      max_tokens: 512,
+      system: SYSTEM_PROMPT,
+      messages: anthropicMessages,
     });
 
-    const result = await model.generateContent({ contents });
-    const reply = result.response.text();
+    const reply =
+      response.content[0]?.type === "text" ? response.content[0].text : "Sorry, I could not generate a response.";
 
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("[support/chat] Gemini error:", err);
+    console.error("[support/chat] Anthropic error:", String(err));
     return NextResponse.json(
       { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
       { status: 500 }
