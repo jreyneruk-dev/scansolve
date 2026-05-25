@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getServerEnv } from "@/lib/server-env";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -27,7 +27,6 @@ Tone guidelines:
 - Never make up features not described above.`;
 
 export async function POST(req: NextRequest) {
-  // Rate limit: 20 messages per IP per hour
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const rl = await checkRateLimit(`support-chat:${ip}`, 20, 3600);
   if (!rl.allowed) {
@@ -37,7 +36,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = getServerEnv("ANTHROPIC_API_KEY");
+  const apiKey = getServerEnv("GOOGLE_AI_API_KEY");
   if (!apiKey) {
     return NextResponse.json({ error: "AI support is not configured." }, { status: 503 });
   }
@@ -54,37 +53,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No messages provided." }, { status: 400 });
   }
 
-  // Build message list: only user/assistant turns, starting with a user turn
-  const filtered = messages
-    .filter((m) => m.role === "user" || m.role === "assistant")
-    .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
-
-  // Drop any leading assistant messages
+  const filtered = messages.filter((m) => m.role === "user" || m.role === "assistant");
   const startIdx = filtered.findIndex((m) => m.role === "user");
   if (startIdx === -1) {
     return NextResponse.json({ error: "No user message found." }, { status: 400 });
   }
-  const anthropicMessages = filtered.slice(startIdx);
+
+  const contents = filtered.slice(startIdx).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
 
   try {
-    const client = new Anthropic({ apiKey });
-    const response = await client.messages.create({
-      model: "claude-3-5-haiku-20241022",
-      max_tokens: 512,
-      system: SYSTEM_PROMPT,
-      messages: anthropicMessages,
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: SYSTEM_PROMPT,
     });
 
-    const reply =
-      response.content[0]?.type === "text" ? response.content[0].text : "Sorry, I could not generate a response.";
-
+    const result = await model.generateContent({ contents });
+    const reply = result.response.text();
     return NextResponse.json({ reply });
   } catch (err) {
-    const msg = String(err).slice(0, 300);
-    console.error("[support/chat] Anthropic error:", msg);
-    return NextResponse.json(
-      { error: "DEBUG: " + msg },
-      { status: 500 }
-    );
+    const msg = String(err).slice(0, 400);
+    console.error("[support/chat] Gemini error:", msg);
+    // Temp debug: return actual error
+    return NextResponse.json({ error: "DEBUG: " + msg }, { status: 500 });
   }
 }
