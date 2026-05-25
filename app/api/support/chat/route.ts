@@ -64,30 +64,36 @@ export async function POST(req: NextRequest) {
     parts: [{ text: m.content }],
   }));
 
+  // Inject system prompt into first user message
+  const contentsWithSystem = contents.map((c, i) => {
+    if (i === 0 && c.role === "user") {
+      return { ...c, parts: [{ text: `${SYSTEM_PROMPT}\n\n---\n\nUser: ${c.parts[0].text}` }] };
+    }
+    return c;
+  });
+
+  // Use REST API directly — more reliable than SDK version mismatches
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel(
-      { model: "gemini-1.5-flash" },
-      { apiVersion: "v1" }
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: contentsWithSystem }),
+      }
     );
 
-    // Inject system prompt into first user message (v1 API workaround)
-    const contentsWithSystem = contents.map((c, i) => {
-      if (i === 0 && c.role === "user") {
-        return {
-          ...c,
-          parts: [{ text: `${SYSTEM_PROMPT}\n\n---\n\nUser: ${c.parts[0].text}` }],
-        };
-      }
-      return c;
-    });
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("[support/chat] Gemini REST error:", res.status, errText.slice(0, 300));
+      return NextResponse.json({ error: `DEBUG5: ${res.status} ${errText.slice(0, 300)}` }, { status: 500 });
+    }
 
-    const result = await model.generateContent({ contents: contentsWithSystem });
-    const reply = result.response.text();
+    const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I could not generate a response.";
     return NextResponse.json({ reply });
   } catch (err) {
-    const msg = String(err).slice(0, 400);
-    console.error("[support/chat] Gemini error:", msg);
-    return NextResponse.json({ error: "DEBUG4: " + msg }, { status: 500 });
+    console.error("[support/chat] fetch error:", String(err).slice(0, 300));
+    return NextResponse.json({ error: "DEBUG5b: " + String(err).slice(0, 300) }, { status: 500 });
   }
 }
