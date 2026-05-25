@@ -16,10 +16,18 @@ export default async function CommissionPage({ params }: PageProps) {
   if (isNaN(orgNum)) redirect("/");
 
   const user = await requireAuth(`/commission/${org_number}/${uid}`);
-  const org = await getOrgForUser(user.id);
+
+  let org: Record<string, unknown> | null = null;
+  let existing = null;
+
+  try {
+    org = (await getOrgForUser(user.id)) as Record<string, unknown> | null;
+  } catch (err) {
+    console.error("[commission] getOrgForUser failed:", err);
+  }
 
   // Verify the logged-in user belongs to the org whose label this is
-  if (!org || (org as Record<string, unknown>).org_number !== orgNum) {
+  if (!org || org.org_number !== orgNum) {
     return (
       <main className="min-h-dvh flex items-center justify-center p-6">
         <div className="max-w-sm w-full text-center space-y-5 animate-slide-in">
@@ -42,7 +50,11 @@ export default async function CommissionPage({ params }: PageProps) {
   }
 
   // Check if already commissioned within this org
-  const existing = await getLocationByOrgAndUID(orgNum, uid);
+  try {
+    existing = await getLocationByOrgAndUID(orgNum, uid);
+  } catch (err) {
+    console.error("[commission] getLocationByOrgAndUID failed:", err);
+  }
 
   if (existing) {
     return (
