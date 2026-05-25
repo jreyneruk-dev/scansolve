@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     canonical: APP_URL,
   },
   verification: {
-    google: "617cc2ba29225e97",
+    google: "iCPMwKAjlmlj-KdcjgemHRTseJ-mIZ1rejTYE7dqUHc",
   },
 };
 
