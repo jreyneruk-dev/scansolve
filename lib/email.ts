@@ -123,6 +123,47 @@ export async function sendInviteEmail(params: {
   });
 }
 
+export async function sendRecoveryCodeEmail(params: {
+  to: string;
+  primaryEmail: string;
+  otp: string;
+  magicLink: string;
+}) {
+  const { to, primaryEmail, otp, magicLink } = params;
+
+  const safePrimary = escapeHtml(primaryEmail);
+  const safeOtp = escapeHtml(otp);
+
+  const body = `
+    <h2 style="margin:0 0 16px;font-size:20px;color:#0f172a;">Your sign-in code</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#475569;line-height:1.6;">
+      A sign-in request was made for <strong>${safePrimary}</strong>. Use the code or
+      button below to access your account.
+    </p>
+    <div style="margin:0 0 24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center;">
+      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;">8-digit code</p>
+      <p style="margin:0;font-size:32px;font-weight:700;color:#0f172a;letter-spacing:0.25em;font-family:monospace;">${safeOtp}</p>
+    </div>
+    <div style="margin-bottom:24px;text-align:center;">
+      <a href="${encodeURI(magicLink)}"
+         style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#ffffff;
+                text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+        Sign In Directly
+      </a>
+    </div>
+    <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
+      This code expires in 60 minutes. If you did not request this, you can safely ignore
+      this email — your account remains secure.
+    </p>`;
+
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: "Your ScanSolve sign-in code",
+    html: wrapEmail(body),
+  });
+}
+
 export async function sendStatusUpdateEmail(params: {
   to: string;
   issueId: string;

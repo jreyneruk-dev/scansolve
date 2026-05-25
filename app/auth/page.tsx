@@ -28,11 +28,32 @@ function AuthForm() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
+  const [useRecovery, setUseRecovery] = useState(false);
 
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (useRecovery) {
+      // Send OTP to the recovery email instead
+      const res = await fetch("/api/auth/send-to-recovery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          primaryEmail: email,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setLoading(false);
+      if (!res.ok) {
+        setError(data.error ?? "Unable to send to recovery email. Please try again.");
+        return;
+      }
+      setStep("sent");
+      return;
+    }
 
     // Check if this email is banned before sending anything
     const checkRes = await fetch("/api/auth/check-email", {
@@ -80,8 +101,10 @@ function AuthForm() {
             <div>
               <h2 className="text-xl font-bold text-slate-900">Check your inbox</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Magic link + 8-digit code sent to<br />
-                <strong className="text-slate-700">{email}</strong>
+                {useRecovery
+                  ? <>Code sent to your <strong className="text-slate-700">recovery email</strong>.<br />Enter it below to sign in to <strong className="text-slate-700">{email}</strong>.</>
+                  : <>Magic link + 8-digit code sent to<br /><strong className="text-slate-700">{email}</strong></>
+                }
               </p>
             </div>
           </div>
@@ -115,7 +138,7 @@ function AuthForm() {
         </div>
 
         <button
-          onClick={() => { setStep("email"); setOtp(""); }}
+          onClick={() => { setStep("email"); setOtp(""); setUseRecovery(false); }}
           className="w-full text-xs text-slate-400 hover:text-slate-600 transition-colors py-2"
         >
           Use a different email
@@ -148,7 +171,9 @@ function AuthForm() {
       <div className="glass-card rounded-3xl p-6">
         <form onSubmit={handleSendMagicLink} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Email address</Label>
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+              {useRecovery ? "Primary email address" : "Email address"}
+            </Label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
@@ -162,6 +187,11 @@ function AuthForm() {
                 className="pl-10 h-12 glass-input rounded-xl"
               />
             </div>
+            {useRecovery && (
+              <p className="text-xs text-slate-500 pt-0.5">
+                Enter your primary email — the code will be sent to your recovery inbox.
+              </p>
+            )}
           </div>
           {error && <p className="text-xs text-red-600 bg-red-50/80 rounded-xl px-3 py-2">{error}</p>}
           <button
@@ -174,13 +204,25 @@ function AuthForm() {
             ) : (
               <>
                 <KeyRound className="h-4 w-4" />
-                {isSignup ? "Create Account" : "Send Magic Link"}
+                {useRecovery ? "Send to Recovery Email" : isSignup ? "Create Account" : "Send Magic Link"}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </>
             )}
           </button>
         </form>
       </div>
+
+      {!isSignup && (
+        <button
+          type="button"
+          onClick={() => { setUseRecovery((r) => !r); setError(null); }}
+          className="w-full text-xs text-slate-400 hover:text-indigo-600 transition-colors py-1"
+        >
+          {useRecovery
+            ? "← Back to sending to primary email"
+            : "Lost access to your inbox? Send code to recovery email instead"}
+        </button>
+      )}
     </div>
   );
 }

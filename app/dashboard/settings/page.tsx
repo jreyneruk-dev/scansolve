@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { BackendSettings } from "@/components/dashboard/BackendSettings";
 import { TeamSettings } from "@/components/dashboard/TeamSettings";
 import { OrgNameSettings } from "@/components/dashboard/OrgNameSettings";
+import { RecoveryEmailSettings } from "@/components/dashboard/RecoveryEmailSettings";
 
 function getServiceClient() {
   return createClient(
@@ -22,6 +23,8 @@ export default async function SettingsPage() {
   const orgId = String((org as Record<string, unknown>).id);
   const orgName = String((org as Record<string, unknown>).name ?? "");
   const service = getServiceClient();
+
+  const recoveryEmail = (user.user_metadata?.recovery_email as string | undefined) ?? null;
 
   const [{ data: orgData }, { data: members }, { data: invites }] = await Promise.all([
     service.from("organizations").select("backend, backend_credentials").eq("id", orgId).single(),
@@ -51,6 +54,10 @@ export default async function SettingsPage() {
           invites={invites ?? []}
           currentUserId={user.id}
         />
+      </div>
+
+      <div className="border-t border-slate-100 pt-6">
+        <RecoveryEmailSettings initialRecoveryEmail={recoveryEmail} />
       </div>
 
       <div className="border-t border-slate-100 pt-6">
