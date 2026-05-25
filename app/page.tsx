@@ -2,17 +2,42 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles } from "lucide-react";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
+
 export const metadata: Metadata = {
   title: "ScanSolve — QR Code Facility Issue Reporting",
   description:
     "Place QR codes anywhere in your facility. Staff scan and report issues in seconds — no app or account needed. Managers get instant visibility and track every issue to resolution. Free for founding members.",
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co",
+    canonical: APP_URL,
+  },
+};
+
+const videoJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: "How ScanSolve Works — QR Code Facility Issue Reporting",
+  description:
+    "See how ScanSolve works: place a QR code at any location, staff scan to report issues instantly with no app or account needed, and managers track every issue through to resolution from one dashboard.",
+  thumbnailUrl: `${APP_URL}/how-it-works-thumb.png`,
+  uploadDate: "2025-05-24",
+  contentUrl: `${APP_URL}/how-it-works.mp4`,
+  embedUrl: APP_URL,
+  duration: "PT1M",
+  publisher: {
+    "@type": "Organization",
+    name: "ScanSolve",
+    url: APP_URL,
   },
 };
 
 export default function HomePage() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoJsonLd) }}
+      />
     <main className="min-h-dvh bg-slate-50 text-slate-900">
 
       {/* ── Navbar ──────────────────────────────────────────────────── */}
@@ -240,5 +265,6 @@ export default function HomePage() {
       </footer>
 
     </main>
+    </>
   );
 }
