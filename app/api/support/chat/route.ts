@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const SYSTEM_PROMPT = `You are the ScanSolve support assistant. You are friendly, concise, and helpful.
@@ -21,7 +21,7 @@ Authentication:
 Managers sign in via a magic link sent to their email — no password needed.
 
 Contact:
-For complex issues or billing questions, direct users to email support@scansolve.co or use the "Email Us" tab in this support widget.
+For complex issues, direct users to email support@scansolve.co or use the "Email Us" tab in this support widget.
 
 Tone guidelines:
 - Be concise. Most answers should be 1-3 sentences.
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "AI support is not configured." }, { status: 503 });
   }
@@ -57,31 +57,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No messages provided." }, { status: 400 });
   }
 
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: SYSTEM_PROMPT,
-    });
-
-    // Convert messages to Gemini history format (all but the last, which is the current user turn)
-    const history = messages.slice(0, -1).map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
+  // Filter to only user messages (exclude the welcome assistant message)
+  const anthropicMessages = messages
+    .filter((m) => m.role === "user" || m.role === "assistant")
+    .map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
     }));
 
-    const lastMessage = messages[messages.length - 1];
-    if (!lastMessage || lastMessage.role !== "user") {
-      return NextResponse.json({ error: "Last message must be from the user." }, { status: 400 });
-    }
+  if (anthropicMessages.length === 0 || anthropicMessages[anthropicMessages.length - 1].role !== "user") {
+    return NextResponse.json({ error: "Last message must be from the user." }, { status: 400 });
+  }
 
-    const chat = model.startChat({ history });
-    const result = await chat.sendMessage(lastMessage.content);
-    const reply = result.response.text();
+  try {
+    const client = new Anthropic({ apiKey });
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 512,
+      system: SYSTEM_PROMPT,
+      messages: anthropicMessages,
+    });
 
+    const reply = response.content[0]?.type === "text" ? response.content[0].text : "";
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("[support/chat] Gemini error:", err);
+    console.error("[support/chat] Anthropic error:", err);
     return NextResponse.json(
       { error: "The AI assistant is temporarily unavailable. Please email support@scansolve.co." },
       { status: 500 }
