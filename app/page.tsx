@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles } from "lucide-react";
+import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles, ChevronDown } from "lucide-react";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 
@@ -291,16 +291,25 @@ export default function HomePage() {
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-8">
           Built to close the gap between a problem spotted and a problem solved
         </h2>
-        <div className="max-w-3xl mx-auto space-y-4 text-slate-600 leading-relaxed">
-          <p>
+        <div className="max-w-3xl mx-auto">
+          <p className="text-slate-600 leading-relaxed">
             ScanSolve is a web-based facility issue reporting platform built around QR codes. Founded in 2025, ScanSolve was created to eliminate the gap between a problem being spotted and a manager knowing about it. Traditional reporting relies on phone calls, paper sheets, or people remembering to log something — all of which are slow, inconsistent, and easy to miss.
           </p>
-          <p>
-            With ScanSolve, facility managers print QR code labels and place them anywhere a problem might occur — a plant room, a gym machine, a hotel corridor, a school toilet block, a retail shop floor. When someone notices an issue, they point their phone camera at the nearest label. No app to download. No account to create. They fill in a short form — selecting a category, optionally adding a description or photo — and submit. The manager sees it instantly in their dashboard.
-          </p>
-          <p>
-            If you&apos;ve ever searched for a way to scan and solve facility problems without expensive specialist software or complicated setup, ScanSolve was built exactly for that. Every issue is tracked from first report through to resolution, with assignment, status updates, and email notifications built in. ScanSolve is designed for facilities managers, property teams, FM companies, hotel operations, school site managers, and anyone responsible for keeping a site running. Founding membership is free.
-          </p>
+          <details className="group mt-4">
+            <summary className="inline-flex items-center gap-1 cursor-pointer text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors list-none select-none">
+              <span className="group-open:hidden">Read more</span>
+              <span className="hidden group-open:inline">Show less</span>
+              <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="mt-4 space-y-4 text-slate-600 leading-relaxed">
+              <p>
+                With ScanSolve, facility managers print QR code labels and place them anywhere a problem might occur — a plant room, a gym machine, a hotel corridor, a school toilet block, a retail shop floor. When someone notices an issue, they point their phone camera at the nearest label. No app to download. No account to create. They fill in a short form — selecting a category, optionally adding a description or photo — and submit. The manager sees it instantly in their dashboard.
+              </p>
+              <p>
+                If you&apos;ve ever searched for a way to scan and solve facility problems without expensive specialist software or complicated setup, ScanSolve was built exactly for that. Every issue is tracked from first report through to resolution, with assignment, status updates, and email notifications built in. ScanSolve is designed for facilities managers, property teams, FM companies, hotel operations, school site managers, and anyone responsible for keeping a site running. Founding membership is free.
+              </p>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -310,10 +319,10 @@ export default function HomePage() {
           <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest text-center mb-3">
             FAQ
           </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-10">
             Frequently asked questions
           </h2>
-          <div className="space-y-8">
+          <div className="divide-y divide-slate-100">
             {[
               {
                 q: "What is ScanSolve?",
@@ -340,10 +349,13 @@ export default function HomePage() {
                 a: "Once an issue is submitted via a ScanSolve QR code, it appears immediately in the facility manager's dashboard with the location, category, description, and any photo the reporter attached. The manager can assign the issue to a specific team member by email, update the status through Assigned, In Progress, and Resolved stages, and receive email notifications at each step. The reporter can optionally provide their email address to receive a confirmation and updates.",
               },
             ].map(({ q, a }) => (
-              <div key={q} className="border-b border-slate-100 pb-8 last:border-0 last:pb-0">
-                <h3 className="text-lg font-bold text-slate-900 mb-3">{q}</h3>
-                <p className="text-slate-500 leading-relaxed">{a}</p>
-              </div>
+              <details key={q} className="group">
+                <summary className="flex items-center justify-between gap-4 cursor-pointer py-5 list-none select-none">
+                  <h3 className="text-base font-semibold text-slate-900 group-open:text-indigo-600 transition-colors">{q}</h3>
+                  <ChevronDown className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180 group-open:text-indigo-500" />
+                </summary>
+                <p className="pb-5 text-slate-500 leading-relaxed text-sm">{a}</p>
+              </details>
             ))}
           </div>
         </div>
