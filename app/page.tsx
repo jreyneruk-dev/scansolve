@@ -214,7 +214,7 @@ export default function HomePage() {
                 <source src="/how-it-works.mp4" type="video/mp4" />
               </video>
             </div>
-            <p className="mt-5 text-sm text-slate-500 text-center max-w-2xl mx-auto leading-relaxed">
+            <p className="sr-only">
               The video above shows the full ScanSolve workflow. A facilities manager logs into the dashboard, generates QR code labels, and prints them on standard Avery sheets. A member of staff scans a label on their phone camera — no app needed — and fills in a short issue report form. The manager instantly receives the report, assigns it to a team member, and tracks it through to resolution, all from a single dashboard. No specialist software, no complicated setup.
             </p>
           </div>
