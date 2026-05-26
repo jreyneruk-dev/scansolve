@@ -289,7 +289,7 @@ export default function HomePage() {
           About ScanSolve
         </p>
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-8">
-          Built to close the gap between a problem spotted and a problem solved
+          Built to close the gap between a problem spotted<br className="hidden sm:block" /> and a problem solved
         </h2>
         <div className="max-w-3xl mx-auto">
           <p className="text-slate-600 leading-relaxed">
