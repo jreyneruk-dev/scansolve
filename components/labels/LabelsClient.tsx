@@ -14,6 +14,7 @@ const SHEET_OPTIONS = [
 
 interface PrintJob {
   id: string;
+  sheetType: string;
   sheetTypeLabel: string;
   sheets: number;
   quantityLabels: number;
@@ -21,6 +22,18 @@ interface PrintJob {
   uidEnd: string;
   printedAt: string;
   printedBy: string;
+}
+
+/** Reconstruct sequential UIDs from a stored range */
+function uidsFromRange(uidStart: string, uidEnd: string): string[] {
+  const prefix = uidStart.slice(0, 4); // e.g. "1026"
+  const start = parseInt(uidStart.slice(4), 10);
+  const end = parseInt(uidEnd.slice(4), 10);
+  const uids: string[] = [];
+  for (let i = start; i <= end; i++) {
+    uids.push(prefix + String(i).padStart(6, "0"));
+  }
+  return uids;
 }
 
 interface PreviewData {
@@ -312,6 +325,7 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
                     <th className="pb-2 px-2 font-semibold text-right">Sheets</th>
                     <th className="pb-2 px-2 font-semibold text-right">Labels</th>
                     <th className="pb-2 px-2 font-semibold">UID range</th>
+                    <th className="pb-2 px-2 font-semibold"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -332,6 +346,19 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
                         {job.uidStart === job.uidEnd
                           ? job.uidStart
                           : `${job.uidStart} – ${job.uidEnd}`}
+                      </td>
+                      <td className="py-2 px-2">
+                        <button
+                          onClick={() => setPreview({
+                            uids: uidsFromRange(job.uidStart, job.uidEnd),
+                            orgNumber,
+                            sheetType: job.sheetType || "avery_l7165",
+                          })}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:bg-indigo-200 transition-colors text-xs font-semibold whitespace-nowrap"
+                        >
+                          <Printer className="h-3 w-3" />
+                          Reprint
+                        </button>
                       </td>
                     </tr>
                   ))}
