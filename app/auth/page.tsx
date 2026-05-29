@@ -163,7 +163,7 @@ function AuthForm() {
           <p className="mt-1 text-sm text-slate-500">
             {isSignup
               ? "Enter your email and we'll send you a link to get started — no password needed."
-              : "Sign in with a magic link — no password needed."}
+              : "Sign in with a magic code — no password needed."}
           </p>
         </div>
       </div>
@@ -204,7 +204,7 @@ function AuthForm() {
             ) : (
               <>
                 <KeyRound className="h-4 w-4" />
-                {useRecovery ? "Send to Recovery Email" : isSignup ? "Create Account" : "Send Magic Link"}
+                {useRecovery ? "Send to Recovery Email" : isSignup ? "Create Account" : "Send Magic Code"}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </>
             )}
