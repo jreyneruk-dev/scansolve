@@ -70,9 +70,9 @@ export function BackendSettings({ initial }: Props) {
   }
 
   const BACKENDS = [
-    { id: "supabase" as const, label: "Supabase", icon: Database, desc: "Default — hosted PostgreSQL" },
-    { id: "sheets" as const, label: "Google Sheets", icon: Sheet, desc: "Store issues in a spreadsheet" },
-    { id: "airtable" as const, label: "Airtable", icon: Table2, desc: "Store issues in an Airtable base" },
+    { id: "supabase" as const, label: "Supabase", icon: Database, desc: "Default — hosted PostgreSQL", comingSoon: false },
+    { id: "sheets" as const, label: "Google Sheets", icon: Sheet, desc: "Store issues in a spreadsheet", comingSoon: true },
+    { id: "airtable" as const, label: "Airtable", icon: Table2, desc: "Store issues in an Airtable base", comingSoon: true },
   ];
 
   return (
@@ -85,25 +85,33 @@ export function BackendSettings({ initial }: Props) {
       </div>
 
       <div className="space-y-2">
-        {BACKENDS.map(({ id, label, icon: Icon, desc }) => (
+        {BACKENDS.map(({ id, label, icon: Icon, desc, comingSoon }) => (
           <button
             key={id}
             type="button"
-            onClick={() => setBackend(id)}
+            onClick={() => !comingSoon && setBackend(id)}
+            disabled={comingSoon}
             className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all duration-200 min-h-[56px] ${
-              backend === id
-                ? "bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-200 shadow-sm"
-                : "glass-card text-slate-700 hover:border-indigo-100"
+              comingSoon
+                ? "glass-card opacity-50 cursor-not-allowed"
+                : backend === id
+                  ? "bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-200 shadow-sm"
+                  : "glass-card text-slate-700 hover:border-indigo-100"
             }`}
           >
-            <Icon className={`h-5 w-5 shrink-0 ${backend === id ? "text-indigo-600" : "text-slate-400"}`} />
+            <Icon className={`h-5 w-5 shrink-0 ${comingSoon ? "text-slate-300" : backend === id ? "text-indigo-600" : "text-slate-400"}`} />
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-semibold ${backend === id ? "text-indigo-900" : "text-slate-800"}`}>{label}</p>
-              <p className="text-xs text-slate-500">{desc}</p>
+              <p className={`text-sm font-semibold ${comingSoon ? "text-slate-400" : backend === id ? "text-indigo-900" : "text-slate-800"}`}>
+                {label}
+              </p>
+              <p className="text-xs text-slate-400">{desc}</p>
             </div>
-            {initial.backend === id && initial.has_credentials !== false && (
-              <span className="text-xs text-indigo-600 font-semibold shrink-0">Active</span>
-            )}
+            {comingSoon
+              ? <span className="text-xs text-slate-400 font-medium shrink-0">Coming soon</span>
+              : initial.backend === id && initial.has_credentials !== false && (
+                  <span className="text-xs text-indigo-600 font-semibold shrink-0">Active</span>
+                )
+            }
           </button>
         ))}
       </div>
