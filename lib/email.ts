@@ -137,8 +137,7 @@ export async function sendRecoveryCodeEmail(params: {
   const body = `
     <h2 style="margin:0 0 16px;font-size:20px;color:#0f172a;">Your sign-in code</h2>
     <p style="margin:0 0 20px;font-size:14px;color:#475569;line-height:1.6;">
-      A sign-in request was made for <strong>${safePrimary}</strong>. Use the code or
-      button below to access your account.
+      A sign-in request was made for <strong>${safePrimary}</strong>. Use the code below to access your account.
     </p>
     <div style="margin:0 0 24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center;">
       <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;">8-digit code</p>
