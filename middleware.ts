@@ -97,8 +97,8 @@ export async function middleware(request: NextRequest) {
       "default-src 'self'",
       `script-src ${scriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
-      // Supabase signed URLs for images; no data: blobs (avoids XSS via data URIs)
-      `img-src 'self' https://${supabaseHost} https://*.supabase.co`,
+      // Supabase signed URLs + data: for client-generated QR code PNGs
+      `img-src 'self' data: https://${supabaseHost} https://*.supabase.co`,
       // API calls: Supabase (data + realtime), Resend, Google AI
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://generativelanguage.googleapis.com",
       "font-src 'self'",
