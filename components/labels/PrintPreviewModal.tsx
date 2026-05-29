@@ -1,8 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
-import { X, Printer, Loader2 } from "lucide-react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { X, Printer, Loader2, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import QRCode from "qrcode";
 import { LabelSheet } from "./LabelSheet";
+
+// On-screen sheet dimensions (1mm ≈ 3.7795px at 96dpi)
+const MM_TO_PX = 3.7795;
+const SHEET_W_PX = 210 * MM_TO_PX;   // ≈ 793.7
+const SHEET_H_PX = 297 * MM_TO_PX;   // ≈ 1122.5
+const SHEET_GAP_PX = 24;
+const MIN_SCALE = 0.2;
+const MAX_SCALE = 2;
 
 // ── Avery L7165 constants (mm) ─────────────────────────────────────────────
 const CFG = {
@@ -63,6 +71,42 @@ interface PrintPreviewModalProps {
 export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose }: PrintPreviewModalProps) {
   const [qrDataUrls, setQrDataUrls] = useState<Record<string, string>>({});
   const [qrReady, setQrReady] = useState(false);
+
+  // Zoom / fit-to-screen state
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [fitScale, setFitScale] = useState(1);
+  const [userZoomed, setUserZoomed] = useState(false);
+
+  const sheetCountForFit = Math.ceil(uids.length / CFG.labelsPerSheet) || 1;
+
+  // Compute the scale that fits one sheet's width into the viewport
+  const computeFit = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return 1;
+    const avail = el.clientWidth - 32; // account for padding
+    return Math.max(MIN_SCALE, Math.min(1, avail / SHEET_W_PX));
+  }, []);
+
+  useEffect(() => {
+    const apply = () => {
+      const f = computeFit();
+      setFitScale(f);
+      if (!userZoomed) setScale(f);
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, [computeFit, userZoomed]);
+
+  const zoomBy = (delta: number) => {
+    setUserZoomed(true);
+    setScale((s) => Math.max(MIN_SCALE, Math.min(MAX_SCALE, +(s + delta).toFixed(2))));
+  };
+  const resetFit = () => { setUserZoomed(false); setScale(fitScale); };
+
+  const scaledW = SHEET_W_PX * scale;
+  const scaledH = (sheetCountForFit * SHEET_H_PX + (sheetCountForFit - 1) * SHEET_GAP_PX) * scale;
 
   // Pre-generate all QR data URLs once (used for both preview and print)
   useEffect(() => {
@@ -130,16 +174,44 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-700/60 backdrop-blur-sm" style={{ overflow: "hidden" }}>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 shrink-0"
+      <div className="flex flex-wrap items-center justify-between gap-y-2 gap-x-3 px-4 sm:px-5 py-3 shrink-0"
         style={{ background: "rgba(255,255,255,0.95)", borderBottom: "1px solid #e2e8f0" }}>
-        <div>
+        <div className="min-w-0">
           <h2 className="text-sm font-bold text-slate-900">Print Preview</h2>
           <p className="text-xs text-slate-500">
             {uids.length} label{uids.length !== 1 ? "s" : ""} &bull;{" "}
             {sheetCount} sheet{sheetCount !== 1 ? "s" : ""} &bull; Avery L7165 A4
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Zoom controls */}
+          <div className="flex items-center rounded-xl border border-slate-200 bg-white/80 overflow-hidden">
+            <button
+              onClick={() => zoomBy(-0.15)}
+              disabled={scale <= MIN_SCALE}
+              aria-label="Zoom out"
+              className="flex h-9 w-9 items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 disabled:opacity-40 transition-colors"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </button>
+            <button
+              onClick={resetFit}
+              aria-label="Fit to screen"
+              className="flex h-9 min-w-[3.25rem] items-center justify-center gap-1 border-x border-slate-200 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+            >
+              <Maximize2 className="h-3.5 w-3.5" />
+              {Math.round(scale * 100)}%
+            </button>
+            <button
+              onClick={() => zoomBy(0.15)}
+              disabled={scale >= MAX_SCALE}
+              aria-label="Zoom in"
+              className="flex h-9 w-9 items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 disabled:opacity-40 transition-colors"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
+          </div>
+
           <button
             onClick={handlePrint}
             disabled={!qrReady}
@@ -156,16 +228,36 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
         </div>
       </div>
 
-      {/* Scrollable preview — purely for on-screen review */}
-      <div className="flex-1 overflow-auto flex justify-center py-6" style={{ background: "#94a3b8" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
-          <LabelSheet
-            uids={uids}
-            orgNumber={orgNumber}
-            sheetType="avery_l7165"
-            appUrl={appUrl}
-            qrDataUrls={qrDataUrls}
-          />
+      {/* Scrollable + zoomable preview — purely for on-screen review */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-auto flex justify-center py-6 px-4"
+        style={{ background: "#94a3b8", touchAction: "pan-x pan-y pinch-zoom" }}
+      >
+        {/* Sized spacer that reserves the scaled footprint so scrolling works */}
+        <div style={{ width: scaledW, height: scaledH, flexShrink: 0, position: "relative" }}>
+          <div
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+              width: SHEET_W_PX,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: SHEET_GAP_PX,
+            }}
+          >
+            <LabelSheet
+              uids={uids}
+              orgNumber={orgNumber}
+              sheetType="avery_l7165"
+              appUrl={appUrl}
+              qrDataUrls={qrDataUrls}
+            />
+          </div>
         </div>
       </div>
     </div>
