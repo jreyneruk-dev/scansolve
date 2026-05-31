@@ -2,9 +2,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { X, Printer, Loader2, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import QRCode from "qrcode";
-import { LabelSheet } from "./LabelSheet";
+import { LabelSheet, logoSvgMarkup } from "./LabelSheet";
+import { getSheetConfig, type SheetConfig } from "@/lib/labels";
 
-// On-screen sheet dimensions (1mm ≈ 3.7795px at 96dpi)
+// On-screen sheet dimensions (1mm ≈ 3.7795px at 96dpi). Page is always A4.
 const MM_TO_PX = 3.7795;
 const SHEET_W_PX = 210 * MM_TO_PX;   // ≈ 793.7
 const SHEET_H_PX = 297 * MM_TO_PX;   // ≈ 1122.5
@@ -12,43 +13,48 @@ const SHEET_GAP_PX = 24;
 const MIN_SCALE = 0.2;
 const MAX_SCALE = 2;
 
-// ── Avery L7165 constants (mm) ─────────────────────────────────────────────
-const CFG = {
-  pageW: 210, pageH: 297,
-  marginTop: 13.5, marginLeft: 5.05,
-  labelW: 99.1, labelH: 67.7,
-  cols: 2, rows: 4,
-  labelsPerSheet: 8,
-};
+// Shared logo markup (identical in preview + print)
+const logoSvg = logoSvgMarkup;
 
-// ── QR icon SVG (lucide QrCode path, inlined for print window) ────────────
-const QR_ICON = `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/>
-  <rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
-  <path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/>
-  <path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/>
-  <path d="M21 12v.01"/><path d="M12 21v-1"/>
-</svg>`;
+// ── Build sheet divs (used for both inject-print and matches LabelSheet) ───
+function buildSheetsHTML(uids: string[], qrDataUrls: Record<string, string>, cfg: SheetConfig): { html: string; sheetCount: number } {
+  const { pageWidthMm: pageW, pageHeightMm: pageH, marginTopMm, marginLeftMm,
+    labelWidthMm: labelW, labelHeightMm: labelH, colGapMm, rowGapMm,
+    cols, rows, labelsPerSheet, layout } = cfg;
 
-// ── Build sheet divs (used for both inject-print and preview) ─────────────
-function buildSheetsHTML(uids: string[], qrDataUrls: Record<string, string>): { html: string; sheetCount: number } {
-  const { pageW, pageH, marginTop, marginLeft, labelW, labelH, labelsPerSheet } = CFG;
-  const pad = 3;
-
-  const leftAvailMm = labelW * 0.4 - pad * 2;
-  const logoBoxMm   = +(leftAvailMm * 0.68).toFixed(1);
-  const logoRadMm   = +(logoBoxMm  * 0.22).toFixed(1);
-
-  function label(uid: string) {
-    if (!uid) return `<div style="width:${labelW}mm;height:${labelH}mm;border:0.25mm dashed #e2e8f0;box-sizing:border-box;"></div>`;
-    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:row;overflow:hidden;"><div style="width:40%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.8).toFixed(1)}mm;border-right:0.25mm solid #e2e8f0;"><svg width="${logoBoxMm}mm" height="${logoBoxMm}mm" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><rect width="100" height="100" rx="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" ry="${+(logoRadMm/logoBoxMm*100).toFixed(1)}" fill="#6366f1"/><g transform="translate(16,16) scale(2.8)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></g></svg><span style="font-size:7pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span><p style="margin:0;font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.01em;">Scan it. Solve it.</p></div><div style="width:60%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.4).toFixed(1)}mm;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:${+(labelH - pad*2 - 5).toFixed(1)}mm;width:auto;height:auto;display:block;" /><p style="margin:0;font-size:5.5pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;">${uid}</p></div></div>`;
+  function emptyLabel() {
+    return `<div style="width:${labelW}mm;height:${labelH}mm;border:0.25mm dashed #e2e8f0;box-sizing:border-box;"></div>`;
   }
+
+  // Wide labels: logo column + QR column
+  function splitLabel(uid: string) {
+    const pad = 3;
+    const leftAvailMm = labelW * 0.4 - pad * 2;
+    const logoBoxMm = +(leftAvailMm * 0.6).toFixed(1);
+    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:row;overflow:hidden;"><div style="width:40%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.8).toFixed(1)}mm;border-right:0.25mm solid #e2e8f0;">${logoSvg(logoBoxMm)}<span style="font-size:7pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span><p style="margin:0;font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.02em;">Scan it. Solve it.</p></div><div style="width:60%;height:100%;padding:${pad}mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${+(pad*0.5).toFixed(1)}mm;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:${+(labelH - pad*2 - 6).toFixed(1)}mm;width:auto;height:auto;display:block;" /><p style="margin:0;font-size:5.5pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;">${uid}</p></div></div>`;
+  }
+
+  // Square / large / compact labels: brand on top, big QR, UID below
+  function stackedLabel(uid: string) {
+    const compact = labelH < 80;
+    const showSlogan = labelH >= 90;
+    const pad = compact ? 2.5 : 4;
+    const logoBoxMm = +(Math.min(labelH * 0.12, 9) * (compact ? 1 : 1.1)).toFixed(1);
+    const wordPt = compact ? 7 : 9;
+    const uidPt = compact ? 5.5 : 6;
+    const slogan = showSlogan
+      ? `<p style="margin:0 0 1mm;font-size:7pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.02em;text-align:center;">Scan it. Solve it.</p>`
+      : "";
+    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden;padding:${pad}mm;"><div style="display:flex;align-items:center;justify-content:center;gap:${+(pad*0.5).toFixed(1)}mm;flex-shrink:0;">${logoSvg(logoBoxMm)}<span style="font-size:${wordPt}pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span></div><div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:${+(pad*0.5).toFixed(1)}mm 0;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:100%;width:auto;height:auto;display:block;object-fit:contain;" /></div>${slogan}<p style="margin:0;font-size:${uidPt}pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;flex-shrink:0;">${uid}</p></div>`;
+  }
+
+  const label = (uid: string) => (!uid ? emptyLabel() : layout === "split" ? splitLabel(uid) : stackedLabel(uid));
 
   function sheet(sheetUids: string[], isLast: boolean) {
     const pageBreak = isLast
       ? "page-break-after:avoid;break-after:avoid;"
       : "page-break-after:always;break-after:page;";
-    return `<div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTop}mm;padding-left:${marginLeft}mm;box-sizing:border-box;background:white;${pageBreak}"><div style="display:grid;grid-template-columns:${labelW}mm ${labelW}mm;grid-template-rows:${labelH}mm ${labelH}mm ${labelH}mm ${labelH}mm;gap:0;">${sheetUids.map(label).join("")}</div></div>`;
+    return `<div style="width:${pageW}mm;height:${pageH}mm;overflow:hidden;padding-top:${marginTopMm}mm;padding-left:${marginLeftMm}mm;box-sizing:border-box;background:white;${pageBreak}"><div style="display:grid;grid-template-columns:repeat(${cols},${labelW}mm);grid-template-rows:repeat(${rows},${labelH}mm);column-gap:${colGapMm}mm;row-gap:${rowGapMm}mm;">${sheetUids.map(label).join("")}</div></div>`;
   }
 
   const all = [...uids];
@@ -69,6 +75,7 @@ interface PrintPreviewModalProps {
 }
 
 export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose }: PrintPreviewModalProps) {
+  const cfg = getSheetConfig(sheetType);
   const [qrDataUrls, setQrDataUrls] = useState<Record<string, string>>({});
   const [qrReady, setQrReady] = useState(false);
 
@@ -78,7 +85,7 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   const [fitScale, setFitScale] = useState(1);
   const [userZoomed, setUserZoomed] = useState(false);
 
-  const sheetCountForFit = Math.ceil(uids.length / CFG.labelsPerSheet) || 1;
+  const sheetCount = Math.ceil(uids.length / cfg.labelsPerSheet) || 1;
 
   // Compute the scale that fits one sheet's width into the viewport
   const computeFit = useCallback(() => {
@@ -106,7 +113,7 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   const resetFit = () => { setUserZoomed(false); setScale(fitScale); };
 
   const scaledW = SHEET_W_PX * scale;
-  const scaledH = (sheetCountForFit * SHEET_H_PX + (sheetCountForFit - 1) * SHEET_GAP_PX) * scale;
+  const scaledH = (sheetCount * SHEET_H_PX + (sheetCount - 1) * SHEET_GAP_PX) * scale;
 
   // Pre-generate all QR data URLs once (used for both preview and print)
   useEffect(() => {
@@ -135,11 +142,9 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
   }, [onClose]);
 
   function handlePrint() {
-    const { html, sheetCount } = buildSheetsHTML(uids, qrDataUrls);
-    const { pageW, pageH } = CFG;
-    const totalH = sheetCount * pageH;
+    const { html, sheetCount: count } = buildSheetsHTML(uids, qrDataUrls, cfg);
+    const totalH = count * cfg.pageHeightMm;
 
-    // Inject print styles — hide everything on the page except our print root
     const styleEl = document.createElement("style");
     styleEl.id = "ss-print-style";
     styleEl.textContent = `
@@ -152,10 +157,9 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
     `;
     document.head.appendChild(styleEl);
 
-    // Inject print content as a fixed overlay
     const rootEl = document.createElement("div");
     rootEl.id = "ss-print-root";
-    rootEl.style.cssText = `position:fixed;top:0;left:0;width:${pageW}mm;height:${totalH}mm;overflow:hidden;background:white;z-index:99999;font-size:0;line-height:0;`;
+    rootEl.style.cssText = `position:fixed;top:0;left:0;width:${cfg.pageWidthMm}mm;height:${totalH}mm;overflow:hidden;background:white;z-index:99999;font-size:0;line-height:0;`;
     rootEl.innerHTML = html;
     document.body.appendChild(rootEl);
 
@@ -165,11 +169,8 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
     };
 
     window.onafterprint = cleanup;
-    // Small delay to let the DOM settle before triggering print
     setTimeout(() => window.print(), 300);
   }
-
-  const sheetCount = Math.ceil(uids.length / CFG.labelsPerSheet);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-700/60 backdrop-blur-sm" style={{ overflow: "hidden" }}>
@@ -180,7 +181,7 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
           <h2 className="text-sm font-bold text-slate-900">Print Preview</h2>
           <p className="text-xs text-slate-500">
             {uids.length} label{uids.length !== 1 ? "s" : ""} &bull;{" "}
-            {sheetCount} sheet{sheetCount !== 1 ? "s" : ""} &bull; Avery L7165 A4
+            {sheetCount} sheet{sheetCount !== 1 ? "s" : ""} &bull; {cfg.short} A4
           </p>
         </div>
         <div className="flex items-center gap-2 ml-auto">
@@ -253,7 +254,7 @@ export function PrintPreviewModal({ uids, orgNumber, sheetType, appUrl, onClose 
             <LabelSheet
               uids={uids}
               orgNumber={orgNumber}
-              sheetType="avery_l7165"
+              sheetType={sheetType}
               appUrl={appUrl}
               qrDataUrls={qrDataUrls}
             />

@@ -6,10 +6,10 @@ import { ClientDate } from "@/components/ui/ClientDate";
 import type { ConfiguredLabel } from "@/app/api/labels/configured/route";
 
 const SHEET_OPTIONS = [
-  { value: "avery_l7165", label: "Avery L7165 — 2×4, 8 labels/sheet", labelsPerSheet: 8, available: true },
-  { value: "avery_l7163", label: "Avery L7163 — 2×7, 14 labels/sheet", labelsPerSheet: 14, available: false },
-  { value: "avery_l7160", label: "Avery L7160 — 3×7, 21 labels/sheet", labelsPerSheet: 21, available: false },
-  { value: "avery_l7166", label: "Avery L7166 — 2×3, 6 labels/sheet", labelsPerSheet: 6, available: false },
+  { value: "avery_l7169", label: "Avery L7169 — 4/sheet · 99×139mm (large)", labelsPerSheet: 4, available: true },
+  { value: "avery_l7166", label: "Avery L7166 — 6/sheet · 99×93mm", labelsPerSheet: 6, available: true },
+  { value: "avery_l7165", label: "Avery L7165 — 8/sheet · 99×68mm (default)", labelsPerSheet: 8, available: true },
+  { value: "avery_l7164", label: "Avery L7164 — 12/sheet · 64×72mm (compact)", labelsPerSheet: 12, available: true },
 ];
 
 interface PrintJob {

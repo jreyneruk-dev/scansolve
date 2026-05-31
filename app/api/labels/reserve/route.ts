@@ -15,7 +15,7 @@ function getServiceClient() {
 }
 
 const Schema = z.object({
-  sheetType: z.enum(["avery_l7165", "avery_l7163", "avery_l7160", "avery_l7166"]),
+  sheetType: z.enum(["avery_l7169", "avery_l7166", "avery_l7165", "avery_l7164"]),
   sheets: z.number().int().min(1).max(9),
 });
 
