@@ -337,15 +337,27 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
                       <td className="py-2 px-2 text-slate-600 max-w-[140px] truncate">
                         {job.printedBy}
                       </td>
-                      <td className="py-2 px-2 text-slate-500 whitespace-nowrap">
-                        {job.sheetTypeLabel}
+                      <td className="py-2 px-2 text-slate-500 max-w-[130px]">
+                        {(() => {
+                          const [name, ...rest] = job.sheetTypeLabel.split(" — ");
+                          const dims = rest.join(" — ");
+                          return (
+                            <div className="leading-tight">
+                              <span className="block font-medium text-slate-600">{name}</span>
+                              {dims && <span className="block text-[11px] text-slate-400">{dims}</span>}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="py-2 px-2 text-slate-600 text-right">{job.sheets}</td>
                       <td className="py-2 px-2 text-slate-600 text-right">{job.quantityLabels}</td>
-                      <td className="py-2 px-2 font-mono text-slate-700 whitespace-nowrap">
-                        {job.uidStart === job.uidEnd
-                          ? job.uidStart
-                          : `${job.uidStart} – ${job.uidEnd}`}
+                      <td className="py-2 px-2 font-mono text-slate-700">
+                        <div className="leading-tight">
+                          <span className="block">{job.uidStart}</span>
+                          {job.uidEnd !== job.uidStart && (
+                            <span className="block text-slate-500">– {job.uidEnd}</span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-2 px-2">
                         <button
