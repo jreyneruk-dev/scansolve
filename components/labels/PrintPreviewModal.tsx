@@ -42,10 +42,15 @@ function buildSheetsHTML(uids: string[], qrDataUrls: Record<string, string>, cfg
     const logoBoxMm = +(Math.min(labelH * 0.12, 9) * (compact ? 1 : 1.1)).toFixed(1);
     const wordPt = compact ? 7 : 9;
     const uidPt = compact ? 5.5 : 6;
+    const gap = +(pad * 0.4).toFixed(1);
+    // Compact: logo+wordmark left, slogan right in same row
+    const brandRow = compact
+      ? `<div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;"><div style="display:flex;align-items:center;gap:${gap}mm;">${logoSvg(logoBoxMm)}<span style="font-size:${wordPt}pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span></div><span style="font-size:6.5pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.02em;line-height:1;">Scan it. Solve it.</span></div>`
+      : `<div style="display:flex;align-items:center;justify-content:center;gap:${+(pad*0.5).toFixed(1)}mm;flex-shrink:0;">${logoSvg(logoBoxMm)}<span style="font-size:${wordPt}pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span></div>`;
     const slogan = showSlogan
       ? `<p style="margin:0 0 1mm;font-size:7pt;font-weight:700;color:#4f46e5;font-family:system-ui,sans-serif;white-space:nowrap;letter-spacing:0.02em;text-align:center;">Scan it. Solve it.</p>`
       : "";
-    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden;padding:${pad}mm;"><div style="display:flex;align-items:center;justify-content:center;gap:${+(pad*0.5).toFixed(1)}mm;flex-shrink:0;">${logoSvg(logoBoxMm)}<span style="font-size:${wordPt}pt;font-weight:700;color:#1e293b;font-family:system-ui,sans-serif;letter-spacing:-0.01em;line-height:1;">ScanSolve</span></div><div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:${+(pad*0.5).toFixed(1)}mm 0;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:100%;width:auto;height:auto;display:block;object-fit:contain;" /></div>${slogan}<p style="margin:0;font-size:${uidPt}pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;flex-shrink:0;">${uid}</p></div>`;
+    return `<div style="width:${labelW}mm;height:${labelH}mm;box-sizing:border-box;border:0.25mm solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden;padding:${pad}mm;">${brandRow}<div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:${+(pad*0.5).toFixed(1)}mm 0;"><img src="${qrDataUrls[uid] ?? ""}" style="max-width:100%;max-height:100%;width:auto;height:auto;display:block;object-fit:contain;" /></div>${slogan}<p style="margin:0;font-size:${uidPt}pt;color:#000;font-family:'Courier New',monospace;font-weight:500;letter-spacing:0.04em;text-align:center;flex-shrink:0;">${uid}</p></div>`;
   }
 
   const label = (uid: string) => (!uid ? emptyLabel() : layout === "split" ? splitLabel(uid) : stackedLabel(uid));

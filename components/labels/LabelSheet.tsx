@@ -223,17 +223,30 @@ function StackedCell({ uid, cfg, qrDataUrl }: { uid: string; cfg: SheetConfig; q
 
   return (
     <div style={cellBox(labelWidthMm, labelHeightMm, { flexDirection: "column", padding: `${paddingMm}mm` })}>
-      {/* Brand row */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: `${paddingMm * 0.5}mm`, flexShrink: 0 }}>
-        <LogoIcon sizeMm={logoBoxMm} />
-        <span
-          style={{
+      {/* Brand row — compact: logo+wordmark left, slogan right; others: centred */}
+      <div style={{
+        display: "flex", alignItems: "center", flexShrink: 0,
+        justifyContent: compact ? "space-between" : "center",
+        gap: `${paddingMm * 0.5}mm`,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: `${paddingMm * 0.4}mm` }}>
+          <LogoIcon sizeMm={logoBoxMm} />
+          <span style={{
             fontSize: `${wordmarkPt}pt`, fontWeight: 700, color: "#1e293b",
             fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "-0.01em", lineHeight: 1,
-          }}
-        >
-          ScanSolve
-        </span>
+          }}>
+            ScanSolve
+          </span>
+        </div>
+        {compact && (
+          <span style={{
+            fontSize: "6.5pt", fontWeight: 700, color: "#4f46e5",
+            fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.02em",
+            whiteSpace: "nowrap", lineHeight: 1,
+          }}>
+            Scan it. Solve it.
+          </span>
+        )}
       </div>
 
       {/* QR — fills remaining vertical space */}
