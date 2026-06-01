@@ -339,11 +339,15 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
                       </td>
                       <td className="py-2 px-2 text-slate-500 max-w-[130px]">
                         {(() => {
-                          const [name, ...rest] = job.sheetTypeLabel.split(" — ");
-                          const dims = rest.join(" — ");
+                          // Label format: "Avery L7169 — 4 / sheet · 99 × 139 mm (large)"
+                          const [name, rest = ""] = job.sheetTypeLabel.split(" — ");
+                          const [qty, ...dimParts] = rest.split(" · ");
+                          const dims = dimParts.join(" · ");
                           return (
                             <div className="leading-tight">
-                              <span className="block font-medium text-slate-600">{name}</span>
+                              <span className="block font-medium text-slate-600">
+                                {name}{qty ? ` · ${qty}` : ""}
+                              </span>
                               {dims && <span className="block text-[11px] text-slate-400">{dims}</span>}
                             </div>
                           );
