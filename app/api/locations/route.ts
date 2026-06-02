@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(location, { status: 201 });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

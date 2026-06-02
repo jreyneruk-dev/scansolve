@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import type { Issue } from "@/types/schema";
-import { formatStatus } from "@/lib/utils";
 import { ClientDate } from "@/components/ui/ClientDate";
 import { MapPin, ChevronRight, Clock, AlertCircle, CheckCircle2, UserCheck, Wrench } from "lucide-react";
 

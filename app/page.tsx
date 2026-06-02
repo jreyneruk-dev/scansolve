@@ -236,7 +236,7 @@ export default function HomePage() {
               <Zap className="h-5 w-5 text-amber-500" />
             </div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">For people on site</p>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">"Finally, a way to get things fixed."</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">&ldquo;Finally, a way to get things fixed.&rdquo;</h3>
             <p className="text-sm text-slate-500 leading-relaxed">
               Spot something broken? Scan the QR code on the wall, fill in a quick form, and optionally leave your email for updates. No app, no account, no chasing anyone. It&apos;s the fastest route from problem to solution.
             </p>
@@ -247,7 +247,7 @@ export default function HomePage() {
               <BarChart3 className="h-5 w-5 text-white" />
             </div>
             <p className="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-2">For managers</p>
-            <h3 className="text-xl font-bold text-white mb-3">"Finally, I know what&apos;s actually happening."</h3>
+            <h3 className="text-xl font-bold text-white mb-3">&ldquo;Finally, I know what&apos;s actually happening.&rdquo;</h3>
             <p className="text-sm text-indigo-100 leading-relaxed">
               Know about every issue the moment it&apos;s reported — without doing a site tour. Assign it, track it, close it. Keep tenants happy, make costs visible, and protect your reputation before small problems become big ones.
             </p>

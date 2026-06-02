@@ -64,10 +64,8 @@ export function CommissionForm({ uid, orgId }: { uid: string; orgId?: string }) 
       if (!res.ok) throw new Error(data.error ?? "AI suggestion failed");
       const incoming: string[] = Array.isArray(data.categories) ? data.categories : [];
       if (incoming.length === 0) throw new Error("AI returned no suggestions — try a more specific room name");
-      let added = 0;
       setSurveyConfig((c) => {
         const merged = Array.from(new Set([...c.categories, ...incoming]));
-        added = merged.length - c.categories.length;
         return { ...c, categories: merged };
       });
       // Small delay so `added` is captured after state flush

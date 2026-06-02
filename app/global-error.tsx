@@ -51,6 +51,7 @@ export default function GlobalError({
             >
               Try again
             </button>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error has its own html/body, Next.js Link is unavailable here */}
             <a href="/" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>
               Back to home
             </a>
