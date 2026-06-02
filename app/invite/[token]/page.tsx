@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { AcceptInviteForm } from "@/components/invite/AcceptInviteForm";
-import { AlertCircle, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ token: string }>;
@@ -46,7 +47,7 @@ export default async function InvitePage({ params }: PageProps) {
 
         {"error" in result ? (
           <div className="text-center">
-            <a href="/" className="text-sm text-indigo-600 hover:text-indigo-700 transition-colors">Go to home</a>
+            <Link href="/" className="text-sm text-indigo-600 hover:text-indigo-700 transition-colors">Go to home</Link>
           </div>
         ) : (
           <AcceptInviteForm token={token} orgName={result.orgName} inviteEmail={result.email} />
