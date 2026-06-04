@@ -1,6 +1,8 @@
 import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { LabelsClient } from "@/components/labels/LabelsClient";
+import { getOrgLimits } from "@/lib/plans";
+import type { Organization } from "@/types/schema";
 import { Printer } from "lucide-react";
 
 export default async function LabelsPage() {
@@ -11,6 +13,7 @@ export default async function LabelsPage() {
 
   const orgNumber = (org as Record<string, unknown>).org_number as number;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const { allowedSheetTypes } = getOrgLimits(org as unknown as Organization);
 
   return (
     <div className="space-y-6 animate-slide-in">
@@ -27,7 +30,7 @@ export default async function LabelsPage() {
         </div>
       </div>
 
-      <LabelsClient orgNumber={orgNumber} appUrl={appUrl} />
+      <LabelsClient orgNumber={orgNumber} appUrl={appUrl} allowedSheetTypes={allowedSheetTypes} />
     </div>
   );
 }

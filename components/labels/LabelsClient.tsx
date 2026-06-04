@@ -5,11 +5,11 @@ import { PrintPreviewModal } from "./PrintPreviewModal";
 import { ClientDate } from "@/components/ui/ClientDate";
 import type { ConfiguredLabel } from "@/app/api/labels/configured/route";
 
-const SHEET_OPTIONS = [
-  { value: "avery_l7169", label: "Avery L7169 — 4/sheet · 99×139mm (large)", labelsPerSheet: 4, available: true },
-  { value: "avery_l7166", label: "Avery L7166 — 6/sheet · 99×93mm", labelsPerSheet: 6, available: true },
-  { value: "avery_l7165", label: "Avery L7165 — 8/sheet · 99×68mm (default)", labelsPerSheet: 8, available: true },
-  { value: "avery_l7164", label: "Avery L7164 — 12/sheet · 64×72mm (compact)", labelsPerSheet: 12, available: true },
+const ALL_SHEET_OPTIONS = [
+  { value: "avery_l7169", label: "Avery L7169 — 4/sheet · 99×139mm (large)", labelsPerSheet: 4 },
+  { value: "avery_l7166", label: "Avery L7166 — 6/sheet · 99×93mm", labelsPerSheet: 6 },
+  { value: "avery_l7165", label: "Avery L7165 — 8/sheet · 99×68mm (default)", labelsPerSheet: 8 },
+  { value: "avery_l7164", label: "Avery L7164 — 12/sheet · 64×72mm (compact)", labelsPerSheet: 12 },
 ];
 
 interface PrintJob {
@@ -45,6 +45,7 @@ interface PreviewData {
 interface LabelsClientProps {
   orgNumber: number;
   appUrl: string;
+  allowedSheetTypes: string[];
 }
 
 // ── Collapsible section wrapper ────────────────────────────────────────────
@@ -114,7 +115,12 @@ function Section({
 }
 
 // ── Main component ─────────────────────────────────────────────────────────
-export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
+export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsClientProps) {
+  const SHEET_OPTIONS = ALL_SHEET_OPTIONS.map((o) => ({
+    ...o,
+    allowed: allowedSheetTypes.includes(o.value),
+  }));
+
   const [sheetType, setSheetType] = useState("avery_l7165");
   const [sheets, setSheets] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -156,7 +162,11 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
     loadConfigured();
   }, [loadHistory, loadConfigured]);
 
-  const selectedSheet = SHEET_OPTIONS.find((o) => o.value === sheetType)!;
+  // If current selection became locked (plan downgrade), reset to default
+  const resolvedSheetType = SHEET_OPTIONS.find((o) => o.value === sheetType)?.allowed
+    ? sheetType
+    : "avery_l7165";
+  const selectedSheet = SHEET_OPTIONS.find((o) => o.value === resolvedSheetType)!;
   const totalLabels = sheets * selectedSheet.labelsPerSheet;
 
   async function handlePreviewAndPrint() {
@@ -166,11 +176,11 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
       const res = await fetch("/api/labels/reserve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sheetType, sheets }),
+        body: JSON.stringify({ sheetType: resolvedSheetType, sheets }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to reserve labels");
-      setPreview({ uids: data.uids, orgNumber: data.orgNumber, sheetType });
+      setPreview({ uids: data.uids, orgNumber: data.orgNumber, sheetType: resolvedSheetType });
       await loadHistory();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -194,16 +204,28 @@ export function LabelsClient({ orgNumber, appUrl }: LabelsClientProps) {
                 Label Sheet
               </label>
               <select
-                value={sheetType}
-                onChange={(e) => setSheetType(e.target.value)}
+                value={resolvedSheetType}
+                onChange={(e) => {
+                  const opt = SHEET_OPTIONS.find((o) => o.value === e.target.value);
+                  if (opt?.allowed) setSheetType(e.target.value);
+                }}
                 className="glass-input w-full h-11 rounded-xl px-3 text-sm text-slate-700 font-medium cursor-pointer"
               >
                 {SHEET_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} disabled={!opt.available}>
-                    {opt.label}{!opt.available ? " (coming soon)" : ""}
+                  <option key={opt.value} value={opt.value} disabled={!opt.allowed}>
+                    {opt.label}{!opt.allowed ? " — Prime only" : ""}
                   </option>
                 ))}
               </select>
+              {SHEET_OPTIONS.some((o) => !o.allowed) && (
+                <p className="text-xs text-slate-400 mt-1">
+                  2 of 4 sheet types available on Starter.{" "}
+                  <a href="/pricing" className="text-indigo-500 hover:text-indigo-700 font-medium transition-colors">
+                    Upgrade to Prime
+                  </a>{" "}
+                  to unlock all four.
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">

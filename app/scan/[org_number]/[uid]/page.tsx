@@ -1,7 +1,10 @@
-import { getLocationByOrgAndUID } from "@/lib/locations";
+import { getLocationByOrgAndUID, getOrgPlanByNumber } from "@/lib/locations";
+import { getEffectivePlan } from "@/lib/plans";
 import { SurveyForm } from "@/components/survey/SurveyForm";
 import { ScanSolveLogo } from "@/components/ui/ScanSolveLogo";
+import { StarterAdBanner } from "@/components/ui/StarterAdBanner";
 import { MapPin, AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 interface PageProps {
   params: Promise<{ org_number: string; uid: string }>;
@@ -10,7 +13,15 @@ interface PageProps {
 export default async function ScanPage({ params }: PageProps) {
   const { org_number, uid } = await params;
   const orgNum = parseInt(org_number, 10);
-  const location = isNaN(orgNum) ? null : await getLocationByOrgAndUID(orgNum, uid);
+  const [location, orgPlan] = await Promise.all([
+    isNaN(orgNum) ? Promise.resolve(null) : getLocationByOrgAndUID(orgNum, uid),
+    isNaN(orgNum) ? Promise.resolve(null) : getOrgPlanByNumber(orgNum),
+  ]);
+
+  const effectivePlan = orgPlan ? getEffectivePlan(orgPlan) : "free";
+  const showAd     = effectivePlan === "free";
+  const isPaid     = effectivePlan !== "free";
+  const orgLogoUrl = isPaid ? (orgPlan?.logo_url ?? null) : null;
 
   if (!location) {
     return (
@@ -45,7 +56,18 @@ export default async function ScanPage({ params }: PageProps) {
         {/* Header */}
         <div className="glass-nav sticky top-0 z-10 px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <ScanSolveLogo size="sm" showWordmark={false} />
+            {orgLogoUrl ? (
+              <Image
+                src={orgLogoUrl}
+                alt="Logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-xl object-contain shrink-0"
+                unoptimized
+              />
+            ) : (
+              <ScanSolveLogo size="sm" showWordmark={false} />
+            )}
             <div className="flex items-center gap-1.5 min-w-0">
               <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
               <span className="text-sm font-semibold text-slate-700 truncate">{location.name}</span>
@@ -60,6 +82,7 @@ export default async function ScanPage({ params }: PageProps) {
             orgNumber={orgNum}
             surveyConfig={location.survey_config}
           />
+          {showAd && <StarterAdBanner variant="scan" />}
         </div>
       </div>
     </main>

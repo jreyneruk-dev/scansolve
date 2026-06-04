@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getOptionalUser } from "@/lib/auth";
+import { PrimeCtaButton } from "@/components/pricing/PrimeCtaButton";
 import {
   QrCode,
   ArrowRight,
@@ -182,7 +184,9 @@ function CompareCell({ value }: { value: boolean | string | undefined }) {
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const user = await getOptionalUser();
+  const isLoggedIn = !!user;
   return (
     <main className="min-h-dvh bg-slate-50 text-slate-900">
 
@@ -300,13 +304,11 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <Link
-              href="/auth?mode=signup"
+            <PrimeCtaButton
+              isLoggedIn={isLoggedIn}
+              label="Get Prime"
               className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-2xl bg-white font-semibold text-sm text-indigo-600 hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-900/20"
-            >
-              Get Prime
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            />
 
             <div className="space-y-3">
               {tiers[1].features.map((f) => (
