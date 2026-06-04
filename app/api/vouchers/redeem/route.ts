@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { requireAuth, getOrgForUser } from "@/lib/auth";
+import { getOptionalUser, getOrgForUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 function getServiceClient() {
@@ -13,7 +13,7 @@ function getServiceClient() {
 
 export async function POST(req: NextRequest) {
   // Auth
-  const user = await requireAuth();
+  const user = await getOptionalUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   // Rate limit

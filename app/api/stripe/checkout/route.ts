@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { requireAuth, getOrgForUser } from "@/lib/auth";
+import { getOptionalUser, getOrgForUser } from "@/lib/auth";
 import { getEffectivePlan } from "@/lib/plans";
 import type { Organization } from "@/types/schema";
 
@@ -11,7 +11,7 @@ function getStripe() {
 }
 
 export async function POST() {
-  const user = await requireAuth();
+  const user = await getOptionalUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
