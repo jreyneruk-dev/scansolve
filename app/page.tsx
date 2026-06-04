@@ -143,7 +143,7 @@ export default function HomePage() {
         </p>
 
         <Link
-          href="/auth?mode=signup"
+          href="/pricing"
           className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
         >
           Join Today
