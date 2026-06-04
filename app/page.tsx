@@ -146,12 +146,12 @@ export default function HomePage() {
           href="/auth?mode=signup"
           className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
         >
-          Join as a Founding Member
+          Join Today
           <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
         <p className="mt-4 text-xs text-slate-400">
-          Free for your first year · No card required · No time pressure
+          Free forever on Starter · No card required · No time pressure
         </p>
       </section>
 
@@ -384,7 +384,7 @@ export default function HomePage() {
           <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
         <p className="mt-4 text-xs text-slate-400">
-          Free for your first year · No pressure · Help build something better
+          Free forever on Starter · No pressure · Help build something better
         </p>
       </section>
 
