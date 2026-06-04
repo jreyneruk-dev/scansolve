@@ -103,12 +103,15 @@ export default function HomePage() {
             </div>
             <span className="font-bold text-slate-900">ScanSolve</span>
           </div>
-          <Link
-            href="/auth"
-            className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
-          >
-            Sign in <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/pricing" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Pricing</Link>
+            <Link
+              href="/auth"
+              className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              Sign in <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -396,7 +399,8 @@ export default function HomePage() {
           </div>
           <p>© {new Date().getFullYear()} ScanSolve. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <Link href="/about" className="hover:text-slate-600 transition-colors">About.</Link>
+            <Link href="/about" className="hover:text-slate-600 transition-colors">About</Link>
+            <Link href="/pricing" className="hover:text-slate-600 transition-colors">Pricing</Link>
             <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
             <Link href="/auth" className="hover:text-slate-600 transition-colors">Manager Sign In →</Link>
           </div>
