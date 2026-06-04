@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Zap, AlertCircle } from "lucide-react";
 
 interface Props {
-  isLoggedIn: boolean;
   className?: string;
   label?: string;
 }
 
-export function PrimeCtaButton({ isLoggedIn, className, label = "Get Prime" }: Props) {
+export function PrimeCtaButton({ className, label = "Get Prime" }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,6 +17,11 @@ export function PrimeCtaButton({ isLoggedIn, className, label = "Get Prime" }: P
     setError(null);
     try {
       const res = await fetch("/api/stripe/checkout", { method: "POST" });
+      if (res.status === 401) {
+        // Not logged in — send to signup then back to billing
+        window.location.href = "/auth?mode=signup&next=/dashboard/billing";
+        return;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to start checkout");
       window.location.href = data.url;
@@ -26,17 +29,6 @@ export function PrimeCtaButton({ isLoggedIn, className, label = "Get Prime" }: P
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
     }
-  }
-
-  if (!isLoggedIn) {
-    return (
-      <Link
-        href="/auth?mode=signup&next=/dashboard/billing"
-        className={className}
-      >
-        {label}
-      </Link>
-    );
   }
 
   return (
