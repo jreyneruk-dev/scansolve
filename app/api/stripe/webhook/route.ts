@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-05-27.dahlia",
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-05-27.dahlia",
+  });
+}
 
 function getServiceClient() {
   return createClient(
@@ -49,7 +51,7 @@ export async function POST(req: NextRequest) {
     // In dev (no webhook secret), parse the event directly without verification
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
       console.warn("[stripe/webhook] No webhook secret — skipping signature verification (dev mode)");
-      const event = JSON.parse(body) as Stripe.Event;
+      const event = JSON.parse(body) as Stripe.Event;  // eslint-disable-line @typescript-eslint/no-unsafe-assignment
       await handleEvent(event);
       return NextResponse.json({ received: true });
     }
@@ -58,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = getStripe().webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[stripe/webhook] Signature verification failed:", msg);

@@ -4,9 +4,11 @@ import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { getEffectivePlan } from "@/lib/plans";
 import type { Organization } from "@/types/schema";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-05-27.dahlia",
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-05-27.dahlia",
+  });
+}
 
 export async function POST() {
   const user = await requireAuth();
@@ -28,7 +30,7 @@ export async function POST() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
   const orgId = (org as Record<string, unknown>).id as string;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: [
