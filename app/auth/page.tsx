@@ -68,15 +68,19 @@ function AuthForm() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-        shouldCreateUser: true,
-      },
+    // Send the magic link + OTP via our own Resend route (not Supabase's
+    // built-in, testing-only email sender, which rate-limits and silently drops).
+    const res = await fetch("/api/auth/magic-link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      }),
     });
+    const data = await res.json().catch(() => ({}));
     setLoading(false);
-    if (error) { setError(error.message); return; }
+    if (!res.ok) { setError(data.error ?? "Unable to send sign-in link. Please try again."); return; }
     setStep("sent");
   }
 

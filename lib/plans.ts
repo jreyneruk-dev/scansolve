@@ -13,7 +13,9 @@
 import type { Organization } from "@/types/schema";
 
 export type OrgPlan = "free" | "prime" | "enterprise";
-export type PlanSource = "free" | "paid" | "voucher";
+// "comp" = complimentary Prime/Enterprise granted manually from the admin tool
+// (not a Stripe subscription, not a redeemed voucher).
+export type PlanSource = "free" | "paid" | "voucher" | "comp";
 
 export interface PlanLimits {
   /** Max number of invitees (excluding the owner). null = unlimited. */

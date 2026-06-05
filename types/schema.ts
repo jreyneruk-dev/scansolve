@@ -8,7 +8,7 @@ export interface Organization {
   owner_id: string;
   plan: OrgPlan;
   plan_expires_at?: string | null; // null = permanent; ISO string = time-limited (voucher)
-  plan_source?: "free" | "paid" | "voucher";
+  plan_source?: "free" | "paid" | "voucher" | "comp";
   backend: BackendType;
   backend_credentials?: Record<string, string>; // encrypted, never sent to client
   created_at: string;
