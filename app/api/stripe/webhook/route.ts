@@ -47,14 +47,21 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
 
-  if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
-    // In dev (no webhook secret), parse the event directly without verification
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.warn("[stripe/webhook] No webhook secret — skipping signature verification (dev mode)");
-      const event = JSON.parse(body) as Stripe.Event;  // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-      await handleEvent(event);
-      return NextResponse.json({ received: true });
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    // In production a missing secret is a hard failure — without signature
+    // verification anyone could forge an event and upgrade any org to Prime.
+    if (process.env.NODE_ENV === "production") {
+      console.error("[stripe/webhook] STRIPE_WEBHOOK_SECRET is not set in production — refusing to process");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
     }
+    // Dev only: parse the event directly so `stripe trigger` works without a secret.
+    console.warn("[stripe/webhook] No webhook secret — skipping signature verification (dev only)");
+    const event = JSON.parse(body) as Stripe.Event;  // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    await handleEvent(event);
+    return NextResponse.json({ received: true });
+  }
+
+  if (!sig) {
     return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
