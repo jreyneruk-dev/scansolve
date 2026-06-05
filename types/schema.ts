@@ -1,4 +1,4 @@
-export type OrgPlan = "free" | "pro";
+export type OrgPlan = "free" | "prime" | "enterprise";
 export type IssueStatus = "reported" | "assigned" | "in_progress" | "resolved";
 export type BackendType = "supabase" | "sheets" | "airtable";
 
@@ -7,6 +7,8 @@ export interface Organization {
   name: string;
   owner_id: string;
   plan: OrgPlan;
+  plan_expires_at?: string | null; // null = permanent; ISO string = time-limited (voucher)
+  plan_source?: "free" | "paid" | "voucher";
   backend: BackendType;
   backend_credentials?: Record<string, string>; // encrypted, never sent to client
   created_at: string;

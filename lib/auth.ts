@@ -10,6 +10,13 @@ function getServiceClient() {
   );
 }
 
+/** Returns the current user without redirecting — null if unauthenticated. */
+export async function getOptionalUser() {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  return user ?? null;
+}
+
 export async function requireAuth(redirectTo?: string) {
   const supabase = await createSupabaseServerClient();
   const {

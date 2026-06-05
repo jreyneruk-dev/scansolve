@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const BUCKET = "issue-photos";
 const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 365; // 1 year in seconds
+const LOGO_URL_EXPIRY  = 60 * 60 * 24 * 365 * 10; // 10 years — logos rarely change
 
 function getServiceClient() {
   return createClient(
@@ -53,6 +54,28 @@ export async function refreshPhotoUrl(storedUrl: string): Promise<string> {
   } catch {
     return storedUrl; // if re-signing fails, return original (better than blank)
   }
+}
+
+/**
+ * Upload an org logo. Overwrites any existing logo for this org.
+ * Returns a 10-year signed URL suitable for storing in organizations.logo_url.
+ */
+export async function uploadOrgLogo(orgId: string, file: File): Promise<string> {
+  const supabase = getServiceClient();
+  const ext = file.name.split(".").pop() ?? "png";
+  const path = `logos/${orgId}/logo.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: true });
+  if (error) throw new Error(error.message);
+
+  const { data, signError } = await (async () => {
+    const res = await supabase.storage.from(BUCKET).createSignedUrl(path, LOGO_URL_EXPIRY);
+    return { data: res.data, signError: res.error };
+  })();
+  if (signError || !data) throw new Error(signError?.message ?? "Failed to sign logo URL");
+  return data.signedUrl;
 }
 
 export async function uploadFloorPlan(

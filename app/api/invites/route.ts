@@ -4,6 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { getOrgForUser } from "@/lib/auth";
 import { sendInviteEmail } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getOrgLimits } from "@/lib/plans";
+import type { Organization } from "@/types/schema";
 import { z } from "zod";
 
 function getServiceClient() {
@@ -49,6 +51,34 @@ export async function POST(req: NextRequest) {
 
   const { email } = parsed.data;
   const service = getServiceClient();
+
+  // ── Plan cap: count current members + pending invites ────────────────────
+  const limits = getOrgLimits(org as unknown as Organization);
+  if (limits.maxInvitees !== null) {
+    const [{ count: memberCount }, { count: pendingCount }] = await Promise.all([
+      service
+        .from("org_members")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", (org as Record<string, unknown>).id)
+        .neq("role", "owner"),
+      service
+        .from("org_invites")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", (org as Record<string, unknown>).id)
+        .is("accepted_at", null)
+        .gt("expires_at", new Date().toISOString()),
+    ]);
+    const currentCount = (memberCount ?? 0) + (pendingCount ?? 0);
+    if (currentCount >= limits.maxInvitees) {
+      return NextResponse.json(
+        {
+          error: `Your plan allows up to ${limits.maxInvitees} team member${limits.maxInvitees === 1 ? "" : "s"}. Upgrade to Prime to invite more.`,
+          code: "INVITE_LIMIT_REACHED",
+        },
+        { status: 403 }
+      );
+    }
+  }
 
   // Check for existing active invite
   const { data: existing } = await service

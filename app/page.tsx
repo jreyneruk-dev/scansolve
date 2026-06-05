@@ -103,12 +103,15 @@ export default function HomePage() {
             </div>
             <span className="font-bold text-slate-900">ScanSolve</span>
           </div>
-          <Link
-            href="/auth"
-            className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
-          >
-            Sign in <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/pricing" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Pricing</Link>
+            <Link
+              href="/auth"
+              className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              Sign in <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -140,15 +143,15 @@ export default function HomePage() {
         </p>
 
         <Link
-          href="/auth?mode=signup"
+          href="/pricing"
           className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
         >
-          Join as a Founding Member
+          Join Today
           <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
         <p className="mt-4 text-xs text-slate-400">
-          Free for your first year · No card required · No time pressure
+          Free forever on Starter · No card required · No time pressure
         </p>
       </section>
 
@@ -381,7 +384,7 @@ export default function HomePage() {
           <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
         <p className="mt-4 text-xs text-slate-400">
-          Free for your first year · No pressure · Help build something better
+          Free forever on Starter · No pressure · Help build something better
         </p>
       </section>
 
@@ -396,7 +399,8 @@ export default function HomePage() {
           </div>
           <p>© {new Date().getFullYear()} ScanSolve. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <Link href="/about" className="hover:text-slate-600 transition-colors">About.</Link>
+            <Link href="/about" className="hover:text-slate-600 transition-colors">About</Link>
+            <Link href="/pricing" className="hover:text-slate-600 transition-colors">Pricing</Link>
             <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
             <Link href="/auth" className="hover:text-slate-600 transition-colors">Manager Sign In →</Link>
           </div>

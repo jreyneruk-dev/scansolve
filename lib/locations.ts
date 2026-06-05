@@ -1,5 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Location, CreateLocationInput } from "@/types/schema";
+import type { Location, CreateLocationInput, OrgPlan } from "@/types/schema";
+
+export interface OrgPlanInfo {
+  plan: OrgPlan;
+  plan_expires_at: string | null;
+  plan_source: string;
+  logo_url: string | null;
+}
+
+/** Returns plan + branding info for an org by its short numeric ID. Used on public scan pages. */
+export async function getOrgPlanByNumber(orgNumber: number): Promise<OrgPlanInfo | null> {
+  const { data, error } = await getServiceClient()
+    .from("organizations")
+    .select("plan, plan_expires_at, plan_source, logo_url")
+    .eq("org_number", orgNumber)
+    .single();
+  if (error || !data) return null;
+  return data as OrgPlanInfo;
+}
 
 function getServiceClient() {
   return createClient(
