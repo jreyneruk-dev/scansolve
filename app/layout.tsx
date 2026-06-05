@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import { MouseSpotlight } from "@/components/ui/MouseSpotlight";
 import { SupportWidget } from "@/components/support/SupportWidget";
 import "./globals.css";
@@ -137,19 +136,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        {/* AdSense library — raw <script> in <head> so it appears in the
+            server-rendered HTML source where the AdSense verification crawler
+            looks for it. (next/script renders only a preload hint in <head>,
+            which the verifier does not accept.) */}
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        <Script
-          id="adsbygoogle-lib"
-          async
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-        />
         <MouseSpotlight />
         <div className="relative z-10">{children}</div>
         <SupportWidget />
