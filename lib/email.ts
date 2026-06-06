@@ -10,6 +10,26 @@ function getResend() {
   return new Resend(key);
 }
 
+/**
+ * Send via Resend and THROW on failure. The Resend SDK returns errors as a
+ * value ({ data, error }) rather than throwing, so callers that only await it
+ * treat a rejected send (e.g. unverified domain → 403) as success. Routing all
+ * sends through here means a failed email surfaces as a real error to the
+ * caller instead of a misleading "check your inbox".
+ */
+async function sendEmail(opts: { from?: string; to: string; subject: string; html: string }) {
+  const { data, error } = await getResend().emails.send({
+    from: opts.from ?? FROM,
+    to: opts.to,
+    subject: opts.subject,
+    html: opts.html,
+  });
+  if (error) {
+    throw new Error(`Resend send failed: ${error.message ?? JSON.stringify(error)}`);
+  }
+  return data;
+}
+
 /** Shared email wrapper — consistent brand, padding, footer */
 function wrapEmail(bodyHtml: string): string {
   return `<!DOCTYPE html>
@@ -79,8 +99,7 @@ export async function sendIssueAssignmentEmail(params: {
       </a>
     </div>`;
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to,
     subject: `New issue assigned: ${safeCategory} at ${safeLocation}`,
     html: wrapEmail(body),
@@ -115,8 +134,7 @@ export async function sendInviteEmail(params: {
       This link expires in 7 days. If you did not expect this invitation, ignore this email.
     </p>`;
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to,
     subject: `You've been invited to join ${safeOrg} on ScanSolve`,
     html: wrapEmail(body),
@@ -155,8 +173,7 @@ export async function sendRecoveryCodeEmail(params: {
       this email — your account remains secure.
     </p>`;
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to,
     subject: "Your ScanSolve sign-in code",
     html: wrapEmail(body),
@@ -193,8 +210,7 @@ export async function sendMagicLinkEmail(params: {
       you can safely ignore this email.
     </p>`;
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to,
     subject: "Your ScanSolve sign-in link",
     html: wrapEmail(body),
@@ -239,8 +255,7 @@ export async function sendStatusUpdateEmail(params: {
       </a>
     </div>`;
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to,
     subject: `Issue status updated: ${safeCategory} at ${safeLocation}`,
     html: wrapEmail(body),
