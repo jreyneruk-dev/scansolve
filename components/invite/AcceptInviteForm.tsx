@@ -81,15 +81,18 @@ export function AcceptInviteForm({ token, orgName, inviteEmail }: Props) {
     setLoading(true);
     setError("");
     try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: inviteEmail,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/invite/${token}`)}`,
-          shouldCreateUser: true,
-        },
+      // Send via our Resend route, not Supabase's built-in (rate-limited) email.
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: inviteEmail,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/invite/${token}`)}`,
+        }),
       });
-      if (otpError) {
-        setError(otpError.message);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Unable to send sign-in link. Please try again.");
         return;
       }
       setOtpSent(true);
