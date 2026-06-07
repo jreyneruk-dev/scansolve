@@ -22,7 +22,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 export const metadata: Metadata = {
   title: "Pricing — ScanSolve",
   description:
-    "Start free with unlimited QR labels. Upgrade to Prime for no ads, your own logo, and instant SMS or WhatsApp alerts when issues are raised.",
+    "Start free with unlimited QR labels. Upgrade to Prime for no ads, your own logo, and instant push alerts the moment an issue is raised.",
   alternates: {
     canonical: `${APP_URL}/pricing`,
   },
@@ -73,7 +73,7 @@ const tiers: Tier[] = [
     ],
     notIncluded: [
       "Your own logo on reporter pages",
-      "SMS or WhatsApp alerts",
+      "Instant push alerts",
       "All 4 Avery sheet types",
     ],
   },
@@ -94,9 +94,9 @@ const tiers: Tier[] = [
       { label: "Owner + up to 20 team members" },
       { label: "All 4 Avery sheet types" },
       {
-        label: "Email + SMS or WhatsApp alerts",
+        label: "Email + instant push alerts",
         highlight: true,
-        note: "instant alerts the moment an issue is raised",
+        note: "add ScanSolve to your home screen and get a push the moment an issue is raised",
       },
     ],
     notIncluded: [],
@@ -148,7 +148,7 @@ const comparisonRows = [
     section: "Notifications",
     rows: [
       { feature: "Email alerts", starter: true, prime: true, enterprise: true },
-      { feature: "SMS or WhatsApp alerts", starter: false, prime: true, enterprise: true },
+      { feature: "Instant push alerts", starter: false, prime: true, enterprise: true },
       { feature: "Slack / Teams integrations", starter: false, prime: false, enterprise: true },
     ],
   },
@@ -405,10 +405,10 @@ export default function PricingPage() {
             </div>
             <h3 className="text-lg font-bold text-white mb-3">Multi-site · You&apos;ve outgrown free</h3>
             <p className="text-sm text-indigo-100 leading-relaxed">
-              Running a gym chain, a shopping centre, or a hospital estate? Three seats and email-only alerts won&apos;t cut it. Prime gives your team room to grow, and instant SMS or WhatsApp alerts the moment a problem is reported — so nothing sits unnoticed.
+              Running a gym chain, a shopping centre, or a hospital estate? Three seats and email-only alerts won&apos;t cut it. Prime gives your team room to grow, and instant push alerts the moment a problem is reported — so nothing sits unnoticed.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {["20 team members", "SMS or WhatsApp", "All sheet types"].map((tag) => (
+              {["20 team members", "Push alerts", "All sheet types"].map((tag) => (
                 <span key={tag} className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold">
                   {tag}
                 </span>
@@ -490,7 +490,7 @@ export default function PricingPage() {
               icon: Bell,
               color: "bg-amber-50 text-amber-500",
               title: "Instant alerts",
-              body: "Email on every plan. Add SMS or WhatsApp on Prime — get notified the second a problem is reported.",
+              body: "Email on every plan. Add instant push alerts on Prime — install ScanSolve to your home screen and get a push the second a problem is reported.",
             },
             {
               icon: Users,
@@ -553,7 +553,7 @@ export default function PricingPage() {
               },
               {
                 q: "Can I use ScanSolve for multiple sites on Starter?",
-                a: "Yes — there is no location or QR label limit on any plan. You can run multiple sites on Starter. The limits are around team size (3 members) and notification channels (email only). If you need a larger team or instant SMS alerts across those sites, Prime is the right move.",
+                a: "Yes — there is no location or QR label limit on any plan. You can run multiple sites on Starter. The limits are around team size (3 members) and notification channels (email only). If you need a larger team or instant push alerts across those sites, Prime is the right move.",
               },
               {
                 q: "What counts as a 'team member'?",
