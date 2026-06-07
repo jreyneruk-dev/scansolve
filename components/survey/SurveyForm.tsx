@@ -45,8 +45,9 @@ export function SurveyForm({ locationUid, orgNumber, surveyConfig }: SurveyFormP
     if (!photoFile) return undefined;
     const fd = new FormData();
     fd.append("file", photoFile);
-    fd.append("org_id", "temp");
-    fd.append("issue_id", crypto.randomUUID());
+    // Reporter flow — upload route resolves the org from org_number + uid.
+    fd.append("org_number", String(orgNumber));
+    fd.append("uid", locationUid);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     if (!res.ok) throw new Error("Photo upload failed");
     const { url } = await res.json();
