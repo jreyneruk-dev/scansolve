@@ -12,8 +12,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "ScanSolve";
   const options = {
     body: data.body || "",
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/icon-192.png",          // full-colour logo in the expanded notification
+    badge: "/badge.png",            // monochrome silhouette for the status bar (Android tints it)
     data: { url: data.url || "/dashboard" },
   };
 
