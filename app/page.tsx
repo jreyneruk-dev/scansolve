@@ -7,7 +7,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 export const metadata: Metadata = {
   title: "ScanSolve — QR Code Facility Issue Reporting",
   description:
-    "Place QR codes anywhere. Staff scan to report issues in seconds — no app or login needed. Managers track every issue to resolution. Free for founding members.",
+    "Place QR codes anywhere. Staff scan to report issues in seconds — no app or login needed. Managers track every issue to resolution. Free forever on the Starter plan.",
   alternates: {
     canonical: APP_URL,
   },
@@ -69,7 +69,7 @@ const homepageJsonLd = {
           name: "Is ScanSolve free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "ScanSolve is currently free for founding members — no credit card required and no time pressure. Founding members get full access during the early access period and their feedback directly shapes the product roadmap.",
+            text: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime for no ads, your own branding, and instant alerts; Enterprise is available for larger estates.",
           },
         },
         {
@@ -309,7 +309,7 @@ export default function HomePage() {
                 With ScanSolve, facility managers print QR code labels and place them anywhere a problem might occur — a plant room, a gym machine, a hotel corridor, a school toilet block, a retail shop floor. When someone notices an issue, they point their phone camera at the nearest label. No app to download. No account to create. They fill in a short form — selecting a category, optionally adding a description or photo — and submit. The manager sees it instantly in their dashboard.
               </p>
               <p>
-                If you&apos;ve ever searched for a way to scan and solve facility problems without expensive specialist software or complicated setup, ScanSolve was built exactly for that. Every issue is tracked from first report through to resolution, with assignment, status updates, and email notifications built in. ScanSolve is designed for facilities managers, property teams, FM companies, hotel operations, school site managers, and anyone responsible for keeping a site running. Founding membership is free.
+                If you&apos;ve ever searched for a way to scan and solve facility problems without expensive specialist software or complicated setup, ScanSolve was built exactly for that. Every issue is tracked from first report through to resolution, with assignment, status updates, and email notifications built in. ScanSolve is designed for facilities managers, property teams, FM companies, hotel operations, school site managers, and anyone responsible for keeping a site running. The Starter plan is free forever.
               </p>
             </div>
           </details>
@@ -345,7 +345,7 @@ export default function HomePage() {
               },
               {
                 q: "Is ScanSolve free?",
-                a: "ScanSolve is currently free for founding members — no credit card required and no time pressure. Founding members get full access during the early access period and their feedback directly shapes the product roadmap. Sign up at scansolve.co to claim your founding membership.",
+                a: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime (£15/mo) for no ads, your own logo, up to 20 team members, and instant alerts. Enterprise is available for larger estates. Sign up at scansolve.co to start free.",
               },
               {
                 q: "What happens after an issue is reported?",
@@ -364,17 +364,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Founding member CTA ─────────────────────────────────────── */}
+      {/* ── Start free CTA ──────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-semibold text-emerald-600 mb-6">
           <Sparkles className="h-3 w-3" />
-          Founding Member
+          Free forever
         </div>
         <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-          Get in early.<br />Shape what we build.
+          Start free.<br />Upgrade when you grow.
         </h2>
         <p className="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
-          ScanSolve is free for founding members — no card required, no time pressure. You&apos;re getting in at the start, and your feedback will directly shape the product.
+          The Starter plan is free forever — unlimited QR labels, no card, no time limit. Go Prime when you want no ads, your own logo, and instant alerts the moment something breaks.
         </p>
         <Link
           href="/auth?mode=signup"
@@ -384,7 +384,7 @@ export default function HomePage() {
           <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
         <p className="mt-4 text-xs text-slate-400">
-          Free forever on Starter · No pressure · Help build something better
+          Unlimited QR labels on Starter · No card required · Upgrade anytime
         </p>
       </section>
 
