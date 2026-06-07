@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import { MouseSpotlight } from "@/components/ui/MouseSpotlight";
 import { SupportWidget } from "@/components/support/SupportWidget";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -71,6 +72,7 @@ export const metadata: Metadata = {
     // (server-side), which Google's verification crawler reads reliably.
     "google-adsense-account": ADSENSE_CLIENT,
   },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
@@ -159,6 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MouseSpotlight />
         <div className="relative z-10">{children}</div>
         <SupportWidget />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

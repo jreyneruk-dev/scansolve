@@ -6,6 +6,7 @@ import { TeamSettings } from "@/components/dashboard/TeamSettings";
 import { OrgNameSettings } from "@/components/dashboard/OrgNameSettings";
 import { RecoveryEmailSettings } from "@/components/dashboard/RecoveryEmailSettings";
 import { BrandingSettings } from "@/components/dashboard/BrandingSettings";
+import { NotificationSettings } from "@/components/dashboard/NotificationSettings";
 import { getEffectivePlan } from "@/lib/plans";
 import type { Organization } from "@/types/schema";
 
@@ -67,6 +68,12 @@ export default async function SettingsPage() {
         <BrandingSettings
           isPrime={getEffectivePlan(org as unknown as Organization) !== "free"}
           initialLogoUrl={orgData?.logo_url ?? null}
+        />
+      </div>
+
+      <div className="border-t border-slate-100 pt-6">
+        <NotificationSettings
+          isPrime={getEffectivePlan(org as unknown as Organization) !== "free"}
         />
       </div>
 
