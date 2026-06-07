@@ -1,9 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { getAdapter } from "@/lib/db";
 import { getLocationByOrgAndUID } from "@/lib/locations";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeCategory } from "@/lib/sanitize";
+import { getEffectivePlan, getPlanLimits } from "@/lib/plans";
+import { sendIssueAlert, type NotifyChannel } from "@/lib/sms";
+import type { Organization } from "@/types/schema";
 import { z } from "zod";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
+
+/**
+ * Fire a Prime SMS/WhatsApp alert for a new issue. Best-effort: never throws,
+ * never blocks issue creation. Gated on Prime + a verified destination number,
+ * and capped per org per day to bound cost/abuse.
+ */
+async function notifyOrgOfNewIssue(orgId: string, locationName: string, category: string) {
+  try {
+    const db = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } }
+    );
+    const { data: org } = await db
+      .from("organizations")
+      .select("plan, plan_expires_at, notify_phone, notify_channel, notify_verified")
+      .eq("id", orgId)
+      .single();
+    if (!org) return;
+
+    if (!org.notify_verified || !org.notify_phone || !org.notify_channel) return;
+    if (!getPlanLimits(getEffectivePlan(org as unknown as Organization)).hasSmsWhatsApp) return;
+
+    // Per-org daily cap on outbound alerts (cost + abuse bound).
+    const cap = await checkRateLimit(`sms_notify:org:${orgId}`, 50, 86400);
+    if (!cap.allowed) {
+      console.warn(`[issues] SMS alert cap reached for org ${orgId}`);
+      return;
+    }
+
+    const body = `ScanSolve: new "${category}" issue reported at ${locationName}. View: ${APP_URL}/dashboard`;
+    await sendIssueAlert({
+      to: org.notify_phone,
+      channel: org.notify_channel as NotifyChannel,
+      body,
+    });
+  } catch (err) {
+    console.error("[issues] alert send failed:", err instanceof Error ? err.message : "unknown");
+  }
+}
 
 const CreateIssueSchema = z.object({
   uid: z.string().min(1).max(30).regex(/^\d+$/, "uid must be numeric"),
@@ -101,6 +147,9 @@ export async function POST(req: NextRequest) {
     contact_email: contact_email?.toLowerCase().trim(),
     reporter_meta,
   });
+
+  // Best-effort Prime SMS/WhatsApp alert — never blocks the reporter response.
+  await notifyOrgOfNewIssue(location.org_id, location.name, normalizedCategory);
 
   return NextResponse.json(
     { message: location.survey_config.success_message },

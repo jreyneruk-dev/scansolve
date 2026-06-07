@@ -9,6 +9,10 @@ export interface Organization {
   plan: OrgPlan;
   plan_expires_at?: string | null; // null = permanent; ISO string = time-limited (voucher)
   plan_source?: "free" | "paid" | "voucher" | "comp";
+  // Prime SMS/WhatsApp issue alerts (migration 012)
+  notify_phone?: string | null;
+  notify_channel?: "sms" | "whatsapp" | null;
+  notify_verified?: boolean;
   backend: BackendType;
   backend_credentials?: Record<string, string>; // encrypted, never sent to client
   created_at: string;
