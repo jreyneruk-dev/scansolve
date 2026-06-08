@@ -45,7 +45,10 @@ Two user types:
 • Reporters — anyone with a smartphone. No account, no app. Scan and submit in under a minute.
 • Managers — create an account, sign in with a magic link (no password ever required). Use the dashboard to manage labels, view issues, and track everything to resolution.
 
-Pricing: completely free during the founding member phase. No credit card required, no time limit, no pressure.
+Pricing — three tiers (see the dedicated PRICING & PLANS section below for full detail):
+• Starter — free forever. Unlimited QR labels, no card, no time limit. Shows small ads, "Powered by ScanSolve" branding, owner + 2 team members, email alerts only, 2 label sheet types.
+• Prime — £15/mo. No ads, your own logo, up to 20 team members, all 4 label sheet types, and instant push alerts on top of email.
+• Enterprise — price on application. Everything in Prime plus unlimited team members and tailored options for larger estates.
 
 Who uses ScanSolve: facilities managers, building managers, office managers, hotel operations teams, gym operators, school site managers, retail store managers, rail/transport operators, residential block managers, and FM companies managing multiple sites.
 
@@ -53,10 +56,11 @@ Who uses ScanSolve: facilities managers, building managers, office managers, hot
 THE FULL LAYOUT — WHERE EVERYTHING IS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOME PAGE (scansolve.co or /):
-• Top navbar: ScanSolve logo on the left, "Sign in →" link on the right
-• "Join as a Founding Member" button → goes to /auth?mode=signup (create account)
-• "Start Free — No Card Needed" button → same as above
+• Top navbar: ScanSolve logo on the left, "Pricing" and "Sign in →" links on the right
+• "Start Free — No Card Needed" button → goes to /auth?mode=signup (create account)
+• A "Start free. Upgrade when you grow." section near the bottom with the same Start Free button
 • Footer links: About | Privacy Policy | Manager Sign In →
+(Note: there is no longer a "founding member" offer — the free tier is now the Starter plan, free forever.)
 
 SIGN-IN PAGE (/auth):
 • Email input field
@@ -75,6 +79,7 @@ DASHBOARD HEADER (shown on all /dashboard/* pages):
 • "Org #XXXX" shown on desktop
 • Your email address shown on desktop
 • "Labels" link with tag icon → /dashboard/labels
+• "Billing" link with card icon → /dashboard/billing
 • "Settings" link with gear icon → /dashboard/settings
 • "Sign out" button with arrow icon → signs you out immediately
 
@@ -101,17 +106,25 @@ LABELS PAGE (/dashboard/labels):
 
 SETTINGS PAGE (/dashboard/settings):
 • "Settings" heading, org name shown below it
-• Four sections separated by horizontal lines:
+• Six sections separated by horizontal lines:
   1. Organisation Name
   2. Team Members
   3. Recovery Email
-  4. Storage Backend
+  4. Branding (your own logo — Prime feature; free orgs see an upgrade prompt)
+  5. Instant alerts (push notifications — Prime feature; free orgs see an upgrade prompt)
+  6. Storage Backend
+
+BILLING PAGE (/dashboard/billing):
+• "Billing" heading
+• "Current plan" card showing Starter, Prime, or Enterprise
+• On Starter: an "Upgrade to Prime — £15/mo" card and a "Have a voucher code?" field
+• On Prime/Enterprise: confirmation of the active plan (and whether it came via Stripe subscription or a voucher)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOW TO: CREATE AN ACCOUNT (FIRST TIME)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. Go to scansolve.co.
-2. Click "Join as a Founding Member" or "Start Free — No Card Needed".
+2. Click "Start Free — No Card Needed".
 3. You'll arrive at /auth with the heading "Create your account".
 4. Enter your work email address.
 5. Click "Create Account".
@@ -198,9 +211,10 @@ HOW TO: PRINT QR CODE LABELS
 3. Click the "Print New Labels" section header to expand it.
 4. Two dropdowns appear:
 
-   "Label Sheet" dropdown:
-   • "Avery L7165 — 2×4, 8 labels/sheet" — this is the ONLY option currently available.
-   • Other sizes (L7163, L7160, L7166) are shown as "coming soon" and are greyed out/disabled.
+   "Label Sheet" dropdown — which Avery sheet types you can pick depends on your plan:
+   • Starter (free): two types — "Avery L7165 — 8 / sheet" (default) and "Avery L7169 — 4 / sheet (large)".
+   • Prime / Enterprise: all four — L7165 (8/sheet), L7169 (4/sheet, large), L7166 (6/sheet), and L7164 (12/sheet, compact).
+   • On Starter, the Prime-only sheet types appear locked with an upgrade hint.
 
    "Number of Sheets" dropdown:
    • Choose 1 to 9 sheets.
@@ -213,7 +227,7 @@ HOW TO: PRINT QR CODE LABELS
 7. Load Avery L7165 label paper into your printer and print.
 8. Peel labels off the backing sheet and stick them wherever issues might arise.
 
-Avery L7165 details: 2 columns × 4 rows = 8 labels per A4 sheet.
+Avery L7165 details: 8 labels per A4 sheet (the default). Load the matching Avery sheet for whichever type you choose.
 
 IMPORTANT: Freshly printed labels are UNCOMMISSIONED. If a reporter scans one before you activate it, they'll see a screen saying "QR Code Not Activated" with an "Activate this QR code" button. You must commission (activate) each label before it works for reporters. See the commissioning section below.
 
@@ -541,6 +555,92 @@ AI suggestions are available only during the commissioning (activation) of a lab
 Common error: "Enter a location name first to get AI suggestions." — This appears if you click AI Suggest before typing a Location Name. Simply type a name first, then click the button again.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRICING & PLANS (FULL DETAIL)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+There are three tiers. QR labels and locations are UNLIMITED on every tier — you are never charged per label or per site. See them on the /pricing page.
+
+STARTER — free forever:
+• Unlimited QR labels and locations
+• Owner + up to 2 team members (3 people total)
+• Email alerts for issue assignments
+• 2 Avery label sheet types (L7165, L7169)
+• Small ads on the reporter page and dashboard, plus a "Powered by ScanSolve" line on reporter pages
+• No credit card, no time limit
+
+PRIME — £15/month (limited-time discount from £20):
+• Everything in Starter, plus:
+• No ads anywhere, and your own logo replaces "Powered by ScanSolve"
+• Up to 20 team members
+• All 4 Avery label sheet types (L7164, L7165, L7166, L7169)
+• Instant push alerts the moment an issue is reported (on top of email)
+
+ENTERPRISE — price on application:
+• Everything in Prime, plus unlimited team members and tailored options for larger estates (multi-site groups, etc.). Contact support@scansolve.co.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO: UPGRADE TO PRIME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Sign in and click "Billing" in the top navigation bar (card icon), or visit /dashboard/billing.
+2. On the "Upgrade to Prime" card, click "Upgrade to Prime — £15/mo".
+3. You're taken to Stripe's secure checkout. Enter your card details and confirm.
+4. After payment you're returned to the billing page with a "Welcome to Prime!" confirmation, and Prime features unlock immediately (ads disappear, logo upload appears in Settings, etc.).
+Cancel anytime from the billing page / Stripe — when a subscription ends, the org returns to the free Starter plan.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO: REDEEM A VOUCHER CODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+If you've been given a voucher code for free Prime access:
+1. Go to /dashboard/billing.
+2. In the "Have a voucher code?" field, type your code (e.g. GYMCHAIN2026).
+3. Click "Redeem".
+4. On success you'll see "Prime activated!" and the page refreshes with Prime unlocked.
+Vouchers may grant Prime for a month, a year, or for life depending on the code. If a time-limited voucher expires, the org returns to Starter.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ABOUT THE ADS (STARTER PLAN)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• On the free Starter plan, ScanSolve shows small, unobtrusive ads on the reporter (scan) page and on the dashboard issue list.
+• Reporter pages also show a small "Powered by ScanSolve" line.
+• To remove all ads and the ScanSolve branding, upgrade to Prime — Prime is completely ad-free and lets you show your own logo instead.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO: ADD YOUR OWN LOGO (PRIME)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Prime orgs can replace "Powered by ScanSolve" on reporter pages with their own logo.
+1. Upgrade to Prime if you haven't (Billing page).
+2. Go to Settings → the "Branding" section.
+3. Click "Upload logo" and choose a square image (PNG/JPG/WebP, recommended at least 200×200px, under 2 MB).
+4. The logo saves and appears on your reporter scan pages immediately. Use "Replace logo" to change it or "Remove" to revert.
+(On the free plan, the Branding section shows an "Upgrade to Prime" prompt instead.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO: TURN ON INSTANT PUSH ALERTS (PRIME)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Prime orgs can get a push notification on their phone the moment a new issue is reported — in addition to email. Alerts are enabled per device.
+
+On Android / desktop Chrome:
+1. Sign in (Prime org) and go to Settings → "Instant alerts".
+2. Click "Enable alerts on this device" and tap "Allow" on the browser permission prompt.
+3. It shows "Alerts on for this device". You'll now get a push for every new issue.
+
+On iPhone (one extra step — Apple requires the app to be installed first):
+1. Open scansolve.co in Safari.
+2. Tap the Share button, then "Add to Home Screen". This adds a ScanSolve app icon.
+3. Open ScanSolve from that new home-screen icon (not Safari).
+4. Go to Settings → "Instant alerts" → "Enable alerts on this device" → "Allow".
+
+To stop alerts on a device: Settings → "Instant alerts" → "Turn off".
+Notes: alerts are a Prime feature (free orgs see an upgrade prompt); each device must be enabled separately; email alerts still work regardless.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TEAM SIZE LIMITS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Starter: owner + 2 invited members (3 total).
+• Prime: up to 20 members.
+• Enterprise: unlimited.
+If you hit the limit when inviting, you'll see a message that your plan's team limit is reached — upgrade to Prime (or Enterprise) for more seats.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOW TO: SIGN OUT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. Look at the top navigation bar on any dashboard page.
@@ -615,6 +715,9 @@ An issue someone submitted isn't showing up in the dashboard:
 
 A team member isn't receiving assignment notification emails:
 → Ask them to check their spam folder and whitelist noreply@scansolve.co. Double-check you typed their email correctly in the "Assign to" field.
+
+I'm not getting instant push alerts:
+→ Push alerts are a Prime feature — confirm the org is on Prime. They're enabled per device, so turn them on under Settings → "Instant alerts" on each phone you want alerts on. On iPhone you must first add ScanSolve to your Home Screen (Share → Add to Home Screen) and open it from that icon before the Enable button works. Also make sure notifications aren't blocked for ScanSolve in your phone/browser settings. Email alerts continue to work regardless.
 
 The "Save recovery email" button is greyed out:
 → The button only enables when the field content has changed from what's currently saved. Edit the email address field and the button will activate.
