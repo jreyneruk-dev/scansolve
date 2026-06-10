@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getOrgForUser } from "@/lib/auth";
 import { getSignedUrl } from "@/lib/storage";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getLocationByOrgAndUID } from "@/lib/locations";
@@ -86,14 +87,19 @@ export async function POST(req: NextRequest) {
     if (!isUUID(orgIdRaw)) {
       return NextResponse.json({ error: "Invalid org_id." }, { status: 400 });
     }
-    // Verify the session org matches the supplied org_id
+    // Verify the session org actually matches the supplied org_id. The upload
+    // below uses the service-role key (which bypasses RLS), so we MUST authorize
+    // here — otherwise any logged-in user could write into any org's storage
+    // prefix by passing a different org_id.
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
-    // We don't import getOrgForUser here to keep the route lean;
-    // the org_id mismatch would fail at the storage RLS level.
+    const org = await getOrgForUser(user.id);
+    if (!org || String((org as Record<string, unknown>).id) !== orgIdRaw) {
+      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+    }
     orgId = orgIdRaw;
   }
   // PATH B: Reporter upload via QR scan (org_number + uid, no auth)

@@ -99,3 +99,29 @@ export function verifyMagicBytes(buffer: Uint8Array, mimeType: string): boolean 
 export function safeExtFromMime(mimeType: string): string {
   return MIME_TO_EXT[mimeType] ?? "bin";
 }
+
+/**
+ * Return a safe internal redirect path, or a fallback. Prevents open-redirect:
+ * only allows same-origin relative paths that start with a single "/" (not "//"
+ * or "/\" which browsers treat as protocol-relative external URLs).
+ */
+export function safeNextPath(next: string | null | undefined, fallback = "/dashboard"): string {
+  if (!next || typeof next !== "string") return fallback;
+  if (!next.startsWith("/")) return fallback;        // must be relative
+  if (next.startsWith("//") || next.startsWith("/\\")) return fallback; // protocol-relative
+  return next;
+}
+
+/**
+ * Validate that an absolute redirect URL points at our own app origin.
+ * Returns the URL if same-origin, otherwise the provided fallback.
+ */
+export function sameOriginUrl(url: string | null | undefined, appUrl: string, fallback: string): string {
+  if (!url) return fallback;
+  try {
+    if (new URL(url).origin === new URL(appUrl).origin) return url;
+  } catch {
+    /* invalid URL */
+  }
+  return fallback;
+}

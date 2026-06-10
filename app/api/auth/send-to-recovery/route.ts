@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendRecoveryCodeEmail } from "@/lib/email";
+import { sameOriginUrl } from "@/lib/sanitize";
 import { z } from "zod";
 
 const Schema = z.object({
@@ -81,7 +82,8 @@ export async function POST(req: NextRequest) {
 
   // ── Generate a magic link + OTP for the primary email ────────────────────
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
-  const callbackUrl = redirectTo ?? `${appUrl}/auth/callback`;
+  // Same-origin only — don't relay the verified auth code to an external URL.
+  const callbackUrl = sameOriginUrl(redirectTo, appUrl, `${appUrl}/auth/callback`);
 
   const { data: linkData, error: linkError } = await service.auth.admin.generateLink({
     type: "magiclink",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { escapeHtml } from "@/lib/sanitize";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -36,6 +37,11 @@ export async function POST(req: NextRequest) {
   }
 
   const { name, email, message } = parsed.data;
+  // Escape before embedding in the email HTML (prevents HTML/style injection
+  // into the support team's inbox). replyTo/subject use the raw values.
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message);
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
@@ -57,20 +63,20 @@ export async function POST(req: NextRequest) {
           <table style="border-collapse:collapse;width:100%;">
             <tr>
               <td style="padding:8px 0;color:#64748b;font-size:14px;width:80px;">Name</td>
-              <td style="padding:8px 0;color:#0f172a;font-size:14px;">${name}</td>
+              <td style="padding:8px 0;color:#0f172a;font-size:14px;">${safeName}</td>
             </tr>
             <tr>
               <td style="padding:8px 0;color:#64748b;font-size:14px;">Email</td>
               <td style="padding:8px 0;color:#0f172a;font-size:14px;">
-                <a href="mailto:${email}" style="color:#4f46e5;">${email}</a>
+                <a href="mailto:${safeEmail}" style="color:#4f46e5;">${safeEmail}</a>
               </td>
             </tr>
           </table>
           <div style="margin-top:16px;padding:16px;background:#f8fafc;border-radius:8px;border-left:4px solid #4f46e5;">
-            <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.6;white-space:pre-wrap;">${message}</p>
+            <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.6;white-space:pre-wrap;">${safeMessage}</p>
           </div>
           <p style="margin-top:16px;font-size:12px;color:#94a3b8;">
-            Sent via the ScanSolve support widget. Reply directly to this email to respond to ${name}.
+            Sent via the ScanSolve support widget. Reply directly to this email to respond to ${safeName}.
           </p>
         </div>
       `,
