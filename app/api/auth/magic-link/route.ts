@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendMagicLinkEmail } from "@/lib/email";
+import { sameOriginUrl } from "@/lib/sanitize";
 import { z } from "zod";
 
 /**
@@ -59,7 +60,9 @@ export async function POST(req: NextRequest) {
 
   const service = getServiceClient();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
-  const callbackUrl = redirectTo ?? `${appUrl}/auth/callback`;
+  // Only honour a redirectTo that points back at our own origin — otherwise the
+  // verified magic-link auth code could be relayed to an attacker domain.
+  const callbackUrl = sameOriginUrl(redirectTo, appUrl, `${appUrl}/auth/callback`);
 
   // Generate a magic link + OTP. For an existing user this works directly; for
   // a new user the first call fails, so we create the user (passwordless) and

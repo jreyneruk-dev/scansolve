@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
+import { safeNextPath } from "@/lib/sanitize";
 
 function getServiceClient() {
   return createClient(
@@ -29,7 +30,9 @@ export async function GET(request: NextRequest) {
   const code       = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type       = searchParams.get("type") as "signup" | "email" | "recovery" | null;
-  const next       = searchParams.get("next") ?? "/dashboard";
+  // Only ever redirect to an internal path — prevents open-redirect / auth-code
+  // relay to an attacker domain via a crafted ?next=https://evil.example.
+  const next       = safeNextPath(searchParams.get("next"));
 
   const supabase = await createSupabaseServerClient();
   let authed = false;
