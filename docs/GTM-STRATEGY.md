@@ -195,6 +195,11 @@ hooks; sequence outreach by which hook the product can already demo; and run a c
 white-glove, IT-bypassing 30-day micro-pilot with agreed success metrics and a no-risk
 off-ramp. The enterprise motion runs alongside gyms, it does not replace them.
 
+On 2026-06-16 the Supabase project was found paused (free-tier auto-pause after 7 idle
+days) and restored. A daily launchd keep-alive was added on the founder's laptop as an
+interim guard. Decision: upgrade Supabase to a paid plan at the first paying customer, so
+the database never pauses once someone depends on it.
+
 ## Related plans
 
 The full project planning (technical execution, database schema, deployment workflow,
@@ -213,3 +218,8 @@ also summarised in the project `CLAUDE.md`.
 - Score the LinkedIn connections export against the personas once it arrives.
 - The white-hat security audit fixes were applied to the working tree but not yet built,
   PR'd, or merged. They still need to ship through the normal PR workflow.
+- Move Supabase off the free tier at the first paying customer. Free projects auto-pause
+  after 7 days of inactivity; a paid plan never pauses. A laptop launchd keep-alive
+  (`~/.claude/scripts/scansolve-supabase-keepalive.sh`, daily) is the interim guard, but
+  it cannot fire if the laptop is off for 7+ days, so it is not safe to rely on once a
+  real customer depends on the database.
