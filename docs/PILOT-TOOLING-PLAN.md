@@ -40,11 +40,12 @@ MVP-first: demo org, then poster and scorecard, then the console. Rationale: you
 demo for the first calls, then the means to run and review one pilot by hand, and only
 then the tooling to make pilots repeatable.
 
-### Phase 0 (prerequisite): ship the parked security fixes
+### Phase 0 (prerequisite): security fixes — complete
 
-The white-hat audit fixes are applied to the working tree but unmerged. Land them through
-the normal branch / PR / CI flow first, so this new work branches off a clean main rather
-than stacking on top of unreviewed security changes. See the GTM open items.
+The white-hat audit fixes shipped on 2026-06-10 via PR #18 (commit `9fbbb2a`) and are on
+main. The admin-tool stored-XSS fix (`escHtml` escaping single quotes and backticks)
+lives in the local, untracked `admin-tool/` and is intentionally not in git, since that
+tool is founder-run and never deployed. Main is clean to build on; proceed to Phase 1.
 
 ### Phase 1: demo / sandbox org
 

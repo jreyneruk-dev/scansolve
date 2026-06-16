@@ -188,6 +188,11 @@ multi-site operators convert because they outgrow the free limits.
 Vouchers and comp grants were added so key prospects and reference customers can get
 free Prime for a fixed duration or for life, separate from the Stripe billing path.
 
+On 2026-06-10 the white-hat security audit fixes (upload IDOR, open-redirect on the auth
+callback and magic-link routes, support-email escaping) shipped to main via PR #18. The
+admin-tool stored-XSS fix lives in the local, untracked `admin-tool/`, which is
+founder-run and never deployed, so it is intentionally not in git.
+
 On 2026-06-16 the strategy was extended from the gym-only beachhead to the champion-led
 enterprise motion described at the top of this document. This came from four pieces of
 external analysis: target the champion not the C-suite; use per-vertical personas and
@@ -218,8 +223,6 @@ The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN
 - Update the `scansolve-outreach` and `scansolve-brand-voice` skills with the
   facilities-management personas, hooks, and LinkedIn title strings.
 - Score the LinkedIn connections export against the personas once it arrives.
-- The white-hat security audit fixes were applied to the working tree but not yet built,
-  PR'd, or merged. They still need to ship through the normal PR workflow.
 - Move Supabase off the free tier at the first paying customer. Free projects auto-pause
   after 7 days of inactivity; a paid plan never pauses. A laptop launchd keep-alive
   (`~/.claude/scripts/scansolve-supabase-keepalive.sh`, daily) is the interim guard, but
