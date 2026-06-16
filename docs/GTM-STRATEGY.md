@@ -216,8 +216,10 @@ also summarised in the project `CLAUDE.md`.
 
 The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN.md`.
 
-- Build the two net-new pilot dependencies: the "scan to report" poster or table-tent
-  template, and the pilot scorecard (report count plus resolution-time baseline).
+- Refresh the scan-to-report poster design before sending prospect invites. The posters
+  and pilot scorecard are built (posters as a section on the Labels page; scorecard at
+  `/dashboard/scorecard`). The poster layout works but is visually plain — polish it
+  before outreach so what a prospect prints looks the part.
 - Build the single-site provisioning console (pilot-kit generator) and a demo or
   sandbox org with vertical sample data.
 - Update the `scansolve-outreach` and `scansolve-brand-voice` skills with the
