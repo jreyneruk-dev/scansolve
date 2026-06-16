@@ -209,6 +209,8 @@ also summarised in the project `CLAUDE.md`.
 
 ## Open items
 
+The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN.md`.
+
 - Build the two net-new pilot dependencies: the "scan to report" poster or table-tent
   template, and the pilot scorecard (report count plus resolution-time baseline).
 - Build the single-site provisioning console (pilot-kit generator) and a demo or
