@@ -2,7 +2,7 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Settings, Tag, CreditCard } from "lucide-react";
+import { LogOut, Settings, Tag, CreditCard, QrCode, BarChart3 } from "lucide-react";
 import { ScanSolveLogo } from "@/components/ui/ScanSolveLogo";
 
 interface DashboardNavProps {
@@ -45,6 +45,22 @@ export function DashboardNav({ userEmail, orgNumber }: DashboardNavProps) {
           >
             <Tag className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Labels</span>
+          </Link>
+
+          <Link
+            href="/dashboard/posters"
+            className="flex items-center gap-1.5 min-h-[36px] px-3 text-xs font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/70 rounded-xl transition-all duration-150"
+          >
+            <QrCode className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Posters</span>
+          </Link>
+
+          <Link
+            href="/dashboard/scorecard"
+            className="flex items-center gap-1.5 min-h-[36px] px-3 text-xs font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/70 rounded-xl transition-all duration-150"
+          >
+            <BarChart3 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Scorecard</span>
           </Link>
 
           <Link
