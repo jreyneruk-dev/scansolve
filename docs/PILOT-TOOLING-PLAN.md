@@ -90,9 +90,10 @@ agreed at the start.
 - Data: all required fields already exist on `issues`; no migration needed.
 - Verify: run it against the Phase 1 demo org and confirm the figures match a hand
   calculation from the seeded rows.
-- Status (2026-06-16): built at `/dashboard/scorecard` (summary cards, per-location table,
-  CSV export). Open question under discussion: drop the "pilot" framing and ship this as a
-  general Prime analytics feature, since pilots run on comp Prime anyway.
+- Status (2026-06-16): built and shipped as the Prime-gated "Insights" page at
+  `/dashboard/insights` (summary cards, per-location table, CSV export). The "pilot
+  scorecard" framing was dropped from the UI and kept to sales/GTM only; Starter sees an
+  upgrade prompt, and pilots get it via comp Prime.
 
 ### Phase 3: provisioning console MVP (founder-run, optional for pilot #1)
 

@@ -48,11 +48,11 @@ export function DashboardNav({ userEmail, orgNumber }: DashboardNavProps) {
           </Link>
 
           <Link
-            href="/dashboard/scorecard"
+            href="/dashboard/insights"
             className="flex items-center gap-1.5 min-h-[36px] px-3 text-xs font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/70 rounded-xl transition-all duration-150"
           >
             <BarChart3 className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Scorecard</span>
+            <span className="hidden sm:inline">Insights</span>
           </Link>
 
           <Link

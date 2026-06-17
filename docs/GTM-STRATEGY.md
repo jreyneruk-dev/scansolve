@@ -131,7 +131,8 @@ team members, email alerts, Supabase backend, ads on the reporter page and dashb
 list, and a "Powered by ScanSolve" line.
 
 Prime is the paid tier: no ads anywhere, the customer's own logo, up to 20 team members,
-all four sheet types, and instant push alerts.
+all four sheet types, instant push alerts, and Insights (reports and resolution-time
+analytics by location).
 
 Enterprise is price-on-application: unlimited team members, advanced analytics and
 export, own-data backends (Sheets, Airtable), Slack and Teams integration, and the usual
@@ -205,6 +206,12 @@ days) and restored. A daily launchd keep-alive was added on the founder's laptop
 interim guard. Decision: upgrade Supabase to a paid plan at the first paying customer, so
 the database never pauses once someone depends on it.
 
+On 2026-06-16 the pilot tooling (Phase 2) shipped: scan-to-report posters as a section on
+the Labels page, and the resolution-time analytics view. Decision: the analytics ship as a
+Prime feature named "Insights" rather than a "pilot scorecard" — the pilot framing lives in
+sales and this document, not the product UI. Pilots still get it because they run on comp
+Prime. Starter sees an upgrade prompt instead.
+
 ## Related plans
 
 The full project planning (technical execution, database schema, deployment workflow,
@@ -217,9 +224,10 @@ also summarised in the project `CLAUDE.md`.
 The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN.md`.
 
 - Refresh the scan-to-report poster design before sending prospect invites. The posters
-  and pilot scorecard are built (posters as a section on the Labels page; scorecard at
-  `/dashboard/scorecard`). The poster layout works but is visually plain — polish it
-  before outreach so what a prospect prints looks the part.
+  and the analytics view are built (posters as a section on the Labels page; analytics
+  shipped as the Prime-gated "Insights" page at `/dashboard/insights`). The poster layout
+  works but is visually plain — polish it before outreach so what a prospect prints looks
+  the part.
 - Build the single-site provisioning console (pilot-kit generator) and a demo or
   sandbox org with vertical sample data.
 - Update the `scansolve-outreach` and `scansolve-brand-voice` skills with the

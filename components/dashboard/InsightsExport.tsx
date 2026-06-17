@@ -3,8 +3,8 @@ import { Download } from "lucide-react";
 
 type Row = Record<string, string | number>;
 
-/** Client-side CSV download for the pilot scorecard — no server round-trip. */
-export function ScorecardExport({ rows, filename }: { rows: Row[]; filename: string }) {
+/** Client-side CSV download for the Insights report — no server round-trip. */
+export function InsightsExport({ rows, filename }: { rows: Row[]; filename: string }) {
   function download() {
     if (!rows.length) return;
     const headers = Object.keys(rows[0]);

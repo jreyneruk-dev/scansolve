@@ -1,8 +1,11 @@
 import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { getAdapter } from "@/lib/db";
+import { getEffectivePlan } from "@/lib/plans";
 import { redirect } from "next/navigation";
-import { BarChart3 } from "lucide-react";
-import { ScorecardExport } from "@/components/dashboard/ScorecardExport";
+import Link from "next/link";
+import { BarChart3, Lock } from "lucide-react";
+import { InsightsExport } from "@/components/dashboard/InsightsExport";
+import type { Organization } from "@/types/schema";
 
 const DAY_MS = 86_400_000;
 
@@ -21,10 +24,42 @@ function fmtDuration(ms: number | null): string {
   return `${(h / 24).toFixed(1)} days`;
 }
 
-export default async function ScorecardPage() {
-  const user = await requireAuth("/dashboard/scorecard");
+export default async function InsightsPage() {
+  const user = await requireAuth("/dashboard/insights");
   const org = await getOrgForUser(user.id);
   if (!org) redirect("/onboarding");
+
+  // Insights is a Prime feature. Pilots see it because they run on comp Prime.
+  if (getEffectivePlan(org as unknown as Organization) === "free") {
+    return (
+      <div className="space-y-6 animate-slide-in">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25">
+            <BarChart3 className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">Insights</h1>
+            <p className="text-sm text-slate-500">Reports captured and resolution times across your locations.</p>
+          </div>
+        </div>
+        <div className="glass-card rounded-2xl p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 mb-4">
+            <Lock className="h-5 w-5 text-indigo-500" />
+          </div>
+          <h2 className="text-base font-semibold text-slate-900">Insights is a Prime feature</h2>
+          <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+            See how many issues get reported and how fast they are resolved, broken down by location. Upgrade to Prime to unlock it.
+          </p>
+          <Link
+            href="/pricing"
+            className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            Upgrade to Prime
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const adapter = await getAdapter(org.id);
   const issues = await adapter.getIssuesByOrg(org.id, { limit: 2000 });
@@ -84,11 +119,11 @@ export default async function ScorecardPage() {
             <BarChart3 className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Pilot scorecard</h1>
-            <p className="text-sm text-slate-500">Reports captured and resolution times — the numbers for your 30-day review.</p>
+            <h1 className="text-xl font-bold text-slate-900">Insights</h1>
+            <p className="text-sm text-slate-500">Reports captured and resolution times across your locations.</p>
           </div>
         </div>
-        <ScorecardExport rows={csvRows} filename="scansolve-pilot-scorecard.csv" />
+        <InsightsExport rows={csvRows} filename="scansolve-insights.csv" />
       </div>
 
       {issues.length === 0 ? (
