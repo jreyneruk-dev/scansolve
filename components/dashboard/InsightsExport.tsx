@@ -12,7 +12,9 @@ export function InsightsExport({ rows, filename }: { rows: Row[]; filename: stri
       const s = String(v ?? "");
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const csv = [
+    // Lead with a UTF-8 BOM so Excel decodes accented characters and dashes
+    // correctly instead of showing mojibake like "‚Äî" for "—".
+    const csv = "﻿" + [
       headers.join(","),
       ...rows.map((r) => headers.map((h) => esc(r[h])).join(",")),
     ].join("\n");

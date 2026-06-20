@@ -16,12 +16,25 @@ function median(nums: number[]): number | null {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
+// Human-readable for the web table: "45m", "17h 54m", "2d 3h".
 function fmtDuration(ms: number | null): string {
   if (ms == null) return "—";
-  const h = ms / 3_600_000;
-  if (h < 1) return `${Math.max(1, Math.round(ms / 60_000))} min`;
-  if (h < 48) return `${h.toFixed(1)} h`;
-  return `${(h / 24).toFixed(1)} days`;
+  const totalMin = Math.round(ms / 60_000);
+  if (totalMin < 60) return `${totalMin}m`;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h < 48) return m ? `${h}h ${m}m` : `${h}h`;
+  const d = Math.floor(h / 24);
+  const rh = h % 24;
+  return rh ? `${d}d ${rh}h` : `${d}d`;
+}
+
+// Split for the CSV: separate whole-hours and minutes columns. Blank when there
+// is nothing resolved yet (cleaner in Excel than a placeholder).
+function splitHM(ms: number | null): { hours: number | ""; minutes: number | "" } {
+  if (ms == null) return { hours: "", minutes: "" };
+  const totalMin = Math.round(ms / 60_000);
+  return { hours: Math.floor(totalMin / 60), minutes: totalMin % 60 };
 }
 
 export default async function InsightsPage() {
@@ -95,13 +108,17 @@ export default async function InsightsPage() {
     .map((r) => ({ name: r.name, uid: r.uid, total: r.total, resolved: r.resolved, medianMs: median(r.resMs) }))
     .sort((a, b) => b.total - a.total);
 
-  const csvRows = locRows.map((r) => ({
-    location: r.name,
-    uid: r.uid,
-    reports: r.total,
-    resolved: r.resolved,
-    median_resolution: fmtDuration(r.medianMs),
-  }));
+  const csvRows = locRows.map((r) => {
+    const { hours, minutes } = splitHM(r.medianMs);
+    return {
+      location: r.name,
+      uid: r.uid,
+      reports: r.total,
+      resolved: r.resolved,
+      median_resolution_hours: hours,
+      median_resolution_minutes: minutes,
+    };
+  });
 
   const cards = [
     { label: "Total reports", value: String(issues.length) },
