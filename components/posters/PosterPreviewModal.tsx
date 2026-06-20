@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { X, Printer, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
+import { logoSvgMarkup } from "@/components/labels/LabelSheet";
 
 export interface PosterLocation {
   uid: string;
@@ -14,13 +15,23 @@ function posterHTML(name: string, uid: string, qr: string, isLast: boolean): str
   const esc = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const brk = isLast ? "page-break-after:avoid;break-after:avoid;" : "page-break-after:always;break-after:page;";
-  return `<div style="width:210mm;height:297mm;${brk}box-sizing:border-box;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24mm;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;">
-    <div style="font-size:18pt;font-weight:700;color:#1e293b;letter-spacing:-0.01em;">ScanSolve</div>
-    <div style="font-size:34pt;line-height:1.1;font-weight:800;color:#0f172a;margin-top:10mm;text-align:center;">Scan to report an issue</div>
-    <div style="font-size:22pt;font-weight:600;color:#4f46e5;margin-top:5mm;text-align:center;">${esc(name)}</div>
-    <img src="${qr}" alt="QR code" style="width:115mm;height:115mm;margin:14mm 0;display:block;" />
-    <div style="font-size:16pt;color:#334155;text-align:center;max-width:150mm;">Point your phone camera at the code. No app needed.</div>
-    <div style="font-size:10pt;color:#94a3b8;margin-top:10mm;font-family:'Courier New',monospace;letter-spacing:0.04em;">${esc(uid)}</div>
+  return `<div style="width:210mm;height:297mm;${brk}box-sizing:border-box;background:white;display:flex;flex-direction:column;align-items:center;padding:24mm;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:4mm;">
+      ${logoSvgMarkup(13)}
+      <span style="font-size:22pt;font-weight:700;color:#1e293b;letter-spacing:-0.02em;">ScanSolve</span>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11mm;width:100%;">
+      <div style="font-size:30pt;line-height:1.15;font-weight:800;color:#0f172a;text-align:center;max-width:160mm;">See something that needs fixing?</div>
+      <div style="padding:9mm;border:0.4mm solid #e2e8f0;border-radius:6mm;">
+        <img src="${qr}" alt="QR code" style="width:92mm;height:92mm;display:block;" />
+      </div>
+      <div style="font-size:15pt;line-height:1.5;color:#334155;text-align:center;max-width:150mm;">Scan the code with your phone camera and tell us. No app, no login — about 20 seconds, and we'll get it sorted.</div>
+      <div style="padding:2mm 5mm;border-radius:999px;background:#eef2ff;color:#4f46e5;font-size:12pt;font-weight:600;">${esc(name)}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:1.5mm;">
+      <div style="font-size:12pt;font-weight:600;color:#6366f1;">Issues fixed, not forgotten.</div>
+      <div style="font-size:9pt;color:#94a3b8;font-family:'Courier New',monospace;letter-spacing:0.04em;">${esc(uid)}</div>
+    </div>
   </div>`;
 }
 
