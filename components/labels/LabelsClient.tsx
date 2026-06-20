@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Printer, Tag, Loader2, RefreshCw, History, ChevronDown, QrCode } from "lucide-react";
+import { Printer, Tag, Loader2, RefreshCw, History, ChevronDown, QrCode, ScanLine } from "lucide-react";
 import { PrintPreviewModal } from "./PrintPreviewModal";
+import { PosterPreviewModal, type PosterLocation } from "@/components/posters/PosterPreviewModal";
 import { ClientDate } from "@/components/ui/ClientDate";
 import type { ConfiguredLabel } from "@/app/api/labels/configured/route";
 
@@ -133,6 +134,10 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
   const [configured, setConfigured] = useState<ConfiguredLabel[]>([]);
   const [configuredLoading, setConfiguredLoading] = useState(true);
 
+  // Poster selection (reuses the configured/commissioned locations below)
+  const [posterSel, setPosterSel] = useState<Set<string>>(new Set());
+  const [posterPreview, setPosterPreview] = useState<PosterLocation[] | null>(null);
+
   const loadHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
@@ -161,6 +166,23 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
     loadHistory();
     loadConfigured();
   }, [loadHistory, loadConfigured]);
+
+  // Default poster selection to all commissioned locations whenever the list loads
+  useEffect(() => {
+    setPosterSel(new Set(configured.map((c) => c.uid)));
+  }, [configured]);
+
+  const posterChosen: PosterLocation[] = configured
+    .filter((c) => posterSel.has(c.uid))
+    .map((c) => ({ uid: c.uid, name: c.name }));
+
+  function togglePoster(uid: string) {
+    setPosterSel((s) => {
+      const n = new Set(s);
+      if (n.has(uid)) n.delete(uid); else n.add(uid);
+      return n;
+    });
+  }
 
   // If current selection became locked (plan downgrade), reset to default
   const resolvedSheetType = SHEET_OPTIONS.find((o) => o.value === sheetType)?.allowed
@@ -319,6 +341,68 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
         </div>
       </Section>
 
+      {/* ── Scan-to-report Posters ───────────────────────────────── */}
+      <Section
+        icon={<ScanLine className="h-4 w-4 text-violet-500" />}
+        title="Scan-to-report Posters"
+        badge={configured.length || undefined}
+        onRefresh={loadConfigured}
+        refreshing={configuredLoading}
+      >
+        <div className="pt-3 space-y-3">
+          <p className="text-xs text-slate-500">
+            Print a large &ldquo;Scan to report an issue&rdquo; poster for any commissioned location — ideal for a pilot zone or high-traffic spot.
+          </p>
+          {configuredLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+            </div>
+          ) : configured.length === 0 ? (
+            <p className="text-xs text-slate-400 text-center py-4">
+              No commissioned locations yet — activate a QR label first, then print its poster.
+            </p>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setPosterSel(posterSel.size === configured.length ? new Set() : new Set(configured.map((c) => c.uid)))}
+                  className="text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors"
+                >
+                  {posterSel.size === configured.length ? "Clear all" : "Select all"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPosterPreview(posterChosen)}
+                  disabled={!posterChosen.length}
+                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 transition-all"
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                  Print {posterChosen.length || ""} poster{posterChosen.length !== 1 ? "s" : ""}
+                </button>
+              </div>
+              <div className="divide-y divide-white/40 -mx-2">
+                {configured.map((loc) => (
+                  <label
+                    key={loc.id}
+                    className="flex items-center gap-3 px-2 py-2.5 cursor-pointer hover:bg-white/40 rounded-lg transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={posterSel.has(loc.uid)}
+                      onChange={() => togglePoster(loc.uid)}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="flex-1 text-sm font-medium text-slate-700 truncate">{loc.name}</span>
+                    <span className="text-xs text-slate-400 font-mono">{loc.uid}</span>
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </Section>
+
       {/* ── Print History ────────────────────────────────────────── */}
       <Section
         icon={<History className="h-4 w-4 text-indigo-500" />}
@@ -415,6 +499,16 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
           sheetType={preview.sheetType}
           appUrl={appUrl}
           onClose={() => setPreview(null)}
+        />
+      )}
+
+      {/* Poster preview modal */}
+      {posterPreview && (
+        <PosterPreviewModal
+          locations={posterPreview}
+          orgNumber={orgNumber}
+          appUrl={appUrl}
+          onClose={() => setPosterPreview(null)}
         />
       )}
     </div>
