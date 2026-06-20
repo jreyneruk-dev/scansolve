@@ -73,10 +73,9 @@ headline, one line of instruction, a large QR, and the org logo if set.
   `app/dashboard/labels/page.tsx`.
 - Verify: the printed QR resolves to `/scan/{org_number}/{uid}` and scans cleanly from a
   phone at arm's length.
-- Status (2026-06-16): built as a collapsible "Scan-to-report Posters" section on the
-  Labels page (`/dashboard/labels`), reusing the commissioned-location list. Design
-  refresh outstanding — the current layout is functional but plain; polish before sending
-  prospect invites (tracked in the GTM open items).
+- Status: built as a collapsible "Scan-to-report Posters" section on the Labels page
+  (`/dashboard/labels`), reusing the commissioned-location list. Design refresh shipped
+  2026-06-21 — real logo, warmer reporter invite, cleaner layout. Done.
 
 ### Phase 2b: pilot scorecard
 
