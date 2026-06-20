@@ -223,11 +223,9 @@ also summarised in the project `CLAUDE.md`.
 
 The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN.md`.
 
-- Refresh the scan-to-report poster design before sending prospect invites. The posters
-  and the analytics view are built (posters as a section on the Labels page; analytics
-  shipped as the Prime-gated "Insights" page at `/dashboard/insights`). The poster layout
-  works but is visually plain — polish it before outreach so what a prospect prints looks
-  the part.
+- Posters and the analytics view are built and shipped: posters as a section on the Labels
+  page (redesigned 2026-06-21 with the real logo, a warmer reporter invite, and a cleaner
+  layout), and analytics as the Prime-gated "Insights" page at `/dashboard/insights`.
 - Build the single-site provisioning console (pilot-kit generator) and a demo or
   sandbox org with vertical sample data.
 - Update the `scansolve-outreach` and `scansolve-brand-voice` skills with the
