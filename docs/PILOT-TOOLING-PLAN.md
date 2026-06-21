@@ -107,6 +107,14 @@ A single "new pilot" screen in the admin tool that assembles a pilot kit in one 
   model already supports everything underneath.
 - Verify: one submission yields a working pilot org reachable by magic link with the
   requested number of scannable labels and a populated scorecard.
+- Status (2026-06-21): built in the admin tool as a "New pilot" card
+  (`admin-tool/lib/create-pilot.js` + `POST /api/pilot`). One submission creates a
+  champion-owned comp-Prime org with a configurable expiry (default 30 days), the
+  prospect's locations pasted one-per-line and pre-commissioned, optional categories and
+  logo URL, and returns the champion magic link plus label-print and Insights links. No
+  sample data. Local/untracked tool — run it like the demo org. Resolved open questions:
+  survey is per-location `survey_config` (no template table — categories set inline);
+  logo is an optional URL field (no file upload); champion email is the org owner.
 
 ## Open questions to confirm at build time
 
