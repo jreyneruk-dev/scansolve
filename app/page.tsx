@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { QrCode, Zap, ArrowRight, CheckCircle, BarChart3, MapPin, Sparkles, ChevronDown } from "lucide-react";
+import { HeroAnimation } from "@/components/features/animation/HeroAnimation";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 
@@ -117,20 +118,6 @@ export default function HomePage() {
 
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-indigo-500 blur-xl opacity-40 animate-pulse-glow" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-2xl shadow-indigo-500/30 animate-float">
-              <QrCode className="h-9 w-9 text-white drop-shadow" />
-            </div>
-          </div>
-        </div>
-
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-600 mb-6">
-          <Sparkles className="h-3 w-3" />
-          Scan it. Solve it. Get stuff done.
-        </div>
-
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 leading-tight mb-5">
           ScanSolve — QR code facility reporting.<br />
           <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
@@ -153,6 +140,8 @@ export default function HomePage() {
         <p className="mt-4 text-xs text-slate-400">
           Free forever on Starter · No card required · No time pressure
         </p>
+
+        <HeroAnimation />
       </section>
 
       {/* ── How it works ────────────────────────────────────────────── */}
