@@ -143,7 +143,7 @@ unbuilt work the enterprise hooks above depend on.
 Pilots use `comp` with a `plan_expires_at` date, so they downgrade cleanly when the
 trial ends.
 
-### Pricing position: no per-seat tax (recommended 2026-07-05, confirm before use)
+### Pricing position: no per-seat tax (confirmed 2026-07-06)
 
 The incumbents in this category charge per user per month: MaintainX £16–49, UpKeep
 £20–75, Limble around £40 (see the foundations review market research). A 20-seat UpKeep
@@ -153,8 +153,9 @@ price is a sharper wedge than the QR mechanic (which SafetyCulture and Oxmaint a
 The recommendation is to lead outbound and comparison copy with "no per-seat tax": one
 price, whole team, versus a per-head bill that grows every time someone joins. Enterprise
 "price on application" should still anchor against incumbent per-seat spend rather than
-guess in a vacuum. This is a positioning recommendation, not a locked decision — confirm
-before it goes into outreach, then it belongs in the outreach and brand-voice skills.
+guess in a vacuum. Confirmed by the founder on 2026-07-06. It is now the lead positioning
+for outbound and comparison copy, and is reflected in the scansolve-brand-voice snippets
+("pricing wedge") and the scansolve-outreach skill.
 
 ### Compliance runway trigger
 
@@ -264,3 +265,6 @@ Decision log:
 - 2026-07-05: recorded the "no per-seat tax" pricing position (recommended, pending
   confirmation) and the compliance-runway trigger, both from the foundations review
   research. Neither is locked; both are for the founder to confirm.
+- 2026-07-06: founder confirmed the no-per-seat-tax pricing position. It is now the lead
+  positioning for outbound and comparison copy, and propagated to the scansolve-brand-voice
+  snippets and the scansolve-outreach skill. The compliance-runway trigger is still open.
