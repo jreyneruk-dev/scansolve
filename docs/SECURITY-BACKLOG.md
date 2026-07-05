@@ -17,14 +17,17 @@ it. On every new issue, the server POSTs to each stored endpoint via `lib/push.t
 Prime user can point it at internal addresses (cloud metadata, localhost services). First
 flagged in `.security-audits/AUDIT-2026-06-29.md` with a ready host-allowlist fix that was
 never applied. Fix: allowlist the known browser push hosts (Apple, FCM, Mozilla, WNS),
-https only, before persisting.
+https only, before persisting. Status: fixed 2026-07-06 — `isAllowedPushEndpoint` in
+`app/api/push/subscribe/route.ts` rejects anything that is not https on a known push host.
 
 ### Stripe webhook stomps voucher/comp plans (medium)
 `app/api/stripe/webhook/route.ts:99-123` calls `setOrgPlan(orgId, "free", "free")`
 unconditionally on subscription-inactive or subscription-deleted events, clearing
 `plan_expires_at` and `plan_source`. An org that cancelled Stripe and later got a voucher
 or a comp grant is downgraded when the old subscription's final event arrives. Fix: only
-downgrade when `plan_source === 'paid'`.
+downgrade when `plan_source === 'paid'`. Status: fixed 2026-07-06 — `downgradeOrgIfPaid`
+in `app/api/stripe/webhook/route.ts` reads `plan_source` first and leaves voucher/comp
+orgs untouched.
 
 ### Reporter IP stored reversibly (low, GDPR)
 `app/api/issues/route.ts:141` computes `Buffer.from(ip).toString("base64").slice(0,12)`
