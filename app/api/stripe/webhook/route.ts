@@ -43,6 +43,27 @@ async function setOrgPlan(
   }
 }
 
+// Only a paid subscription's lifecycle should downgrade the plan. If the org has since
+// moved to a voucher or a comp grant, a late Stripe event (cancellation / inactive)
+// must not stomp it back to free.
+async function downgradeOrgIfPaid(orgId: string) {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .from("organizations")
+    .select("plan_source")
+    .eq("id", orgId)
+    .single();
+  if (error) {
+    console.error("[stripe/webhook] Failed to read org plan_source:", error.message);
+    throw error;
+  }
+  if (data?.plan_source !== "paid") {
+    console.log(`[stripe/webhook] org ${orgId} left as-is (plan_source=${data?.plan_source}) — Stripe event ignored`);
+    return;
+  }
+  await setOrgPlan(orgId, "free", "free");
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
@@ -100,16 +121,15 @@ async function handleEvent(event: Stripe.Event) {
       const sub = event.data.object as Stripe.Subscription;
       const orgId = sub.metadata?.org_id;
       if (!orgId) break;
-      // Active or trialing = prime; anything else = downgrade
+      // Active or trialing = prime; anything else = downgrade, but only if the org is
+      // still on a paid plan (never stomp a voucher/comp grant).
       const active = sub.status === "active" || sub.status === "trialing";
-      await setOrgPlan(
-        orgId,
-        active ? "prime" : "free",
-        active ? "paid" : "free",
-        sub.customer as string | undefined,
-        sub.id
-      );
-      console.log(`[stripe/webhook] org ${orgId} → ${active ? "prime" : "free"} (sub updated, status=${sub.status})`);
+      if (active) {
+        await setOrgPlan(orgId, "prime", "paid", sub.customer as string | undefined, sub.id);
+        console.log(`[stripe/webhook] org ${orgId} → prime (sub updated, status=${sub.status})`);
+      } else {
+        await downgradeOrgIfPaid(orgId);
+      }
       break;
     }
 
@@ -117,8 +137,7 @@ async function handleEvent(event: Stripe.Event) {
       const sub = event.data.object as Stripe.Subscription;
       const orgId = sub.metadata?.org_id;
       if (!orgId) break;
-      await setOrgPlan(orgId, "free", "free");
-      console.log(`[stripe/webhook] org ${orgId} → free (sub cancelled)`);
+      await downgradeOrgIfPaid(orgId);
       break;
     }
 

@@ -22,6 +22,25 @@ const Schema = z.object({
   }),
 });
 
+// The stored endpoint is POSTed server-side on every new issue, so an unconstrained
+// URL is an SSRF vector (cloud metadata, localhost services). Only accept https URLs
+// on the real browser push services.
+const ALLOWED_PUSH_HOSTS = [
+  /(^|\.)push\.apple\.com$/,            // Safari / APNs
+  /(^|\.)googleapis\.com$/,             // Chrome / Edge / Android (FCM)
+  /(^|\.)push\.services\.mozilla\.com$/, // Firefox
+  /(^|\.)notify\.windows\.com$/,        // Windows / WNS
+];
+
+function isAllowedPushEndpoint(url: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(url);
+    return protocol === "https:" && ALLOWED_PUSH_HOSTS.some((re) => re.test(hostname));
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   const user = await getOptionalUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -54,6 +73,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { endpoint, keys } = parsed.data;
+  if (!isAllowedPushEndpoint(endpoint)) {
+    return NextResponse.json({ error: "Unsupported push endpoint." }, { status: 422 });
+  }
   const db = getServiceClient();
 
   // Upsert by endpoint so re-subscribing the same device doesn't duplicate,
