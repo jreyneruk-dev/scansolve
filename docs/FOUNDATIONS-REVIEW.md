@@ -175,6 +175,92 @@ into this doc and the GTM decision log. The restore drill and analytics
 decision fit in the gaps. Legal/pen-test items are scheduled, not done, in two
 days.
 
+## 7. Day 1 audit findings (2026-07-05)
+
+Four Fable 5 agents mapped the codebase and audited it. Full output lives in
+`.planning/codebase/` (7 docs) and `.planning/audits/` (PATHFINDER, SEO,
+OVERENGINEERING). This section carries the load-bearing findings; the detail and
+file-line references are in those files.
+
+### Corrections to section 2 and 3 counts
+
+Direct grep beats memory. The `listUsers` scale cliff is three call sites, not the
+~25 I first wrote: `send-to-recovery` (1,000-user cliff), `labels/history` (a worse
+50-user cliff, no pagination params), and the admin pilot tool. The type debt is
+larger than stated, though: 42 `Record<string, unknown>` casts, 13
+`as unknown as Organization` casts feeding plan gates, and 25 identical
+`getServiceClient()` definitions. The `Organization` type in `types/schema.ts` is
+stale — it lacks `org_number`, `logo_url`, `plan_source`, and the Stripe columns, so
+every cast is hand-asserting columns the compiler can't see.
+
+### Live defects found that were not in the original review
+
+These are real, current, and worth acting on before the first pilot. None are
+theoretical.
+
+| Severity | Defect | Location |
+|---|---|---|
+| Medium | Push-subscribe SSRF: any URL accepted as `endpoint`, then POSTed server-side on every new issue. Flagged in the 2026-06-29 audit with a ready fix; still unapplied. | `app/api/push/subscribe/route.ts:18` |
+| Medium | Stripe webhook downgrades to free without checking `plan_source`, so a late lifecycle event stomps a voucher or comp grant. | `app/api/stripe/webhook/route.ts:99-123` |
+| Low/GDPR | `reporter_meta.ip_hash` is `base64(ip).slice(0,12)` — reversible, not a hash, despite the comment. Reporter IPs are personal data. | `app/api/issues/route.ts:141` |
+| Low | Raw Postgres `error.message` returned to any authenticated member. | `app/api/organizations/route.ts`, `app/api/labels/{history,configured}/route.ts` |
+| Low | Issue-assignment PATCH emails issue details to any syntactically valid address, no rate limit. | `app/api/issues/[id]/route.ts` |
+
+The voucher `use_count` race (parked item 4) is confirmed real in code: three writes
+in `Promise.all` labelled "atomically" that are not a transaction. The middleware
+fails open by design, which is acceptable only because every dashboard page and API
+route re-checks auth independently — that discipline is now load-bearing and should be
+protected by a test, not a convention.
+
+### Marketing and discoverability (SEO audit)
+
+The technical SEO hygiene is mostly fine (server-rendered metadata, valid JSON-LD,
+sensible robots policy). One finding outweighs the rest: the homepage uses "QR code" 12
+times and the words buyers actually search — CMMS, work order, maintenance request,
+maintenance software — zero times. The site ranks for its own name and for "QR code
+facility issue reporting," a phrase ScanSolve coined and nobody searches. It has four
+indexable pages; the incumbents run hundreds. This is the on-site half of the
+"incremental marketing" feeling from section 4, and it is concrete: category vocabulary
+in the copy, per-vertical landing pages (the GTM personas already exist), and
+comparison pages against MaintainX/UpKeep that double as outreach collateral. The two
+channels that matter more than on-page work are software directories (Capterra, G2 own
+page one for "best X software") and AI assistants (the robots policy and FAQ markup
+already point at this). Smaller fixes worth doing in one pass: `/pricing` is missing
+from the sitemap, page titles double the brand, `/pricing` and `/about` Open Graph
+tags are broken by Next metadata overrides, and the AdSense script loads site-wide but
+is blocked by the CSP, so it is dead weight on every marketing page while also reading
+as low-trust for enterprise buyers.
+
+### Architecture readiness (pathfinder audit)
+
+The layering is already right; what is missing is four shared spines that make
+Enterprise work additive instead of scattered: a typed org-plus-role context resolved
+once (kills the casts and the double-resolution, and gives SSO and roles a home), one
+service-client choke point (where audit logging can attach), a `profiles` table (ends
+the `listUsers` cliffs), and an audit-log seam (a procurement requirement). The
+pathfinder lays out an eight-step, roughly 5–6 day sequence of independent PRs, first
+three of which change no behavior. After step four, SSO has a mounting point, roles are
+enforced, and multi-org is one function change away. Two operational riders ride
+alongside and are not refactors: commit the admin tool to git, and stand up a test
+runner so the billing-correctness fixes land with the first real tests.
+
+### Over-engineering (deletion audit)
+
+Immediate safe deletions: `@anthropic-ai/sdk` and `pg` (zero imports), and three
+Radix packages (dialog, dropdown-menu, toast) that nothing uses. The large one is
+`googleapis` at 194 MB, pulled in only by the never-run Sheets adapter — the single
+biggest dependency serves a "coming soon" feature no customer can enable. Treat the
+Sheets/Airtable adapters as one decision: harden-and-ship or delete-and-defer, and move
+`googleapis` out of the build until then. The 25 copied `getServiceClient()` factories
+collapse into the single service client the pathfinder also wants.
+
+### What Day 1 changes about the plan
+
+Nothing contradicts sections 1–6; the audits sharpen them. The pathfinder's four spines
+are the concrete "make Enterprise slick" answer section 5 asked for. The push SSRF and
+the Stripe-voucher-stomp are new must-fix items ahead of pilots. The SEO keyword gap is
+the specific, testable version of the "marketing feels incremental" critique.
+
 ## Decision log
 
 - 2026-07-05: review written. Key calls surfaced for decision: state the
@@ -182,3 +268,8 @@ days.
   the admin tool to git; move the security backlog into the repo; instrument
   analytics before the next outreach wave; add the test/error-tracking floor
   before the first live pilot.
+- 2026-07-05: Day 1 audits run (codebase map, pathfinder, SEO, over-engineering),
+  written to `.planning/`. Added section 7. New must-fix-before-pilot items: the
+  push-subscribe SSRF and the Stripe-webhook voucher/comp stomp. Corrected the
+  `listUsers` cliff count (3, not ~25) and raised the type-debt count (42 plus 13
+  casts, 25 service-client copies).
