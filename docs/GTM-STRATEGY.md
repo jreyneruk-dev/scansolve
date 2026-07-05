@@ -143,6 +143,29 @@ unbuilt work the enterprise hooks above depend on.
 Pilots use `comp` with a `plan_expires_at` date, so they downgrade cleanly when the
 trial ends.
 
+### Pricing position: no per-seat tax (recommended 2026-07-05, confirm before use)
+
+The incumbents in this category charge per user per month: MaintainX £16–49, UpKeep
+£20–75, Limble around £40 (see the foundations review market research). A 20-seat UpKeep
+deployment runs past £10k a year. ScanSolve Prime is £15 per org, flat, for the owner plus
+20 members. That is 20–50 times cheaper than an incumbent for the same team, and the flat
+price is a sharper wedge than the QR mechanic (which SafetyCulture and Oxmaint also ship).
+The recommendation is to lead outbound and comparison copy with "no per-seat tax": one
+price, whole team, versus a per-head bill that grows every time someone joins. Enterprise
+"price on application" should still anchor against incumbent per-seat spend rather than
+guess in a vacuum. This is a positioning recommendation, not a locked decision — confirm
+before it goes into outreach, then it belongs in the outreach and brand-voice skills.
+
+### Compliance runway trigger
+
+Enterprise procurement asks for SOC 2 Type II or ISO 27001, SAML SSO, audit logging, a
+pen-test report, and a DPA with a data-residency answer (see `docs/SECURITY-BACKLOG.md`).
+None of these block a micro-pilot, because the pilot deliberately bypasses IT. All of them
+block a pilot converting to a paid Enterprise contract. SOC 2 Type II alone is a 6–12 month
+runway. Decision to make, not yet made: when the first pilot signals conversion intent,
+start the compliance clock rather than discovering the gap mid-deal. Log the start date
+here when it happens.
+
 ## Outreach and ICP
 
 Outreach is founder-led and manual: email, LinkedIn DM, and Instagram DM. The first ~50
@@ -236,3 +259,8 @@ The build work below is sequenced into an executable plan in `PILOT-TOOLING-PLAN
   (`~/.claude/scripts/scansolve-supabase-keepalive.sh`, daily) is the interim guard, but
   it cannot fire if the laptop is off for 7+ days, so it is not safe to rely on once a
   real customer depends on the database.
+
+Decision log:
+- 2026-07-05: recorded the "no per-seat tax" pricing position (recommended, pending
+  confirmation) and the compliance-runway trigger, both from the foundations review
+  research. Neither is locked; both are for the founder to confirm.
