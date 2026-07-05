@@ -163,9 +163,21 @@ Enterprise procurement asks for SOC 2 Type II or ISO 27001, SAML SSO, audit logg
 pen-test report, and a DPA with a data-residency answer (see `docs/SECURITY-BACKLOG.md`).
 None of these block a micro-pilot, because the pilot deliberately bypasses IT. All of them
 block a pilot converting to a paid Enterprise contract. SOC 2 Type II alone is a 6–12 month
-runway. Decision to make, not yet made: when the first pilot signals conversion intent,
-start the compliance clock rather than discovering the gap mid-deal. Log the start date
-here when it happens.
+runway, because Type II needs an auditor to observe the controls operating over that window,
+so starting it the day procurement asks is already too late.
+
+Trigger (confirmed 2026-07-06): start the compliance clock at the first credible conversion
+signal from a pilot — a champion asking how to roll it out company-wide, procurement making
+contact, or a security questionnaire arriving, whichever comes first. At that moment, engage
+a compliance platform (Vanta, Drata, or similar) to begin SOC 2 Type II, commission a
+penetration test, and finalise the DPA. Do not wait for the request itself.
+
+Pull forward now, ahead of any trigger, because they cost little and shorten the eventual
+runway: write the DPA template, pin down and document the data-residency answer (which
+region the Supabase project runs in), and build audit logging as part of the pathfinder
+org-context work (`.planning/audits/PATHFINDER.md`, steps 4 and 6). Do not start SOC 2 or a
+pen test speculatively — those wait for the trigger. Log the actual clock-start date here
+when it fires.
 
 ## Outreach and ICP
 
@@ -267,4 +279,10 @@ Decision log:
   research. Neither is locked; both are for the founder to confirm.
 - 2026-07-06: founder confirmed the no-per-seat-tax pricing position. It is now the lead
   positioning for outbound and comparison copy, and propagated to the scansolve-brand-voice
-  snippets and the scansolve-outreach skill. The compliance-runway trigger is still open.
+  snippets and the scansolve-outreach skill. The compliance-runway trigger was confirmed the
+  same day (see the entry below).
+- 2026-07-06: confirmed the compliance-runway trigger. Start the clock at the first credible
+  pilot conversion signal (champion rollout question, procurement contact, or security
+  questionnaire) — then begin SOC 2 Type II, a pen test, and the DPA. Pull the cheap items
+  (DPA template, data-residency answer, audit logging) forward now; hold SOC 2 and the pen
+  test for the trigger.
