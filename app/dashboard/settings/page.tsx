@@ -1,7 +1,6 @@
 import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { BackendSettings } from "@/components/dashboard/BackendSettings";
 import { TeamSettings } from "@/components/dashboard/TeamSettings";
 import { OrgNameSettings } from "@/components/dashboard/OrgNameSettings";
 import { RecoveryEmailSettings } from "@/components/dashboard/RecoveryEmailSettings";
@@ -31,15 +30,10 @@ export default async function SettingsPage() {
   const recoveryEmail = (user.user_metadata?.recovery_email as string | undefined) ?? null;
 
   const [{ data: orgData }, { data: members }, { data: invites }] = await Promise.all([
-    service.from("organizations").select("backend, backend_credentials, plan, plan_expires_at, logo_url").eq("id", orgId).single(),
+    service.from("organizations").select("logo_url").eq("id", orgId).single(),
     service.from("org_members").select("id, role, created_at, user_id").eq("org_id", orgId),
     service.from("org_invites").select("id, email, accepted_at, expires_at, created_at").eq("org_id", orgId).order("created_at", { ascending: false }),
   ]);
-
-  const backendInitial = {
-    backend: (orgData?.backend ?? "supabase") as "supabase" | "sheets" | "airtable",
-    has_credentials: !!orgData?.backend_credentials,
-  };
 
   return (
     <div className="space-y-8 max-w-lg">
@@ -75,10 +69,6 @@ export default async function SettingsPage() {
         <NotificationSettings
           isPrime={getEffectivePlan(org as unknown as Organization) !== "free"}
         />
-      </div>
-
-      <div className="border-t border-slate-100 pt-6">
-        <BackendSettings initial={backendInitial} />
       </div>
     </div>
   );

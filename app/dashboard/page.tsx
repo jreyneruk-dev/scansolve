@@ -2,10 +2,8 @@ import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { getAdapter } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { IssueList } from "@/components/dashboard/IssueList";
-import { StarterAdBanner } from "@/components/ui/StarterAdBanner";
-import { getEffectivePlan } from "@/lib/plans";
 import { CheckCircle2 } from "lucide-react";
-import type { IssueStatus, Organization } from "@/types/schema";
+import type { IssueStatus } from "@/types/schema";
 import { createClient } from "@supabase/supabase-js";
 
 function getServiceClient() {
@@ -102,10 +100,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       </div>
 
       <IssueList issues={issues} />
-
-      {getEffectivePlan(org as unknown as Organization) === "free" && (
-        <StarterAdBanner variant="dashboard" />
-      )}
     </div>
   );
 }

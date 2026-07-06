@@ -2,7 +2,6 @@ import { getLocationByOrgAndUID, getOrgPlanByNumber } from "@/lib/locations";
 import { getEffectivePlan } from "@/lib/plans";
 import { SurveyForm } from "@/components/survey/SurveyForm";
 import { ScanSolveLogo } from "@/components/ui/ScanSolveLogo";
-import { ReporterAd } from "@/components/ui/ReporterAd";
 import { MapPin, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -19,7 +18,6 @@ export default async function ScanPage({ params }: PageProps) {
   ]);
 
   const effectivePlan = orgPlan ? getEffectivePlan(orgPlan) : "free";
-  const showAd     = effectivePlan === "free";
   const isPaid     = effectivePlan !== "free";
   const orgLogoUrl = isPaid ? (orgPlan?.logo_url ?? null) : null;
 
@@ -82,7 +80,6 @@ export default async function ScanPage({ params }: PageProps) {
             orgNumber={orgNum}
             surveyConfig={location.survey_config}
           />
-          {showAd && <ReporterAd />}
         </div>
       </div>
     </main>

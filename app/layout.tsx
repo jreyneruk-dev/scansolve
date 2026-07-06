@@ -1,18 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import { MouseSpotlight } from "@/components/ui/MouseSpotlight";
 import { SupportWidget } from "@/components/support/SupportWidget";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
-// Google AdSense publisher ID (public, permanent). The library is loaded
-// site-wide for account/site verification, but ad UNITS only ever render on
-// the public reporter page (see components/ui/ReporterAd.tsx) — never on the
-// auth-gated dashboard, which AdSense policy does not permit.
-const ADSENSE_CLIENT = "ca-pub-7948132881222311";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 
@@ -68,9 +61,6 @@ export const metadata: Metadata = {
   },
   other: {
     "theme-color": "#4f46e5",
-    // AdSense site verification — renders a verbatim <meta> in <head>
-    // (server-side), which Google's verification crawler reads reliably.
-    "google-adsense-account": ADSENSE_CLIENT,
   },
   manifest: "/manifest.json",
 };
@@ -148,16 +138,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        {/* AdSense library — loaded at runtime to serve ads. Site verification
-            is handled by the google-adsense-account <meta> tag (see metadata),
-            not by this script. */}
-        <Script
-          id="adsbygoogle-lib"
-          async
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-        />
         <MouseSpotlight />
         <div className="relative z-10">{children}</div>
         <SupportWidget />
