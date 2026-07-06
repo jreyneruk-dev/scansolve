@@ -241,7 +241,30 @@ export const VERTICALS: Vertical[] = [
         q: "How is this different from our helpdesk?",
         a: "The helpdesk is where a ticket lives once it exists. ScanSolve is how the ticket gets raised in the first place, from the spot where the fault is, by someone who would never open the helpdesk. It can feed the rest later.",
       },
+      {
+        q: "How is this cheaper than a CMMS like MaintainX or UpKeep?",
+        a: "Those tools bill per user per month — MaintainX from $16, UpKeep from $20, and workplace platforms up to $100 — so the facilities team gets more expensive every time it grows. ScanSolve is one flat £15/mo for the owner plus 20 members, and the employees who scan and report never count as users at all.",
+      },
     ],
+    seoKeywords: [
+      "office facilities issue reporting",
+      "workplace maintenance app",
+      "report office issues QR code",
+      "facilities management software no per user fee",
+      "no-login issue reporting",
+    ],
+    proofStat: {
+      headline: "Most workplace faults never get logged.",
+      sub: "Something's always broken. Reporting it means opening a portal nobody wants to open — so people just don't.",
+    },
+    competitorContrast: {
+      heading: "No per-seat tax",
+      body: "MaintainX, UpKeep and the rest bill $16–45 per user, every month — so the facilities team gets more expensive every time it grows. ScanSolve is one flat price for the whole team, and the people who scan never count as users.",
+    },
+    heroImage: {
+      src: "/verticals/workplace-hero.svg",
+      alt: "A ScanSolve QR label beside a phone showing the report form for a meeting-room fault",
+    },
   },
 
   // ── Manufacturing ─────────────────────────────────────────────────────────
@@ -318,7 +341,31 @@ export const VERTICALS: Vertical[] = [
         q: "Does it integrate with our CMMS?",
         a: "A pilot runs standalone with no integration, so you can prove operators will scan and the data is accurate before involving IT. Integrations sit in the Enterprise tier for when you're ready to connect it.",
       },
+      {
+        q: "How is this cheaper than a CMMS like MaintainX or UpKeep?",
+        a: "Those tools bill per user per month — MaintainX from $16, UpKeep from $20 — so giving every operator a way to report gets expensive fast. ScanSolve is one flat £15/mo for the whole maintenance team, and the operators who scan a code aren't users at all. It complements a CMMS rather than replacing it.",
+      },
     ],
+    seoKeywords: [
+      "manufacturing maintenance QR code",
+      "asset fault reporting",
+      "report machine faults from the floor",
+      "timestamped maintenance audit trail",
+      "plant maintenance reporting no app",
+    ],
+    proofStat: {
+      headline: "Equipment failure causes 42% of unplanned downtime.",
+      sub: "Every minute a technician spends finding which asset failed is downtime you're paying for.",
+      source: "Aberdeen / industry downtime data",
+    },
+    competitorContrast: {
+      heading: "No per-seat tax",
+      body: "A CMMS like MaintainX or UpKeep bills $16–45 per user, so giving every operator a way to report gets expensive fast. With ScanSolve the operators who scan aren't users — you pay one flat price.",
+    },
+    heroImage: {
+      src: "/verticals/manufacturing-hero.svg",
+      alt: "A ScanSolve QR label beside a phone showing the report form for an HVAC unit fault",
+    },
   },
 
   // ── Financial services ────────────────────────────────────────────────────
@@ -395,7 +442,31 @@ export const VERTICALS: Vertical[] = [
         q: "Is it secure enough for a bank or insurer to trial?",
         a: "A pilot runs as a standalone web tool outside your core network, with no SSO or integration, so it bypasses the full security review. That's by design for a 30-day trial; SSO, audit logging, and a DPA come with an Enterprise contract.",
       },
+      {
+        q: "Is this another per-seat SaaS bill on top of our FM contract?",
+        a: "No. ScanSolve is one flat price for your team, not a per-head licence. You already pay the FM provider; this adds your own independent record of every fault, raised to resolved, for a fixed monthly cost.",
+      },
     ],
+    seoKeywords: [
+      "facilities SLA tracking",
+      "outsourced FM vendor accountability",
+      "independent maintenance record",
+      "facilities issue reporting financial services",
+      "vendor SLA evidence",
+    ],
+    proofStat: {
+      headline: "60–70% of FM work is outsourced. Under 30% is measured against an SLA.",
+      sub: "Without your own record of raise-to-resolve, the vendor's numbers are the only numbers.",
+      source: "FM vendor-management data",
+    },
+    competitorContrast: {
+      heading: "One flat price",
+      body: "This isn't another per-seat SaaS bill on top of your FM contract. ScanSolve is one flat price for your team — an independent record of every fault, raised to resolved, that sits alongside the vendor's system.",
+    },
+    heroImage: {
+      src: "/verticals/financial-services-hero.svg",
+      alt: "A ScanSolve QR label beside a phone showing the report form for a lift out of service",
+    },
   },
 ];
 
