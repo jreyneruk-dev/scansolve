@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrgForUser } from "@/lib/auth";
-import { encrypt } from "@/lib/crypto";
 import { z } from "zod";
 
 function getServiceClient() {
@@ -13,24 +12,9 @@ function getServiceClient() {
   );
 }
 
-// Org name update (standalone — no backend field required)
 const UpdateOrgNameSchema = z.object({
   name: z.string().min(1).max(80),
 });
-
-const UpdateOrgBackendSchema = z.discriminatedUnion("backend", [
-  z.object({ backend: z.literal("supabase") }),
-  z.object({
-    backend: z.literal("sheets"),
-    spreadsheet_id: z.string().min(1),
-    service_account_key: z.string().min(1),
-  }),
-  z.object({
-    backend: z.literal("airtable"),
-    base_id: z.string().min(1),
-    api_key: z.string().min(1),
-  }),
-]);
 
 export async function GET(_req: NextRequest) {
   const supabase = await createSupabaseServerClient();
@@ -40,13 +24,10 @@ export async function GET(_req: NextRequest) {
   const org = await getOrgForUser(user.id);
   if (!org) return NextResponse.json({ error: "No organization" }, { status: 404 });
 
-  // Return org without encrypted credentials
   return NextResponse.json({
     id: org.id,
     name: org.name,
     plan: org.plan,
-    backend: (org as Record<string, unknown>).backend ?? "supabase",
-    has_credentials: !!(org as Record<string, unknown>).backend_credentials,
   });
 }
 
@@ -63,46 +44,15 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // Detect which kind of update this is by the presence of a "name" key
-  const bodyObj = body as Record<string, unknown>;
-
-  if ("name" in bodyObj) {
-    // ── Org name update ──────────────────────────────────────────────────────
-    const parsed = UpdateOrgNameSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
-    }
-    const { error } = await getServiceClient()
-      .from("organizations")
-      .update({ name: parsed.data.name })
-      .eq("id", org.id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ name: parsed.data.name });
-  }
-
-  // ── Backend/credentials update ─────────────────────────────────────────────
-  const parsed = UpdateOrgBackendSchema.safeParse(body);
+  // Only the org name is editable here. Data backend is Supabase-only now.
+  const parsed = UpdateOrgNameSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
   }
-
-  const { backend, ...rest } = parsed.data;
-  let backend_credentials: string | null = null;
-
-  if (backend !== "supabase" && Object.keys(rest).length > 0) {
-    try {
-      backend_credentials = encrypt(JSON.stringify(rest));
-    } catch {
-      return NextResponse.json({ error: "Failed to encrypt credentials" }, { status: 500 });
-    }
-  }
-
   const { error } = await getServiceClient()
     .from("organizations")
-    .update({ backend, backend_credentials })
+    .update({ name: parsed.data.name })
     .eq("id", org.id);
-
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  return NextResponse.json({ backend, has_credentials: !!backend_credentials });
+  return NextResponse.json({ name: parsed.data.name });
 }
