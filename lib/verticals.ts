@@ -46,17 +46,8 @@ export interface Vertical {
   proofStat?: { headline: string; sub: string; source?: string };
   // Named-competitor contrast callout (e.g. the "no per-seat tax" wedge).
   competitorContrast?: { heading: string; body: string };
-  // Art-directed hero image in public/verticals/. Omit to fall back to the text hero.
-  // `sticker` overlays a real, scannable, ScanSolve-branded QR label on the photo.
-  heroImage?: {
-    src: string;
-    alt: string;
-    sticker?: {
-      qr: string;
-      caption: string;
-      pos?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
-    };
-  };
+  // Crafted on-brand hero graphic in public/verticals/ (SVG). Omit for the text hero.
+  heroImage?: { src: string; alt: string };
   // On-brand SVG infographics in public/verticals/.
   infographics?: { src: string; alt: string; caption?: string }[];
 }
@@ -164,13 +155,8 @@ export const VERTICALS: Vertical[] = [
       body: "MaintainX and UpKeep bill $16–20 per user, per month — a bill that grows every time your team does. ScanSolve is one flat price for the whole team, and putting a code on every machine costs nothing.",
     },
     heroImage: {
-      src: "/verticals/gyms-hero.jpg",
-      alt: "A modern gym treadmill with a ScanSolve QR label to scan and report a fault",
-      sticker: {
-        qr: "/verticals/qr-scansolve.png",
-        caption: "Scan to report a fault",
-        pos: "bottom-left",
-      },
+      src: "/verticals/gyms-hero.svg",
+      alt: "A ScanSolve QR label beside a phone showing the report form for a gym treadmill fault",
     },
     infographics: [
       {
