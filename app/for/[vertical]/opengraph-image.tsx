@@ -46,10 +46,9 @@ export default async function OpengraphImage({
               alignItems: "center",
               justifyContent: "center",
               marginRight: 16,
-              fontSize: 24,
             }}
           >
-            ▦
+            <div style={{ width: 20, height: 20, borderRadius: 5, background: "#ffffff" }} />
           </div>
           ScanSolve
         </div>

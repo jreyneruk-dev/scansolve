@@ -131,9 +131,35 @@ export default async function VerticalPage({ params }: PageProps) {
           </p>
 
           {v.heroImage && (
-            <div className="mt-12 rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/60">
+            <div className="relative mt-12 rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/60">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={v.heroImage.src} alt={v.heroImage.alt} className="w-full h-auto" />
+              {v.heroImage.sticker && (
+                <div
+                  className={`absolute w-[34%] max-w-[180px] ${
+                    {
+                      "bottom-left": "bottom-[7%] left-[6%] -rotate-3",
+                      "bottom-right": "bottom-[7%] right-[6%] rotate-3",
+                      "top-left": "top-[7%] left-[6%] -rotate-3",
+                      "top-right": "top-[7%] right-[6%] rotate-3",
+                    }[v.heroImage.sticker.pos ?? "bottom-left"]
+                  }`}
+                >
+                  <div className="rounded-xl bg-white shadow-2xl ring-1 ring-black/5 p-2.5">
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-600">
+                        <QrCode className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-900">ScanSolve</span>
+                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={v.heroImage.sticker.qr} alt="ScanSolve QR code" className="w-full rounded-md" />
+                    <p className="mt-1.5 text-center text-[9px] font-semibold uppercase tracking-wider text-slate-500">
+                      {v.heroImage.sticker.caption}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </section>

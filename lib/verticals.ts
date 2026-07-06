@@ -47,7 +47,16 @@ export interface Vertical {
   // Named-competitor contrast callout (e.g. the "no per-seat tax" wedge).
   competitorContrast?: { heading: string; body: string };
   // Art-directed hero image in public/verticals/. Omit to fall back to the text hero.
-  heroImage?: { src: string; alt: string };
+  // `sticker` overlays a real, scannable, ScanSolve-branded QR label on the photo.
+  heroImage?: {
+    src: string;
+    alt: string;
+    sticker?: {
+      qr: string;
+      caption: string;
+      pos?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
+    };
+  };
   // On-brand SVG infographics in public/verticals/.
   infographics?: { src: string; alt: string; caption?: string }[];
 }
@@ -156,7 +165,12 @@ export const VERTICALS: Vertical[] = [
     },
     heroImage: {
       src: "/verticals/gyms-hero.jpg",
-      alt: "A gym treadmill console showing a QR code to scan and report a fault",
+      alt: "A modern gym treadmill with a ScanSolve QR label to scan and report a fault",
+      sticker: {
+        qr: "/verticals/qr-scansolve.png",
+        caption: "Scan to report a fault",
+        pos: "bottom-left",
+      },
     },
     infographics: [
       {
