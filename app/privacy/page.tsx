@@ -3,7 +3,7 @@ import Link from "next/link";
 import { QrCode } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — ScanSolve",
+  title: "Privacy policy",
   description: "ScanSolve privacy policy — how we collect, use, and protect your data.",
   robots: { index: true, follow: true },
   openGraph: {

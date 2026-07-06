@@ -3,11 +3,17 @@ import Link from "next/link";
 import { QrCode, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About ScanSolve — QR Code Facility Issue Reporting",
+  title: "About",
   description:
-    "ScanSolve is a QR code facility issue reporting tool founded in 2025. Place a label, staff scan to report, managers track to resolution — no app needed.",
+    "ScanSolve is QR-code maintenance reporting, founded in 2025. Place a label, staff scan to report a fault, managers track the work order to resolution — no app needed.",
   openGraph: {
+    title: "About ScanSolve",
+    description:
+      "QR-code maintenance reporting. Place a label, staff scan to report a fault, managers track it to resolution.",
     url: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/about`,
+    siteName: "ScanSolve",
+    type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ScanSolve" }],
   },
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co"}/about`,

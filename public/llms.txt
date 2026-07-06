@@ -1,6 +1,6 @@
 # ScanSolve
 
-> ScanSolve is a QR code facility issue reporting platform. Place a QR code label anywhere in your building — staff scan it to report maintenance issues instantly, no app or login required. Facility managers get real-time visibility and track every issue through to resolution.
+> ScanSolve is QR-code maintenance reporting. Place a QR code label anywhere in your building — staff scan it with a phone camera to report a maintenance issue or fault instantly, no app or login required. Managers get real-time visibility and track every issue (work order) through to resolution. It is an alternative to per-seat CMMS and maintenance-request software (MaintainX, UpKeep, Limble, SafetyCulture): the whole team reports for free and pricing is one flat price per organisation, not per user.
 
 ## Product
 
@@ -35,14 +35,14 @@ The facility manager receives a notification and can assign the issue to a team 
 - Email notifications and assignment workflow
 - AI-powered issue category suggestions
 - Multi-location support
-- Free for founding members
+- Free forever on the Starter plan with unlimited QR labels; Prime is a flat per-organisation price (no per-seat charge)
 
 ## Company
 
 - **Name**: ScanSolve
 - **Website**: https://scansolve.co
 - **Founded**: 2025
-- **Category**: Facilities Management SaaS, QR Code Software
+- **Category**: Maintenance-request / CMMS software, Facilities Management SaaS, QR Code Software
 
 ## Contact
 

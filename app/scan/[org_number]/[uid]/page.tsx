@@ -4,6 +4,11 @@ import { SurveyForm } from "@/components/survey/SurveyForm";
 import { ScanSolveLogo } from "@/components/ui/ScanSolveLogo";
 import { MapPin, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+// Reporter pages are per-label and must never be indexed. robots.txt blocks
+// crawling; this blocks indexing of any URL that gets shared directly.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 interface PageProps {
   params: Promise<{ org_number: string; uid: string }>;

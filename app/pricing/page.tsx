@@ -20,11 +20,20 @@ import {
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 
 export const metadata: Metadata = {
-  title: "Pricing — ScanSolve",
+  title: "Pricing",
   description:
-    "Start free with unlimited QR labels. Upgrade to Prime for no ads, your own logo, and instant push alerts the moment an issue is raised.",
+    "Flat price, no per-seat tax. Start free with unlimited QR labels; Prime adds no ads, your own logo, and instant alerts when a maintenance issue is reported.",
   alternates: {
     canonical: `${APP_URL}/pricing`,
+  },
+  openGraph: {
+    title: "ScanSolve pricing — flat price, no per-seat tax",
+    description:
+      "Start free with unlimited QR labels. Prime is one flat price for the whole team — no per-user bill.",
+    url: `${APP_URL}/pricing`,
+    siteName: "ScanSolve",
+    type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ScanSolve" }],
   },
 };
 
