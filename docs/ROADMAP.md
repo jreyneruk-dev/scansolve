@@ -54,24 +54,24 @@ Enterprise-readiness, ~5–6 days of independent PRs. Steps 1–3 change no beha
 
 ## Marketing / SEO (`.planning/audits/SEO.md`)
 
-- [ ] Category vocabulary in homepage and pricing copy (maintenance reporting, work
-  order, maintenance request). Partly addressed; expand.
+- [x] Add `/pricing` to the sitemap.
+- [x] Fix double-brand titles on `/pricing`, `/about`, `/privacy`.
+- [x] Fix broken Open Graph on `/pricing` (inherited homepage) and `/about` (no image).
+- [x] `noindex` the `/scan/*` and `/commission/*` routes.
+- [x] Refresh `public/llms.txt` (retire "founding members"; add category/pricing language).
+- [~] Category vocabulary — done in pricing/about metadata and llms.txt; still to expand
+  into the homepage body copy.
 - [ ] Per-vertical landing pages matching the GTM personas (gyms first, then tech/
   workplace, manufacturing, financial services). Large content build.
 - [ ] Comparison pages: "ScanSolve vs MaintainX", "vs UpKeep". Large content build;
   double as outreach collateral.
-- [ ] Add `/pricing` to the sitemap.
-- [ ] Fix double-brand titles on `/pricing`, `/about`, `/privacy`.
-- [ ] Fix broken Open Graph on `/pricing` (inherits homepage) and `/about` (no image).
-- [ ] `noindex` the `/scan/*` and `/commission/*` routes (a second layer over robots.txt).
-- [ ] Add `public/llms.txt` for the AI-crawler strategy.
 - [ ] Off-site (founder action): list on Capterra and G2 — they own page one for
   "best X software" and unlock the SoftwareApplication rich-result path.
 
 ## Outreach (`GTM-STRATEGY.md`)
 
 - [x] Pricing wedge added to the brand-voice and outreach skills.
-- [ ] Add the facilities-management personas, per-vertical hooks, and LinkedIn title
+- [x] Add the facilities-management personas, per-vertical hooks, and LinkedIn title
   strings to `scansolve-outreach` and `scansolve-brand-voice`.
 - [ ] Score the LinkedIn connections export against the personas (pending the export).
 
