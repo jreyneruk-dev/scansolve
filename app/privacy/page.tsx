@@ -80,7 +80,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">Cookies</h2>
             <p>
-              ScanSolve uses session cookies for authentication (facility manager accounts only). These are strictly necessary cookies — no advertising or tracking cookies are used. We do not use Google Analytics or any third-party tracking scripts.
+              ScanSolve uses session cookies for authentication (facility manager accounts only). These are strictly necessary cookies — no advertising or tracking cookies are used. For aggregate visitor counts we use Vercel Web Analytics, which is cookieless: it records anonymous page views and does not collect personal data or track you across other sites. We do not use Google Analytics or advertising trackers.
             </p>
           </section>
 
