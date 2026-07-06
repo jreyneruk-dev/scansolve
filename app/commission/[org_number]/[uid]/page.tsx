@@ -4,6 +4,10 @@ import { CommissionForm } from "@/components/dashboard/CommissionForm";
 import { ScanSolveLogo } from "@/components/ui/ScanSolveLogo";
 import { AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+// Commissioning is an authenticated per-label action; keep it out of the index.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 interface PageProps {
   params: Promise<{ org_number: string; uid: string }>;

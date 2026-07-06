@@ -8,6 +8,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date("2026-05-25"),
     },
     {
+      url: `${baseUrl}/pricing`,
+      lastModified: new Date("2026-07-06"),
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date("2026-05-25"),
     },
