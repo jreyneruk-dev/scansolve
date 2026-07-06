@@ -38,6 +38,18 @@ export interface Vertical {
 
   // FAQ
   faqs: { q: string; a: string }[];
+
+  // ── Enrichment (optional; present once a vertical has been researched) ──
+  // SEO keywords woven into the page; also used in metadata keywords.
+  seoKeywords?: string[];
+  // A sourced proof stat rendered as a full-width band. `sub` may be framing/opinion.
+  proofStat?: { headline: string; sub: string; source?: string };
+  // Named-competitor contrast callout (e.g. the "no per-seat tax" wedge).
+  competitorContrast?: { heading: string; body: string };
+  // Art-directed hero image in public/verticals/. Omit to fall back to the text hero.
+  heroImage?: { src: string; alt: string };
+  // On-brand SVG infographics in public/verticals/.
+  infographics?: { src: string; alt: string; caption?: string }[];
 }
 
 const DEMO_CTA = (subject: string) => ({
@@ -120,6 +132,37 @@ export const VERTICALS: Vertical[] = [
       {
         q: "Can trainers and reception staff report too?",
         a: "Anyone on site can scan and report — members, trainers, cleaners, reception. Only you and your team need a login to manage what comes in.",
+      },
+      {
+        q: "How is this cheaper than MaintainX or UpKeep?",
+        a: "Those tools bill per user per month — MaintainX from $16, UpKeep from $20 — so the cost climbs every time you add a staff member. ScanSolve is one flat £15/mo for the owner plus 20 team members, and unlimited QR labels are free forever. For a single gym logging broken kit, you don't need a per-head CMMS.",
+      },
+    ],
+    seoKeywords: [
+      "gym equipment maintenance software",
+      "report broken gym equipment",
+      "QR code gym equipment reporting",
+      "gym maintenance app no per user fee",
+      "gym facility issue reporting no app",
+    ],
+    proofStat: {
+      headline: "Gyms lose up to half their members every year.",
+      sub: "A broken machine a member never reports is a renewal you never see.",
+      source: "IHRSA / industry retention data",
+    },
+    competitorContrast: {
+      heading: "No per-seat tax",
+      body: "MaintainX and UpKeep bill $16–20 per user, per month — a bill that grows every time your team does. ScanSolve is one flat price for the whole team, and putting a code on every machine costs nothing.",
+    },
+    heroImage: {
+      src: "/verticals/gyms-hero.jpg",
+      alt: "A gym treadmill console showing a QR code to scan and report a fault",
+    },
+    infographics: [
+      {
+        src: "/verticals/flow.svg",
+        alt: "Four steps: scan the code, report the fault, it gets assigned, it gets resolved",
+        caption: "Scan to resolved, in four steps.",
       },
     ],
   },

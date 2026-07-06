@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: v.metaTitle,
     description: v.metaDescription,
+    keywords: v.seoKeywords,
     alternates: { canonical: url },
     openGraph: {
       title: `${v.metaTitle} | ScanSolve`,
@@ -37,7 +38,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url,
       siteName: "ScanSolve",
       type: "website",
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ScanSolve" }],
     },
   };
 }
@@ -129,6 +129,13 @@ export default async function VerticalPage({ params }: PageProps) {
           <p className="mt-4 text-xs text-slate-400">
             Unlimited QR labels on Starter · No card required · Written for {v.targetRole}
           </p>
+
+          {v.heroImage && (
+            <div className="mt-12 rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/60">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={v.heroImage.src} alt={v.heroImage.alt} className="w-full h-auto" />
+            </div>
+          )}
         </section>
 
         {/* ── The problem ─────────────────────────────────────────────── */}
@@ -156,6 +163,23 @@ export default async function VerticalPage({ params }: PageProps) {
             </div>
           </div>
         </section>
+
+        {/* ── Proof stat ──────────────────────────────────────────────── */}
+        {v.proofStat && (
+          <section className="bg-gradient-to-br from-indigo-600 to-violet-700 py-14">
+            <div className="max-w-3xl mx-auto px-6 text-center">
+              <p className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
+                {v.proofStat.headline}
+              </p>
+              <p className="text-indigo-100 leading-relaxed max-w-xl mx-auto">
+                {v.proofStat.sub}
+              </p>
+              {v.proofStat.source && (
+                <p className="mt-4 text-xs text-indigo-200/80">Source: {v.proofStat.source}</p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* ── How ScanSolve fits ──────────────────────────────────────── */}
         <section className="max-w-5xl mx-auto px-6 py-16">
@@ -187,6 +211,31 @@ export default async function VerticalPage({ params }: PageProps) {
           </div>
         </section>
 
+        {/* ── Infographics ────────────────────────────────────────────── */}
+        {v.infographics && v.infographics.length > 0 && (
+          <section className="bg-white border-y border-slate-100 py-16">
+            <div className="max-w-5xl mx-auto px-6">
+              <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest text-center mb-3">
+                See it in action
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-center text-slate-900 mb-12">
+                From a wall to a work order
+              </h2>
+              <div className={`grid gap-6 ${v.infographics.length > 1 ? "sm:grid-cols-2" : "max-w-2xl mx-auto"}`}>
+                {v.infographics.map((g) => (
+                  <figure key={g.src} className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={g.src} alt={g.alt} className="w-full h-auto rounded-lg" />
+                    {g.caption && (
+                      <figcaption className="mt-3 text-sm text-slate-500 text-center">{g.caption}</figcaption>
+                    )}
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── Outcomes ────────────────────────────────────────────────── */}
         <section className="bg-white border-y border-slate-100 py-16">
           <div className="max-w-5xl mx-auto px-6">
@@ -209,6 +258,27 @@ export default async function VerticalPage({ params }: PageProps) {
             </div>
           </div>
         </section>
+
+        {/* ── Competitor contrast ─────────────────────────────────────── */}
+        {v.competitorContrast && (
+          <section className="max-w-5xl mx-auto px-6 py-16">
+            <div className="rounded-3xl bg-slate-900 p-8 sm:p-10 text-center">
+              <p className="text-xs font-semibold text-indigo-300 uppercase tracking-widest mb-3">
+                {v.competitorContrast.heading}
+              </p>
+              <p className="text-lg sm:text-xl text-white leading-relaxed max-w-2xl mx-auto">
+                {v.competitorContrast.body}
+              </p>
+              <Link
+                href="/pricing"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-white transition-colors"
+              >
+                See how our pricing compares
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* ── How it works (3 steps) ──────────────────────────────────── */}
         <section className="max-w-5xl mx-auto px-6 py-16">
@@ -253,6 +323,24 @@ export default async function VerticalPage({ params }: PageProps) {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── Video ───────────────────────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-6 pb-4">
+          <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl shadow-slate-200/70 border border-slate-100 bg-slate-900">
+            <video
+              className="w-full aspect-video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster="/how-it-works-thumb.png"
+              aria-label="ScanSolve product walkthrough — QR code facility issue reporting"
+            >
+              <source src="/how-it-works.mp4" type="video/mp4" />
+            </video>
           </div>
         </section>
 

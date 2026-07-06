@@ -1,0 +1,48 @@
+<svg viewBox="0 0 810 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four steps: scan the code, report the fault, assign to the team, resolved">
+  <style>
+    .lbl{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:700;font-size:17px;fill:#0f172a}
+    .sub{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:400;font-size:12px;fill:#94a3b8}
+  </style>
+
+  <!-- connectors -->
+  <g stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round" fill="#cbd5e1">
+    <line x1="130" y1="70" x2="258" y2="70"/><path d="M258 70 L250 65 L250 75 Z"/>
+    <line x1="340" y1="70" x2="468" y2="70"/><path d="M468 70 L460 65 L460 75 Z"/>
+    <line x1="550" y1="70" x2="678" y2="70"/><path d="M678 70 L670 65 L670 75 Z"/>
+  </g>
+
+  <!-- nodes -->
+  <rect x="54"  y="34" width="72" height="72" rx="18" fill="#eef2ff" stroke="#e0e7ff"/>
+  <rect x="264" y="34" width="72" height="72" rx="18" fill="#eef2ff" stroke="#e0e7ff"/>
+  <rect x="474" y="34" width="72" height="72" rx="18" fill="#eef2ff" stroke="#e0e7ff"/>
+  <rect x="684" y="34" width="72" height="72" rx="18" fill="#ecfdf5" stroke="#d1fae5"/>
+
+  <!-- 1 scan -->
+  <g transform="translate(90,70)" stroke="#4f46e5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-14 -8 V-14 H-8"/><path d="M14 -8 V-14 H8"/>
+    <path d="M-14 8 V14 H-8"/><path d="M14 8 V14 H8"/>
+    <line x1="-14" y1="0" x2="14" y2="0"/>
+  </g>
+  <!-- 2 report -->
+  <g transform="translate(300,70)" stroke="#4f46e5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="-12" y="-15" width="24" height="30" rx="3"/>
+    <line x1="-6" y1="-6" x2="6" y2="-6"/><line x1="-6" y1="1" x2="6" y2="1"/><line x1="-6" y1="8" x2="2" y2="8"/>
+  </g>
+  <!-- 3 assign -->
+  <g transform="translate(510,70)" stroke="#4f46e5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="0" cy="-6" r="7"/>
+    <path d="M-12 15 C-12 4 12 4 12 15"/>
+  </g>
+  <!-- 4 resolved -->
+  <g transform="translate(720,70)" stroke="#059669" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-13 1 L-4 11 L14 -11"/>
+  </g>
+
+  <!-- labels -->
+  <g text-anchor="middle">
+    <text class="lbl" x="90"  y="150">Scan</text>     <text class="sub" x="90"  y="169">the code</text>
+    <text class="lbl" x="300" y="150">Report</text>   <text class="sub" x="300" y="169">the fault</text>
+    <text class="lbl" x="510" y="150">Assign</text>   <text class="sub" x="510" y="169">to the team</text>
+    <text class="lbl" x="720" y="150">Resolved</text> <text class="sub" x="720" y="169">tracked to done</text>
+  </g>
+</svg>
