@@ -261,16 +261,35 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
-              "🏢 Offices", "🏋️ Gyms & Leisure", "🛍️ Retail", "🏨 Hotels",
-              "🚂 Rail", "🏫 Schools", "🏗️ Serviced Offices", "🏘️ Residential Blocks", "🔧 FM Companies",
-            ].map((label) => (
-              <span
-                key={label}
-                className="px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700"
-              >
-                {label}
-              </span>
-            ))}
+              { label: "🏢 Offices", href: "/for/workplace" },
+              { label: "🏋️ Gyms & Leisure", href: "/for/gyms" },
+              { label: "🏭 Manufacturing", href: "/for/manufacturing" },
+              { label: "🏦 Financial Services", href: "/for/financial-services" },
+              { label: "🛍️ Retail" },
+              { label: "🏨 Hotels" },
+              { label: "🚂 Rail" },
+              { label: "🏫 Schools" },
+              { label: "🏗️ Serviced Offices" },
+              { label: "🏘️ Residential Blocks" },
+              { label: "🔧 FM Companies" },
+            ].map(({ label, href }) =>
+              href ? (
+                <Link
+                  key={label}
+                  href={href}
+                  className="px-4 py-2 rounded-full bg-white border border-indigo-200 text-sm font-medium text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+                >
+                  {label}
+                </Link>
+              ) : (
+                <span
+                  key={label}
+                  className="px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700"
+                >
+                  {label}
+                </span>
+              )
+            )}
           </div>
         </div>
       </section>
