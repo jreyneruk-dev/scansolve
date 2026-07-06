@@ -15,8 +15,10 @@ kept current as items ship. Detail for each lives in the doc named beside it.
   first multi-seat pilot.
 - [ ] Supabase: founder upgrading off free tier (2026-07-07). Confirm daily backups +
   point-in-time recovery are on after the upgrade.
-- [ ] Analytics: decide whether to add Plausible (privacy-light) before the next outreach
-  wave. Needs a one-line privacy-page update.
+- [x] Analytics: chose Vercel Web Analytics (cookieless, zero-ops, already on the
+  platform) over Plausible. Code shipped; privacy page updated. Founder action: enable
+  Web Analytics in the Vercel dashboard (Project → Analytics → Enable) — it collects
+  nothing until then.
 - [ ] Error tracking: decide whether to add Sentry before the first live pilot.
 - [ ] Data-residency: pin down and document which region the Supabase project runs in
   (needed for the DPA).

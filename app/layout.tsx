@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { MouseSpotlight } from "@/components/ui/MouseSpotlight";
 import { SupportWidget } from "@/components/support/SupportWidget";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -142,6 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="relative z-10">{children}</div>
         <SupportWidget />
         <ServiceWorkerRegister />
+        <Analytics />
       </body>
     </html>
   );
