@@ -59,13 +59,11 @@ I would like to set up a free 15 minute no-commitment demo of ScanSolve.
 
 Here's some background on my interest:
 
-Company/Organisation: ______________
-Possible Applications: ______________
+Company/Organisation:
+Possible Applications:
 
 
-Best Regards
-
-______________`;
+Best Regards`;
 
 const DEMO_CTA = (subject: string) => ({
   label: "Book a 15-minute demo",
