@@ -52,9 +52,24 @@ export interface Vertical {
   infographics?: { src: string; alt: string; caption?: string }[];
 }
 
+// Pre-filled body for the "Book a 15-minute demo" mailto CTAs.
+const DEMO_BODY = `Hello
+
+I would like to set up a free 15 minute no-commitment demo of ScanSolve.
+
+Here's some background on my interest:
+
+> Company/Organisation:
+> Possible Applications:
+
+
+Best Regards
+
+>`;
+
 const DEMO_CTA = (subject: string) => ({
   label: "Book a 15-minute demo",
-  href: `mailto:hello@scansolve.co?subject=${encodeURIComponent(subject)}`,
+  href: `mailto:hello@scansolve.co?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(DEMO_BODY)}`,
   external: true,
 });
 
