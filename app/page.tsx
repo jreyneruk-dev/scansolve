@@ -265,31 +265,22 @@ export default function HomePage() {
               { label: "🏋️ Gyms & Leisure", href: "/for/gyms" },
               { label: "🏭 Manufacturing", href: "/for/manufacturing" },
               { label: "🏦 Financial Services", href: "/for/financial-services" },
-              { label: "🛍️ Retail" },
-              { label: "🏨 Hotels" },
-              { label: "🚂 Rail" },
-              { label: "🏫 Schools" },
-              { label: "🏗️ Serviced Offices" },
-              { label: "🏘️ Residential Blocks" },
-              { label: "🔧 FM Companies" },
-            ].map(({ label, href }) =>
-              href ? (
-                <Link
-                  key={label}
-                  href={href}
-                  className="px-4 py-2 rounded-full bg-white border border-indigo-200 text-sm font-medium text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
-                >
-                  {label}
-                </Link>
-              ) : (
-                <span
-                  key={label}
-                  className="px-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700"
-                >
-                  {label}
-                </span>
-              )
-            )}
+              { label: "🛍️ Retail", href: "/for/retail" },
+              { label: "🏨 Hotels", href: "/for/hotels" },
+              { label: "🚂 Rail", href: "/for/rail" },
+              { label: "🏫 Schools", href: "/for/schools" },
+              { label: "🏗️ Serviced Offices", href: "/for/serviced-offices" },
+              { label: "🏘️ Residential Blocks", href: "/for/residential" },
+              { label: "🔧 FM Companies", href: "/for/fm-companies" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="px-4 py-2 rounded-full bg-white border border-indigo-200 text-sm font-medium text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
