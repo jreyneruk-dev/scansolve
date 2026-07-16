@@ -379,6 +379,12 @@ export default function PricingPage() {
           <p className="text-slate-500 leading-relaxed max-w-xl mx-auto text-sm">
             Most software limits the core unit to force upgrades. We don&apos;t. Every label on a wall is another reporter, another data point, another issue caught before it becomes expensive. Saturating your site is the goal — we won&apos;t cap it.
           </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
+            <span className="text-slate-400">Comparing us to a CMMS?</span>
+            <Link href="/compare/maintainx" className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">ScanSolve vs MaintainX</Link>
+            <span className="text-slate-300">·</span>
+            <Link href="/compare/upkeep" className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">vs UpKeep</Link>
+          </div>
         </div>
       </section>
 
