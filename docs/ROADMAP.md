@@ -63,8 +63,12 @@ Enterprise-readiness, ~5–6 days of independent PRs. Steps 1–3 change no beha
 - [x] Refresh `public/llms.txt` (retire "founding members"; add category/pricing language).
 - [~] Category vocabulary — done in pricing/about metadata and llms.txt; still to expand
   into the homepage body copy.
-- [ ] Per-vertical landing pages matching the GTM personas (gyms first, then tech/
-  workplace, manufacturing, financial services). Large content build.
+- [x] Per-vertical landing pages — all 11 industry pages shipped at `/for/[vertical]`
+  (gyms, workplace, manufacturing, financial-services, retail, hotels, rail, schools,
+  serviced-offices, residential, fm-companies): research-driven copy, sourced/insight proof
+  stats, no-per-seat-tax callouts, crafted per-vertical hero graphics (real per-vertical QR),
+  and per-vertical OG cards; all linked from the homepage chips + sitemap. Reusable via the
+  `scansolve-vertical-page` skill + `scripts/gen-vertical-hero.cjs`. Live 2026-07-07 (PRs #36, #37).
 - [ ] Comparison pages: "ScanSolve vs MaintainX", "vs UpKeep". Large content build;
   double as outreach collateral.
 - [ ] Off-site (founder action): list on Capterra and G2 — they own page one for
