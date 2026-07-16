@@ -1,6 +1,6 @@
 # ScanSolve go-to-market strategy
 
-Last updated: 2026-06-16
+Last updated: 2026-07-07
 
 This is the standing reference for how ScanSolve goes to market: who we sell to, the
 message that lands, how we run pilots, and the pricing model. It also keeps a dated
@@ -286,3 +286,13 @@ Decision log:
   questionnaire) — then begin SOC 2 Type II, a pen test, and the DPA. Pull the cheap items
   (DPA template, data-residency answer, audit logging) forward now; hold SOC 2 and the pen
   test for the trigger.
+- 2026-07-07: shipped the per-vertical landing-page program — 11 `/for/[vertical]` pages (the
+  four GTM personas: gyms, workplace, manufacturing, financial-services; plus the seven
+  homepage long-tail verticals: retail, hotels, rail, schools, serviced-offices, residential,
+  fm-companies). Each is research-driven with a sourced or honest insight proof stat, the
+  no-per-seat-tax competitor callout, a crafted hero graphic carrying a real per-vertical QR,
+  and a per-vertical OG card; all 11 link from the homepage chips and the sitemap. Copy keeps
+  the honesty rule (no hook the product can't demo). Built a reusable `scansolve-vertical-page`
+  skill plus `scripts/gen-vertical-hero.cjs` so future verticals are a one-shot. Live via PRs
+  #36 (Wave 1) and #37 (Wave 2). Still to build: the "vs MaintainX / vs UpKeep" comparison
+  pages (double as outreach collateral).
