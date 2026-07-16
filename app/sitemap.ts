@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { VERTICALS } from "@/lib/verticals";
+import { COMPARISONS } from "@/lib/comparisons";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
@@ -19,6 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...VERTICALS.map((v) => ({
       url: `${baseUrl}/for/${v.slug}`,
       lastModified: new Date("2026-07-06"),
+    })),
+    ...COMPARISONS.map((c) => ({
+      url: `${baseUrl}/compare/${c.slug}`,
+      lastModified: new Date("2026-07-07"),
     })),
     {
       url: `${baseUrl}/privacy`,
