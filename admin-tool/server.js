@@ -264,24 +264,24 @@ function dashboardPage(stats, orgs, activity, bannedEmails, vouchers, redemption
       <td class="px-4 py-3 text-sm text-slate-400">${fmtDate(org.created_at)}</td>
       <td class="px-4 py-3">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <button onclick="startEditName('${org.id}')"
+          <button type="button"
             class="text-xs px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 transition-colors edit-btn" data-id="${org.id}">
             Edit name
           </button>
-          <button onclick="saveEditName('${org.id}')"
+          <button type="button"
             class="text-xs px-2.5 py-1 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors hidden save-btn" data-id="${org.id}">
             Save
           </button>
-          <button onclick="cancelEditName('${org.id}')"
+          <button type="button"
             class="text-xs px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors hidden cancel-btn" data-id="${org.id}">
             Cancel
           </button>
-          <button onclick="deleteOrg('${org.id}', '${escHtml(org.name)}')"
-            class="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-colors">
+          <button type="button" data-id="${org.id}" data-name="${escHtml(org.name)}"
+            class="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-colors delete-btn">
             Delete
           </button>
-          <button onclick="banOrg('${org.id}', '${escHtml(org.name)}')"
-            class="text-xs px-2.5 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors font-semibold">
+          <button type="button" data-id="${org.id}" data-name="${escHtml(org.name)}"
+            class="text-xs px-2.5 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition-colors font-semibold ban-btn">
             Ban
           </button>
         </div>
@@ -316,8 +316,8 @@ function dashboardPage(stats, orgs, activity, bannedEmails, vouchers, redemption
     return `<tr class="border-b border-slate-100 hover:bg-slate-50">
       <td class="px-4 py-3">
         <span class="font-mono text-sm font-semibold ${dead ? "text-slate-400 line-through" : "text-slate-900"}">${escHtml(v.code)}</span>
-        <button onclick="navigator.clipboard.writeText('${escHtml(v.code)}');toast('Copied ${escHtml(v.code)}')"
-          class="ml-2 text-[11px] text-indigo-500 hover:text-indigo-700">copy</button>
+        <button type="button" data-code="${escHtml(v.code)}"
+          class="ml-2 text-[11px] text-indigo-500 hover:text-indigo-700 copy-code-btn">copy</button>
         ${codeExpired ? '<span class="ml-2 text-[11px] text-red-500">code expired</span>' : ""}
       </td>
       <td class="px-4 py-3"><span class="text-xs font-semibold px-2 py-0.5 rounded-full ${v.tier === "enterprise" ? "bg-violet-100 text-violet-700" : "bg-indigo-100 text-indigo-700"}">${v.tier === "enterprise" ? "Enterprise" : "Prime"}</span></td>
@@ -645,8 +645,8 @@ function dashboardPage(stats, orgs, activity, bannedEmails, vouchers, redemption
                     </td>
                     <td class="px-4 py-3 text-sm text-slate-400">${fmtDate(b.banned_at)}</td>
                     <td class="px-4 py-3">
-                      <button onclick="unbanEmail('${b.id}', '${escHtml(b.email)}')"
-                        class="text-xs px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 font-semibold transition-colors">
+                      <button type="button" data-id="${b.id}" data-email="${escHtml(b.email)}"
+                        class="text-xs px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 font-semibold transition-colors unban-btn">
                         Unban
                       </button>
                     </td>
@@ -662,6 +662,32 @@ function dashboardPage(stats, orgs, activity, bannedEmails, vouchers, redemption
   <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white text-sm px-4 py-2.5 rounded-xl shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none"></div>
 
   <script>
+    // Delegated click handling. Buttons carry their data in data-* attributes and
+    // are wired up here, so no untrusted value (org name, email, voucher code) is
+    // ever interpolated into JS source. dataset values arrive as plain strings and
+    // are never parsed as code — this is what closes the stored-XSS hole that inline
+    // onclick="fn('<name>')" handlers had (issue #34).
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-id],[data-code]");
+      if (!el) return;
+      const { id, name, email, code } = el.dataset;
+      if (el.classList.contains("edit-btn")) return startEditName(id);
+      if (el.classList.contains("save-btn")) return saveEditName(id);
+      if (el.classList.contains("cancel-btn")) return cancelEditName(id);
+      if (el.classList.contains("delete-btn")) return deleteOrg(id, name);
+      if (el.classList.contains("ban-btn")) return banOrg(id, name);
+      if (el.classList.contains("unban-btn")) return unbanEmail(id, email);
+      if (el.classList.contains("copy-code-btn")) {
+        navigator.clipboard.writeText(code);
+        toast("Copied " + code);
+      }
+    });
+
+    document.addEventListener("change", (e) => {
+      const sel = e.target.closest(".plan-select");
+      if (sel) updatePlan(sel.dataset.id, sel.value);
+    });
+
     function toast(msg, isErr = false) {
       const t = document.getElementById("toast");
       t.textContent = msg;
@@ -918,10 +944,13 @@ function dashboardPage(stats, orgs, activity, bannedEmails, vouchers, redemption
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function escHtml(str) {
-  // Escapes for both HTML text and quoted attribute / inline-handler contexts.
-  // Single quotes and backticks MUST be escaped because org names/emails are
-  // interpolated into single-quoted JS string args inside onclick handlers —
-  // without this, an org named  x'),alert(1),('  runs JS in the admin session.
+  // Escapes for HTML text and quoted attribute values ONLY — a single context.
+  //
+  // It is NOT sufficient for values interpolated into JS source (e.g. an inline
+  // onclick="fn('...')"), because the browser HTML-decodes an attribute before the
+  // JS parser sees it: an escaped &#x27; round-trips to a literal ' and breaks out
+  // of the JS string. That was issue #34. Never build JS by interpolation — pass
+  // untrusted values via data-* attributes and read them from dataset instead.
   return String(str ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -981,8 +1010,8 @@ function planSelect(org) {
   const eff = effPlan(org);
   // Reflect the *effective* plan in the dropdown so an expired voucher reads "Starter".
   const opt = (v, lbl) => `<option value="${v}" ${eff === v ? "selected" : ""}>${lbl}</option>`;
-  return `<select class="border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 bg-white focus:outline-none"
-            data-id="${org.id}" onchange="updatePlan('${org.id}', this.value)">
+  return `<select class="border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 bg-white focus:outline-none plan-select"
+            data-id="${org.id}">
     ${opt("free", "Starter")}${opt("prime", "Prime")}${opt("enterprise", "Enterprise")}
   </select>`;
 }
