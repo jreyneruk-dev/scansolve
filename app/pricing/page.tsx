@@ -22,7 +22,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Flat price, no per-seat tax. Start free with unlimited QR labels; Prime adds no ads, your own logo, and instant alerts when a maintenance issue is reported.",
+    "Flat price, no per-seat tax. Start free with unlimited QR labels; Prime adds your own logo, a bigger team, and instant alerts when a maintenance issue is reported.",
   alternates: {
     canonical: `${APP_URL}/pricing`,
   },
@@ -76,8 +76,8 @@ const tiers: Tier[] = [
       { label: "Issue dashboard" },
       { label: "AI category suggestions" },
       {
-        label: "Ad-supported",
-        note: "minimalist ads on reporter + dashboard pages",
+        label: "\"Powered by ScanSolve\" badge",
+        note: "shown on your reporter pages",
       },
     ],
     notIncluded: [
@@ -93,12 +93,11 @@ const tiers: Tier[] = [
     priceLabel: "£15/mo",
     priceSub: "Limited time discount.",
     description:
-      "Your brand, no ads. Built for teams who want to look professional and react fast when something breaks.",
+      "Your brand, front and centre. Built for teams who want to look professional and react fast when something breaks.",
     cta: { label: "Get Prime", href: "/auth?mode=signup" },
     isPrimary: true,
     features: [
       { label: "Everything in Starter" },
-      { label: "No ads, anywhere", highlight: true },
       { label: "Your own logo on reporter pages", highlight: true },
       { label: "Owner + up to 20 team members" },
       { label: "All 4 Avery sheet types" },
@@ -147,7 +146,6 @@ const comparisonRows = [
   {
     section: "Branding",
     rows: [
-      { feature: "Ads on reporter + dashboard", starter: true, prime: false, enterprise: false },
       { feature: "\"Powered by ScanSolve\" badge", starter: true, prime: false, enterprise: false },
       { feature: "Your own logo", starter: false, prime: true, enterprise: true },
       { feature: "Custom domain", starter: false, prime: false, enterprise: true },
@@ -306,7 +304,7 @@ export default function PricingPage() {
               </div>
               <p className="text-xs text-indigo-200 mb-4">Limited time discount.</p>
               <p className="text-sm text-indigo-100 leading-relaxed">
-                Your brand, no ads. Built for teams who want to look professional and react fast when something breaks.
+                Your brand, front and centre. Built for teams who want to look professional and react fast when something breaks.
               </p>
             </div>
 
@@ -406,7 +404,7 @@ export default function PricingPage() {
               On Starter, your reporter page says &ldquo;Powered by ScanSolve&rdquo; and shows ads. That&apos;s fine to start — but if your staff or visitors are seeing it every time they report an issue, your brand deserves better. Prime removes every trace of us and puts your logo front and centre.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {["No ads", "Your logo", "Your brand"].map((tag) => (
+              {["Your logo", "Your brand", "No ScanSolve badge"].map((tag) => (
                 <span key={tag} className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold">
                   {tag}
                 </span>
@@ -556,11 +554,11 @@ export default function PricingPage() {
             {[
               {
                 q: "Is the Starter tier really free forever?",
-                a: "Yes. Starter is free with no time limit and no credit card. You get unlimited QR labels, a full issue dashboard, and email notifications — for as long as you need them. The only constraints are team size (3 members) and the ads that appear on the reporter page and dashboard.",
+                a: "Yes. Starter is free with no time limit and no credit card. You get unlimited QR labels, a full issue dashboard, and email notifications — for as long as you need them. The only constraints are team size (3 members) and a small \"Powered by ScanSolve\" badge on your reporter pages.",
               },
               {
-                q: "What are the ads like on the free tier?",
-                a: "Minimalist — a small banner on the reporter survey page and on the dashboard issue list. They promote ScanSolve itself initially. They never appear on your configuration pages or on the issue detail and update screens. Upgrading to Prime removes all ads everywhere.",
+                q: "What does the free tier look like to my staff?",
+                a: "Exactly like the paid one, with one difference: the reporter page carries a small \"Powered by ScanSolve\" badge. There are no ads anywhere on ScanSolve, on any plan. Prime replaces that badge with your own logo.",
               },
               {
                 q: "How much does Prime cost?",

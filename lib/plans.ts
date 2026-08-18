@@ -22,8 +22,6 @@ export interface PlanLimits {
   maxInvitees: number | null;
   /** Avery sheet type keys allowed for this plan (keys of SHEET_TYPES in lib/labels.ts). */
   allowedSheetTypes: string[];
-  /** Show ads on reporter and dashboard pages. */
-  hasAds: boolean;
   /** Org can upload their own logo and remove "Powered by ScanSolve". */
   hasOwnLogo: boolean;
   /** SMS or WhatsApp notifications available. */
@@ -38,21 +36,18 @@ const LIMITS: Record<OrgPlan, PlanLimits> = {
   free: {
     maxInvitees:      2,
     allowedSheetTypes: AVERY_STARTER,
-    hasAds:           true,
     hasOwnLogo:       false,
     hasSmsWhatsApp:   false,
   },
   prime: {
     maxInvitees:      20,
     allowedSheetTypes: AVERY_ALL,
-    hasAds:           false,
     hasOwnLogo:       true,
     hasSmsWhatsApp:   true,
   },
   enterprise: {
     maxInvitees:      null, // unlimited
     allowedSheetTypes: AVERY_ALL,
-    hasAds:           false,
     hasOwnLogo:       true,
     hasSmsWhatsApp:   true,
   },

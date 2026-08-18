@@ -70,7 +70,7 @@ const homepageJsonLd = {
           name: "Is ScanSolve free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime for no ads, your own branding, and instant alerts; Enterprise is available for larger estates.",
+            text: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime for your own branding, a bigger team, and instant alerts; Enterprise is available for larger estates.",
           },
         },
         {
@@ -344,7 +344,7 @@ export default function HomePage() {
               },
               {
                 q: "Is ScanSolve free?",
-                a: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime (£15/mo) for no ads, your own logo, up to 20 team members, and instant alerts. Enterprise is available for larger estates. Sign up at scansolve.co to start free.",
+                a: "ScanSolve's Starter plan is free forever — unlimited QR labels, no credit card, no time limit. Upgrade to Prime (£15/mo) for your own logo, up to 20 team members, and instant alerts. Enterprise is available for larger estates. Sign up at scansolve.co to start free.",
               },
               {
                 q: "What happens after an issue is reported?",
@@ -373,7 +373,7 @@ export default function HomePage() {
           Start free.<br />Upgrade when you grow.
         </h2>
         <p className="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
-          The Starter plan is free forever — unlimited QR labels, no card, no time limit. Go Prime when you want no ads, your own logo, and instant alerts the moment something breaks.
+          The Starter plan is free forever — unlimited QR labels, no card, no time limit. Go Prime when you want your own logo, a bigger team, and instant alerts the moment something breaks.
         </p>
         <Link
           href="/auth?mode=signup"
