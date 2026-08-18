@@ -123,7 +123,7 @@ export function BillingClient({ currentPlan, justUpgraded, justCancelled, stripe
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-900">Upgrade to Prime</h2>
-              <p className="text-xs text-slate-500 mt-0.5">No ads · your logo · instant alerts</p>
+              <p className="text-xs text-slate-500 mt-0.5">Your logo · bigger team · instant alerts</p>
             </div>
             <div className="ml-auto text-right shrink-0">
               <div className="flex items-baseline gap-1">

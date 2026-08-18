@@ -153,7 +153,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "What does it cost to start?",
-        a: "Nothing. The Starter plan is free forever with unlimited labels. Upgrade to Prime (£15/mo flat, whole team) when you want your own logo on the report page, no ads, and instant push alerts.",
+        a: "Nothing. The Starter plan is free forever with unlimited labels. Upgrade to Prime (£15/mo flat, whole team) when you want your own logo on the report page and instant push alerts.",
       },
       {
         q: "Can trainers and reception staff report too?",
@@ -261,7 +261,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Can we brand the report page?",
-        a: "On Prime, yes — your logo, no ads, no 'Powered by ScanSolve'. An employee scanning a code sees your workplace, not ours.",
+        a: "On Prime, yes — your logo replaces the 'Powered by ScanSolve' badge. An employee scanning a code sees your workplace, not ours.",
       },
       {
         q: "How is this different from our helpdesk?",
@@ -563,7 +563,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "What does it cost to start?",
-        a: "Nothing. Starter is free forever with unlimited labels. Prime is £15/mo flat for the owner plus 20 team members, when you want your own branding, no ads, and instant alerts.",
+        a: "Nothing. Starter is free forever with unlimited labels. Prime is £15/mo flat for the owner plus 20 team members, when you want your own branding and instant alerts.",
       },
       {
         q: "How is this cheaper than a CMMS like MaintainX or UpKeep?",
@@ -659,7 +659,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Can we brand the report page?",
-        a: "On Prime, yes — your logo, no ads, no \"Powered by ScanSolve\". A guest scanning a code in your room sees your hotel, not us.",
+        a: "On Prime, yes — your logo replaces the \"Powered by ScanSolve\" badge. A guest scanning a code in your room sees your hotel, not us.",
       },
       {
         q: "How is this cheaper than a CMMS like MaintainX or UpKeep?",
@@ -945,7 +945,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Can we brand the report page?",
-        a: "On Prime, yes — your logo, no ads, no \"Powered by ScanSolve\". A member scanning a code sees your space, not us.",
+        a: "On Prime, yes — your logo replaces the \"Powered by ScanSolve\" badge. A member scanning a code sees your space, not us.",
       },
       {
         q: "Can we tag every room?",
@@ -1137,7 +1137,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Can we brand it for each client?",
-        a: "On Prime you get your own logo and no ads, so the report page carries your brand rather than ours. Per-client custom domains and full white-label sit in the Enterprise tier.",
+        a: "On Prime your own logo replaces the ScanSolve badge, so the report page carries your brand rather than ours. Per-client custom domains and full white-label sit in the Enterprise tier.",
       },
       {
         q: "Does it give us a multi-site SLA dashboard?",

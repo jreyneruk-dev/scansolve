@@ -47,7 +47,7 @@ Two user types:
 
 Pricing — three tiers (see the dedicated PRICING & PLANS section below for full detail):
 • Starter — free forever. Unlimited QR labels, no card, no time limit. Shows small ads, "Powered by ScanSolve" branding, owner + 2 team members, email alerts only, 2 label sheet types.
-• Prime — £15/mo. No ads, your own logo, up to 20 team members, all 4 label sheet types, and instant push alerts on top of email.
+• Prime — £15/mo. Your own logo (removes the "Powered by ScanSolve" badge), up to 20 team members, all 4 label sheet types, and instant push alerts on top of email. ScanSolve shows no ads on any plan.
 • Enterprise — price on application. Everything in Prime plus unlimited team members and tailored options for larger estates.
 
 Who uses ScanSolve: facilities managers, building managers, office managers, hotel operations teams, gym operators, school site managers, retail store managers, rail/transport operators, residential block managers, and FM companies managing multiple sites.
@@ -564,12 +564,12 @@ STARTER — free forever:
 • Owner + up to 2 team members (3 people total)
 • Email alerts for issue assignments
 • 2 Avery label sheet types (L7165, L7169)
-• Small ads on the reporter page and dashboard, plus a "Powered by ScanSolve" line on reporter pages
+• A small "Powered by ScanSolve" badge on reporter pages
 • No credit card, no time limit
 
 PRIME — £15/month (limited-time discount from £20):
 • Everything in Starter, plus:
-• No ads anywhere, and your own logo replaces "Powered by ScanSolve"
+• Your own logo replaces the "Powered by ScanSolve" badge
 • Up to 20 team members
 • All 4 Avery label sheet types (L7164, L7165, L7166, L7169)
 • Instant push alerts the moment an issue is reported (on top of email)
@@ -599,7 +599,7 @@ Vouchers may grant Prime for a month, a year, or for life depending on the code.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABOUT THE ADS (STARTER PLAN)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• On the free Starter plan, ScanSolve shows small, unobtrusive ads on the reporter (scan) page and on the dashboard issue list.
+• ScanSolve shows no ads on any plan. On the free Starter plan the reporter page carries a small "Powered by ScanSolve" badge; Prime replaces it with your own logo.
 • Reporter pages also show a small "Powered by ScanSolve" line.
 • To remove all ads and the ScanSolve branding, upgrade to Prime — Prime is completely ad-free and lets you show your own logo instead.
 
