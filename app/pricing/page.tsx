@@ -89,9 +89,9 @@ const tiers: Tier[] = [
   {
     name: "Prime",
     badge: "Popular",
-    tagline: "£15/mo · Limited time discount",
+    tagline: "£15/mo · One flat price",
     priceLabel: "£15/mo",
-    priceSub: "Limited time discount.",
+    priceSub: "One flat price for your whole team.",
     description:
       "Your brand, front and centre. Built for teams who want to look professional and react fast when something breaks.",
     cta: { label: "Get Prime", href: "/auth?mode=signup" },
@@ -116,17 +116,16 @@ const tiers: Tier[] = [
     priceLabel: "Contact us",
     priceSub: "Custom contract · Dedicated support",
     description:
-      "For multi-site operations, chains, and organisations that need full control, deep integrations, and an SLA.",
+      "For estates and multi-site operations that want us to set it up with them, plus the paperwork a procurement team asks for.",
     cta: { label: "Talk to us", href: "mailto:hello@scansolve.co", external: true },
     features: [
       { label: "Everything in Prime" },
-      { label: "Unlimited team members" },
-      { label: "Advanced analytics + CSV / PDF export" },
-      { label: "Google Sheets / Airtable backends" },
-      { label: "Slack, Teams + platform integrations" },
-      { label: "Custom domain + full white-label" },
-      { label: "SSO / SAML" },
-      { label: "Dedicated support + SLA" },
+      { label: "Unlimited team members", highlight: true },
+      { label: "We install your first codes on site", highlight: true, note: "we plan the zones and put the labels up with you" },
+      { label: "Named contact with agreed response times" },
+      { label: "Data processing agreement" },
+      { label: "Quarterly review of your estate data" },
+      { label: "Onboarding for your team" },
     ],
     notIncluded: [],
   },
@@ -148,7 +147,6 @@ const comparisonRows = [
     rows: [
       { feature: "\"Powered by ScanSolve\" badge", starter: true, prime: false, enterprise: false },
       { feature: "Your own logo", starter: false, prime: true, enterprise: true },
-      { feature: "Custom domain", starter: false, prime: false, enterprise: true },
     ],
   },
   {
@@ -156,22 +154,21 @@ const comparisonRows = [
     rows: [
       { feature: "Email alerts", starter: true, prime: true, enterprise: true },
       { feature: "Instant push alerts", starter: false, prime: true, enterprise: true },
-      { feature: "Slack / Teams integrations", starter: false, prime: false, enterprise: true },
     ],
   },
   {
     section: "Data & Reporting",
     rows: [
       { feature: "Issue dashboard", starter: true, prime: true, enterprise: true },
-      { feature: "Advanced analytics + export", starter: false, prime: false, enterprise: true },
-      { feature: "Google Sheets / Airtable backend", starter: false, prime: false, enterprise: true },
+      { feature: "Insights — resolution times + CSV export", starter: false, prime: true, enterprise: true },
     ],
   },
   {
-    section: "Access & Security",
+    section: "Service",
     rows: [
-      { feature: "SSO / SAML", starter: false, prime: false, enterprise: true },
-      { feature: "Dedicated support + SLA", starter: false, prime: false, enterprise: true },
+      { feature: "On-site setup with you", starter: false, prime: false, enterprise: true },
+      { feature: "Named contact + response times", starter: false, prime: false, enterprise: true },
+      { feature: "Data processing agreement", starter: false, prime: false, enterprise: true },
     ],
   },
 ];
@@ -300,7 +297,6 @@ export default function PricingPage() {
               </div>
               <div className="flex items-baseline gap-2.5 mb-1">
                 <span className="text-4xl font-bold text-white">£15<span className="text-xl font-semibold">/mo</span></span>
-                <span className="text-lg font-medium text-indigo-300 line-through">£20</span>
               </div>
               <p className="text-xs text-indigo-200 mb-4">Limited time discount.</p>
               <p className="text-sm text-indigo-100 leading-relaxed">
@@ -562,7 +558,7 @@ export default function PricingPage() {
               },
               {
                 q: "How much does Prime cost?",
-                a: "Prime is £15/month on a monthly contract — no annual commitment required. This is a limited-time discounted rate from the standard £20/month price. We'll give existing subscribers notice before any price change.",
+                a: "Prime is £15/month for your whole organisation, on a monthly contract with no annual commitment. That is one flat price, not a per-user fee — adding team members up to 20 costs nothing extra. We will give existing subscribers notice before any price change.",
               },
               {
                 q: "Can I use ScanSolve for multiple sites on Starter?",
@@ -574,7 +570,7 @@ export default function PricingPage() {
               },
               {
                 q: "What's included in Enterprise?",
-                a: "Enterprise is for organisations that need advanced analytics and reporting, custom data backends (Google Sheets or Airtable), platform integrations (Slack, Teams), full white-labelling, SSO, and a dedicated support SLA. Get in touch and we'll put together a proposal.",
+                a: "Enterprise is for larger estates and multi-site operations. It adds unlimited team members, on-site setup where we plan the zones and put the first codes up with you, a named contact with agreed response times, a data processing agreement, and a quarterly review of your data. SSO, audit logging and platform integrations are not built yet — we would rather tell you that now than at procurement. Get in touch and we will scope it with you.",
               },
             ].map(({ q, a }) => (
               <details key={q} className="group">

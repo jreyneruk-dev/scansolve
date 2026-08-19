@@ -136,11 +136,11 @@ export function BillingClient({ currentPlan, justUpgraded, justCancelled, stripe
 
           <ul className="space-y-1.5 text-xs text-slate-600">
             {[
-              "Remove all ads, everywhere",
               "Your logo on every reporter page",
               "Up to 20 team members",
               "All 4 Avery label types",
-              "Email + SMS or WhatsApp alerts",
+              "Email + instant push alerts",
+              "Insights — resolution times by location",
             ].map((f) => (
               <li key={f} className="flex items-center gap-2">
                 <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
