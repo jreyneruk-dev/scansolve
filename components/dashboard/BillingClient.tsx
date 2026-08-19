@@ -136,11 +136,11 @@ export function BillingClient({ currentPlan, justUpgraded, justCancelled, stripe
 
           <ul className="space-y-1.5 text-xs text-slate-600">
             {[
-              "Remove all ads, everywhere",
               "Your logo on every reporter page",
               "Up to 20 team members",
               "All 4 Avery label types",
-              "Email + SMS or WhatsApp alerts",
+              "Email + instant push alerts",
+              "Insights — resolution times by location",
             ].map((f) => (
               <li key={f} className="flex items-center gap-2">
                 <CheckCircle className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
@@ -164,6 +164,10 @@ export function BillingClient({ currentPlan, justUpgraded, justCancelled, stripe
             <Zap className="h-4 w-4" />
             {loading ? "Redirecting to checkout…" : "Upgrade to Prime — £15/mo"}
           </button>
+          <p className="mt-2 text-[11px] leading-relaxed text-slate-400 text-center">
+            Subscriptions renew monthly until cancelled. By subscribing you agree to our{" "}
+            <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
+          </p>
           <p className="text-center text-xs text-slate-400">Limited time discount from £20/mo · Cancel anytime</p>
         </div>
       )}

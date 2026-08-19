@@ -213,6 +213,12 @@ function AuthForm() {
               </>
             )}
           </button>
+          <p className="text-[11px] leading-relaxed text-slate-400 text-center">
+            By continuing you agree to our{" "}
+            <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>,{" "}
+            <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a> and{" "}
+            <a href="/dpa" className="underline hover:text-slate-600">Data Processing Agreement</a>.
+          </p>
         </form>
       </div>
 

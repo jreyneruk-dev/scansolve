@@ -365,7 +365,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Does it integrate with our CMMS?",
-        a: "A pilot runs standalone with no integration, so you can prove operators will scan and the data is accurate before involving IT. Integrations sit in the Enterprise tier for when you're ready to connect it.",
+        a: "A pilot runs standalone with no integration, so you can prove operators will scan and the data is accurate before involving IT. CMMS and platform integrations aren't built yet — they're Enterprise roadmap, not shipped. If you need one, say so early and we'll talk about timing.",
       },
       {
         q: "How is this cheaper than a CMMS like MaintainX or UpKeep?",
@@ -466,7 +466,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Is it secure enough for a bank or insurer to trial?",
-        a: "A pilot runs as a standalone web tool outside your core network, with no SSO or integration, so it bypasses the full security review. That's by design for a 30-day trial; SSO, audit logging, and a DPA come with an Enterprise contract.",
+        a: "A pilot runs as a standalone web tool outside your core network, with no SSO or integration, so it bypasses the full security review. That's by design for a 30-day trial. We can put a DPA in place. SSO and audit logging aren't built yet — Enterprise roadmap, not shipped, and we'd rather tell you now than at procurement.",
       },
       {
         q: "Is this another per-seat SaaS bill on top of our FM contract?",
@@ -1137,7 +1137,7 @@ export const VERTICALS: Vertical[] = [
       },
       {
         q: "Can we brand it for each client?",
-        a: "On Prime your own logo replaces the ScanSolve badge, so the report page carries your brand rather than ours. Per-client custom domains and full white-label sit in the Enterprise tier.",
+        a: "On Prime your own logo replaces the ScanSolve badge, so the report page carries your brand rather than ours. Per-client custom domains and full white-label aren't built yet — Enterprise roadmap, not shipped.",
       },
       {
         q: "Does it give us a multi-site SLA dashboard?",

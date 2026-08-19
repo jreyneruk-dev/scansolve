@@ -472,43 +472,6 @@ HOW TO: CHANGE YOUR ORGANISATION NAME
 9. The updated name appears in the card immediately.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-HOW TO: CHANGE THE STORAGE BACKEND (GOOGLE SHEETS / AIRTABLE)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-By default, all issue data is stored in ScanSolve's database. You can switch to Google Sheets or Airtable so issues are written directly into a spreadsheet or database you control.
-
-1. Click "Settings" in the top navigation bar.
-2. Scroll to the last section at the bottom: "Storage Backend".
-3. The heading says: "Choose where new issues are stored. Locations always stay in Supabase."
-4. Three option buttons are shown — click the one you want:
-
-   SUPABASE (default):
-   • Label: "Supabase", description: "Default — hosted PostgreSQL"
-   • No extra fields needed. Just select it and click "Save Settings".
-   • The current active option shows "Active" in indigo text.
-
-   GOOGLE SHEETS:
-   • Label: "Google Sheets", description: "Store issues in a spreadsheet"
-   • Two fields appear below:
-     - "Spreadsheet ID" — the long ID in the URL of your Google Sheet. It's the string between /d/ and /edit. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms". The hint text says: "Found in the Google Sheets URL after /d/"
-     - "Service Account Key (JSON)" — paste the entire JSON content of a Google Cloud service account key file. The hint says: "Paste the full JSON from your Google Cloud service account". Format starts with: {"type":"service_account","project_id":"...",...}
-   • Both fields are required.
-
-   AIRTABLE:
-   • Label: "Airtable", description: "Store issues in an Airtable base"
-   • Two fields appear below:
-     - "Base ID" — starts with "app" followed by letters/numbers. Found in the URL of your Airtable base after airtable.com/. Example: "appXXXXXXXXXXXXXX". The hint says: "Found in your Airtable base URL after airtable.com/"
-     - "Personal Access Token" — create one at airtable.com/create/tokens. Needs the data.records:write scope. The hint says: "Create one at airtable.com/create/tokens with data.records:write scope"
-   • Both fields are required.
-
-5. Click "Save Settings".
-6. Green confirmation: "Settings saved successfully."
-7. Red error appears if fields are missing: e.g. "Both Spreadsheet ID and Service Account Key are required."
-
-Important note: Location data (your QR label names and settings) always stays in ScanSolve's system regardless of backend. Only the issue data (the reports submitted by reporters) goes to the selected backend.
-
-This is an advanced feature. If you're not sure whether you need it, stay on Supabase (the default). Email support@scansolve.co if you need help setting up Sheets or Airtable.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOW TO: REPORT AN ISSUE (FOR REPORTERS / STAFF ON SITE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 No account or app required. Works on any smartphone.
@@ -684,12 +647,6 @@ ERROR MESSAGES — WHAT THEY MEAN
 
 "Please enter a valid email address for the assignee":
 → The email you typed in the "Assign to" field is not a valid format. Check it and try again.
-
-"Both Spreadsheet ID and Service Account Key are required":
-→ You selected Google Sheets as the backend but didn't fill in both fields. Fill in the Spreadsheet ID and the Service Account Key JSON.
-
-"Both Base ID and API Key are required":
-→ You selected Airtable as the backend but didn't fill in both fields. Fill in the Base ID and Personal Access Token.
 
 "Message too long. Please keep questions under 1000 characters." (in this chat):
 → Your message to the support assistant was too long. Shorten it and try again.

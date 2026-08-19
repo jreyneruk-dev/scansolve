@@ -67,13 +67,22 @@ export default function PrivacyPage() {
               <li>To send issue notification and status emails</li>
               <li>To improve the service and fix technical issues</li>
             </ul>
-            <p className="mt-3">We do not sell your data. We do not share your data with third parties except as required to deliver the service (Supabase for data storage, Resend for email delivery).</p>
+            <p className="mt-3">We do not sell your data, and we do not use it to train AI models. We share data with the following processors only as needed to run the service:</p>
+            <ul className="list-disc list-inside space-y-1 ml-2 mt-3">
+              <li><strong>Supabase</strong> — database, authentication and file storage (EU, Ireland)</li>
+              <li><strong>Vercel</strong> — application hosting and cookieless analytics</li>
+              <li><strong>Resend</strong> — transactional email delivery</li>
+              <li><strong>Stripe</strong> — subscription payments (we never see or store card details)</li>
+              <li><strong>Google</strong> — Gemini, used for the support chat and AI category suggestions</li>
+              <li><strong>Upstash</strong> — rate limiting, where enabled</li>
+            </ul>
+            <p className="mt-3">A full data processing agreement is available to organisation account holders on request.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">Data storage and security</h2>
             <p>
-              Your data is stored on Supabase (EU region). Issue photo uploads are stored in Supabase Storage and accessed via signed URLs that expire after 7 days. We use row-level security to ensure each organisation can only access its own data. All connections are encrypted via HTTPS.
+              Your data is stored on Supabase in the EU (eu-west-1, Ireland). Issue photo uploads are stored in Supabase Storage and accessed via signed URLs that expire after 7 days. We use row-level security to ensure each organisation can only access its own data. All connections are encrypted via HTTPS.
             </p>
           </section>
 
