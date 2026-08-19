@@ -632,6 +632,7 @@ export default function PricingPage() {
           <div className="flex items-center gap-4">
             <Link href="/about" className="hover:text-slate-600 transition-colors">About</Link>
             <Link href="/pricing" className="hover:text-slate-600 transition-colors font-semibold text-slate-500">Pricing</Link>
+            <Link href="/terms" className="hover:text-slate-600 transition-colors">Terms</Link>
             <Link href="/trust" className="hover:text-slate-600 transition-colors">Trust</Link>
             <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy</Link>
             <Link href="/auth" className="hover:text-slate-600 transition-colors">Manager Sign In →</Link>

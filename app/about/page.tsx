@@ -119,6 +119,7 @@ export default function AboutPage() {
           </div>
           <p>© {new Date().getFullYear()} ScanSolve. All rights reserved.</p>
           <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-slate-600 transition-colors">Terms</Link>
             <Link href="/trust" className="hover:text-slate-600 transition-colors">Trust</Link>
             <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy</Link>
             <Link href="/auth" className="hover:text-slate-600 transition-colors">Manager Sign In →</Link>
