@@ -289,7 +289,8 @@ export default async function ComparePage({ params }: PageProps) {
             <div className="flex items-center gap-4">
               <Link href="/about" className="hover:text-slate-600 transition-colors">About</Link>
               <Link href="/pricing" className="hover:text-slate-600 transition-colors">Pricing</Link>
-              <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
+              <Link href="/trust" className="hover:text-slate-600 transition-colors">Trust</Link>
+            <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy</Link>
               <Link href="/auth" className="hover:text-slate-600 transition-colors">Manager Sign In →</Link>
             </div>
           </div>

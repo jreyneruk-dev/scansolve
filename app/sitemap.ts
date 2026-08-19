@@ -26,6 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date("2026-07-07"),
     })),
     {
+      url: `${baseUrl}/trust`,
+      lastModified: new Date("2026-08-18"),
+    },
+    {
       url: `${baseUrl}/privacy`,
       lastModified: new Date("2026-01-15"),
     },
