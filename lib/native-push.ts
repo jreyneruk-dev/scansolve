@@ -15,13 +15,17 @@ export async function registerNativePush(): Promise<void> {
   if (perm.receive !== "granted") {
     throw new Error("Notifications are turned off for ScanSolve. Turn them on in your phone's Settings.");
   }
+  const listeners: { remove: () => Promise<void> }[] = [];
   const token = await new Promise<string>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error("Couldn't reach the notification service. Try again.")), 15000);
-    PushNotifications.addListener("registration", (t) => { clearTimeout(timer); resolve(t.value); });
-    PushNotifications.addListener("registrationError", (e) => { clearTimeout(timer); reject(new Error(e.error)); });
-    PushNotifications.register();
-  });
-  await PushNotifications.removeAllListeners();
+    (async () => {
+      listeners.push(
+        await PushNotifications.addListener("registration", (t) => { clearTimeout(timer); resolve(t.value); }),
+        await PushNotifications.addListener("registrationError", (e) => { clearTimeout(timer); reject(new Error(e.error)); })
+      );
+      await PushNotifications.register();
+    })().catch(reject);
+  }).finally(() => listeners.forEach((l) => l.remove()));
 
   const res = await fetch("/api/push/subscribe", {
     method: "POST",

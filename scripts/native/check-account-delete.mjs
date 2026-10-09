@@ -1,5 +1,6 @@
 // G5: account deletion. Member leaves; owner takes the org, its rows and storage with them;
 // a failed subscription cancel deletes nothing.
+import "./_alias.mjs";
 import { makeUser, makeOrg, sessionCookie, send, service, cleanup, fail } from "./_helpers.mjs";
 
 const BUCKET = "issue-photos";

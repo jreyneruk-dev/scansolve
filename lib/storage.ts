@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 const BUCKET = "issue-photos";
 const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 365; // 1 year in seconds
@@ -44,11 +45,8 @@ export async function getSignedUrl(path: string): Promise<string> {
  * Falls back to the original value if it can't be parsed (e.g. external URL).
  */
 export async function refreshPhotoUrl(storedUrl: string): Promise<string> {
-  // Supabase signed URL format:
-  // https://{project}.supabase.co/storage/v1/object/sign/{bucket}/{path}?token=...
-  const match = storedUrl.match(/\/storage\/v1\/object\/sign\/[^/]+\/(.+?)(?:\?|$)/);
-  if (!match) return storedUrl; // not a Supabase storage URL — return as-is
-  const path = decodeURIComponent(match[1]);
+  const path = storagePathFromSignedUrl(storedUrl);
+  if (!path) return storedUrl; // not a Supabase storage URL — return as-is
   try {
     return await getSignedUrl(path);
   } catch {
@@ -93,4 +91,55 @@ export async function uploadFloorPlan(
   if (error) throw new Error(error.message);
 
   return getSignedUrl(path);
+}
+
+/**
+ * Storage path inside the bucket from a Supabase signed URL
+ * (https://{project}.supabase.co/storage/v1/object/sign/{bucket}/{path}?token=...).
+ */
+export function storagePathFromSignedUrl(url: string): string | null {
+  const match = url.match(/\/storage\/v1\/object\/sign\/[^/]+\/(.+?)(?:\?|$)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/** A photo_url must be one of our Supabase signed storage URLs, never an arbitrary link. */
+export const signedPhotoUrl = z
+  .string()
+  .url()
+  .refine(
+    (url) => {
+      try {
+        const { hostname, pathname } = new URL(url);
+        return hostname.endsWith(".supabase.co") && pathname.startsWith("/storage/v1/object/sign/");
+      } catch {
+        return false;
+      }
+    },
+    { message: "photo_url must be a Supabase signed storage URL" }
+  );
+
+/** Every object under a prefix, walking sub-folders (list() is one level deep). */
+async function listAll(db: SupabaseClient, prefix: string): Promise<string[]> {
+  const out: string[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await db.storage.from(BUCKET).list(prefix, { limit: 1000, offset });
+    if (error) throw new Error(`storage list failed: ${error.message}`);
+    for (const entry of data ?? []) {
+      const path = `${prefix}/${entry.name}`;
+      // Folders come back with a null id.
+      if (entry.id === null) out.push(...(await listAll(db, path)));
+      else out.push(path);
+    }
+    if (!data || data.length < 1000) return out;
+  }
+}
+
+/** Removes everything the upload helpers above store for an org: photos, logo, floor plans. */
+export async function deleteOrgStorage(orgId: string): Promise<void> {
+  const db = getServiceClient();
+  const paths = (await Promise.all([orgId, `logos/${orgId}`, `floorplans/${orgId}`].map((p) => listAll(db, p)))).flat();
+  for (let i = 0; i < paths.length; i += 100) {
+    const { error } = await db.storage.from(BUCKET).remove(paths.slice(i, i + 100));
+    if (error) throw new Error(`storage remove failed: ${error.message}`);
+  }
 }

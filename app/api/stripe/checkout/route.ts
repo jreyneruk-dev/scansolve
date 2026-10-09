@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import { getStripe } from "@/lib/stripe";
 import { getOptionalUser, getOrgForUser } from "@/lib/auth";
 import { getEffectivePlan } from "@/lib/plans";
 import type { Organization } from "@/types/schema";
 
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-05-27.dahlia",
-  });
-}
 
 export async function POST() {
   const user = await getOptionalUser();

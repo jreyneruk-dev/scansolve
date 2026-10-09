@@ -1,9 +1,8 @@
 "use client";
 import { useRef, useState } from "react";
-import { Upload, X, Sparkles, ArrowRight, ImageIcon } from "lucide-react";
+import { Upload, X, ImageIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useIsNative } from "@/components/native/NativeContext";
+import { PrimeUpsell } from "./PrimeUpsell";
 
 interface Props {
   isPrime: boolean;
@@ -11,38 +10,20 @@ interface Props {
 }
 
 export function BrandingSettings({ isPrime, initialLogoUrl }: Props) {
-  const native = useIsNative();
   const [logoUrl, setLogoUrl] = useState<string | null>(initialLogoUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Store app: no upsell (Apple 3.1.1), so a non-Prime org just doesn't see this section.
-  if (!isPrime && native) return null;
-
   if (!isPrime) {
     return (
-      <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-1">Branding</h2>
-        <p className="text-xs text-slate-400 mb-4">Upload your logo to replace ScanSolve branding on reporter pages.</p>
-        <div className="rounded-2xl bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 p-5 flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
-            <Sparkles className="h-4 w-4 text-indigo-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800">Your logo on every reporter page</p>
-            <p className="text-xs text-slate-500 mt-0.5">Upgrade to Prime to replace &ldquo;Powered by ScanSolve&rdquo; with your own branding.</p>
-          </div>
-          <Link
-            href="/pricing"
-            className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors"
-          >
-            Upgrade
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </div>
+      <PrimeUpsell
+        heading="Branding"
+        intro="Upload your logo to replace ScanSolve branding on reporter pages."
+        title="Your logo on every reporter page"
+        blurb="Upgrade to Prime to replace “Powered by ScanSolve” with your own branding."
+      />
     );
   }
 

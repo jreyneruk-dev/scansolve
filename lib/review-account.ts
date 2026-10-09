@@ -23,10 +23,7 @@ export function isReviewEmail(email: string): boolean {
 }
 
 /** Constant-time compare (hash first so lengths always match). */
-export function reviewCodeMatches(code: string): boolean {
-  const cfg = reviewConfig();
-  if (!cfg) return false;
-  const a = createHash("sha256").update(code.trim()).digest();
-  const b = createHash("sha256").update(cfg.code).digest();
-  return timingSafeEqual(a, b);
+export function codesMatch(given: string, expected: string): boolean {
+  const hash = (s: string) => createHash("sha256").update(s.trim()).digest();
+  return timingSafeEqual(hash(given), hash(expected));
 }

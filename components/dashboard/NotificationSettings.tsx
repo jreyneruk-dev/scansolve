@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Bell, BellOff, Loader2, Share, Plus, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { Bell, BellOff, Loader2, Share, Plus, CheckCircle2 } from "lucide-react";
 import { useIsNative } from "@/components/native/NativeContext";
+import { PrimeUpsell } from "./PrimeUpsell";
 
 interface Props {
   isPrime: boolean;
@@ -129,37 +129,14 @@ export function NotificationSettings({ isPrime }: Props) {
     }
   }
 
-  // ── Not Prime, in the store app → no upsell (Apple 3.1.1) ──
-  if (!isPrime && native) {
-    return (
-      <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-1">Instant alerts</h2>
-        <p className="text-xs text-slate-500 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
-          Instant alerts aren&apos;t turned on for your organisation.
-        </p>
-      </div>
-    );
-  }
-
-  // ── Not Prime → upsell ──
   if (!isPrime) {
     return (
-      <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-1">Instant alerts</h2>
-        <p className="text-xs text-slate-400 mb-4">Get a push notification the moment a new issue is reported.</p>
-        <div className="rounded-2xl bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 p-5 flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
-            <Sparkles className="h-4 w-4 text-indigo-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800">Real-time push alerts</p>
-            <p className="text-xs text-slate-500 mt-0.5">Upgrade to Prime to get alerted the moment something breaks.</p>
-          </div>
-          <Link href="/pricing" className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors">
-            Upgrade <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </div>
+      <PrimeUpsell
+        heading="Instant alerts"
+        intro="Get a push notification the moment a new issue is reported."
+        title="Real-time push alerts"
+        blurb="Upgrade to Prime to get alerted the moment something breaks."
+      />
     );
   }
 

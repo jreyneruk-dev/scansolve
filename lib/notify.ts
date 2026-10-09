@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { getServiceClient } from "@/lib/supabase/service";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getEffectivePlan, getPlanLimits } from "@/lib/plans";
 import { sendPush } from "@/lib/push";
@@ -12,24 +12,14 @@ import type { Organization } from "@/types/schema";
  */
 export async function notifyOrgOfNewIssue(orgId: string, where: string, category: string, issueId?: string) {
   try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    );
-
-    const { data: org } = await db
-      .from("organizations")
-      .select("plan, plan_expires_at")
-      .eq("id", orgId)
-      .single();
-    if (!org) return;
-    if (!getPlanLimits(getEffectivePlan(org as unknown as Organization)).hasSmsWhatsApp) return;
-
-    const [{ data: subs }, { data: devices }] = await Promise.all([
+    const db = getServiceClient();
+    // Independent reads in one round trip; the cap is only charged if there's someone to alert.
+    const [{ data: org }, { data: subs }, { data: devices }] = await Promise.all([
+      db.from("organizations").select("plan, plan_expires_at").eq("id", orgId).single(),
       db.from("push_subscriptions").select("endpoint, p256dh, auth").eq("org_id", orgId),
       db.from("native_push_tokens").select("token").eq("org_id", orgId),
     ]);
+    if (!org || !getPlanLimits(getEffectivePlan(org as unknown as Organization)).hasSmsWhatsApp) return;
     if (!subs?.length && !devices?.length) return;
 
     // Per-org daily cap (counts alert *events*, not per-device fan-out).

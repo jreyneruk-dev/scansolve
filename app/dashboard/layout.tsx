@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { requireAuth, getOrgForUser } from "@/lib/auth";
-import { isNativeRequest } from "@/lib/native";
+import { isNativeUserAgent } from "@/lib/native";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { NativeProvider } from "@/components/native/NativeContext";
 import { NativeBridge } from "@/components/native/NativeBridge";
@@ -9,7 +9,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const user = await requireAuth("/dashboard");
   const org = await getOrgForUser(user.id);
   const orgNumber = (org as Record<string, unknown>)?.org_number as number | null ?? null;
-  const native = isNativeRequest(await headers());
+  const native = isNativeUserAgent((await headers()).get("user-agent"));
 
   return (
     <NativeProvider native={native}>

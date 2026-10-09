@@ -53,22 +53,16 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     redirect("/onboarding");
   }
 
+  // Category suggestions for "Log issue": just the arrays, fetched alongside the issues.
   const adapter = await getAdapter(org.id);
-  const issues = await adapter.getIssuesByOrg(org.id, {
-    status: status as IssueStatus | undefined,
-    limit: 50,
-  });
+  const [issues, { data: locs }] = await Promise.all([
+    adapter.getIssuesByOrg(org.id, { status: status as IssueStatus | undefined, limit: 50 }),
+    getServiceClient().from("locations").select("categories:survey_config->categories").eq("org_id", org.id).limit(500),
+  ]);
 
   const unresolvedCount = issues.filter((i) => i.status !== "resolved").length;
-
-  // Suggest the categories already used on this org's labels.
-  const { data: locs } = await getServiceClient()
-    .from("locations")
-    .select("survey_config")
-    .eq("org_id", org.id)
-    .limit(500);
   const categories = Array.from(
-    new Set((locs ?? []).flatMap((l) => (l.survey_config as { categories?: string[] } | null)?.categories ?? []))
+    new Set((locs ?? []).flatMap((l) => (Array.isArray(l.categories) ? (l.categories as string[]) : [])))
   ).sort();
 
   return (

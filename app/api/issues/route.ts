@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getAdapter } from "@/lib/db";
 import { getLocationByOrgAndUID } from "@/lib/locations";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeCategory } from "@/lib/sanitize";
 import { notifyOrgOfNewIssue } from "@/lib/notify";
+import { signedPhotoUrl } from "@/lib/storage";
 import { z } from "zod";
 
 const CreateIssueSchema = z.object({
@@ -11,25 +12,7 @@ const CreateIssueSchema = z.object({
   org_number: z.number().int().positive(),
   category: z.string().min(1).max(100),
   description: z.string().max(2000).optional(),
-  // photo_url must be a Supabase signed URL — reject arbitrary URLs
-  photo_url: z
-    .string()
-    .url()
-    .refine(
-      (url) => {
-        try {
-          const { hostname, pathname } = new URL(url);
-          return (
-            hostname.endsWith(".supabase.co") &&
-            pathname.startsWith("/storage/v1/object/sign/")
-          );
-        } catch {
-          return false;
-        }
-      },
-      { message: "photo_url must be a Supabase signed storage URL" }
-    )
-    .optional(),
+  photo_url: signedPhotoUrl.optional(),
   contact_email: z.string().email().max(254).optional(),
 });
 
@@ -102,8 +85,8 @@ export async function POST(req: NextRequest) {
     reporter_meta,
   });
 
-  // Best-effort Prime push alert — never blocks or fails the reporter response.
-  await notifyOrgOfNewIssue(location.org_id, location.name, normalizedCategory, issue.id);
+  // Best-effort Prime push alert, sent after the response so reporters never wait on it.
+  after(() => notifyOrgOfNewIssue(location.org_id, location.name, normalizedCategory, issue.id));
 
   return NextResponse.json(
     { message: location.survey_config.success_message },

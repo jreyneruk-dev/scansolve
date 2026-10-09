@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { getOptionalUser, getOrgForUser } from "@/lib/auth";
 import { getAdapter } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeCategory } from "@/lib/sanitize";
 import { notifyOrgOfNewIssue } from "@/lib/notify";
+import { signedPhotoUrl, storagePathFromSignedUrl } from "@/lib/storage";
 
 // Staff log an issue without a QR label. The org always comes from the
 // signed-in session; anything org-like in the body is ignored by the schema.
@@ -12,18 +13,7 @@ const Schema = z.object({
   location_text: z.string().trim().min(2).max(200),
   category: z.string().trim().min(1).max(50),
   description: z.string().trim().max(2000).optional(),
-  photo_url: z
-    .string()
-    .url()
-    .refine((url) => {
-      try {
-        const { hostname, pathname } = new URL(url);
-        return hostname.endsWith(".supabase.co") && pathname.startsWith("/storage/v1/object/sign/");
-      } catch {
-        return false;
-      }
-    })
-    .optional(),
+  photo_url: signedPhotoUrl.optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -48,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Photos are stored under the org's own prefix; reject another org's upload.
-  if (parsed.data.photo_url && !new URL(parsed.data.photo_url).pathname.includes(`/${org.id}/`)) {
+  if (parsed.data.photo_url && !storagePathFromSignedUrl(parsed.data.photo_url)?.startsWith(`${org.id}/`)) {
     return NextResponse.json({ error: "Invalid photo." }, { status: 422 });
   }
 
@@ -65,7 +55,7 @@ export async function POST(req: NextRequest) {
     reporter_meta: { source: "staff", submitted_at: new Date().toISOString() },
   });
 
-  await notifyOrgOfNewIssue(org.id, parsed.data.location_text, category, issue.id);
+  after(() => notifyOrgOfNewIssue(org.id, parsed.data.location_text, category, issue.id));
 
   return NextResponse.json({ id: issue.id }, { status: 201 });
 }

@@ -30,8 +30,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const result = await deleteAccount(user.id, org);
-    return NextResponse.json({ deleted: true, ...result });
+    await deleteAccount(user.id, org);
+    return NextResponse.json({ deleted: true });
   } catch (err) {
     if (err instanceof DeletionAborted) {
       return NextResponse.json({ error: err.message }, { status: 502 });

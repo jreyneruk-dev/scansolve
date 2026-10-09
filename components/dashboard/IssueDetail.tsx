@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { issueWhere } from "@/lib/issue-location";
+import { NoLabelPill } from "./NoLabelPill";
 import { useRouter } from "next/navigation";
 import type { Issue, IssueStatus } from "@/types/schema";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -80,7 +81,7 @@ export function IssueDetail({ issue }: { issue: Issue }) {
           <h1 className="text-lg font-bold text-slate-900 truncate">{issue.category}</h1>
           <div className="flex items-center gap-1 text-xs text-slate-400">
             <MapPin className="h-3 w-3" />
-            <span className="truncate">{issueWhere(issue)}</span> {!issue.location_id && <span className="shrink-0 rounded-full bg-slate-100 px-1.5 text-[10px] font-medium text-slate-500">No label</span>}
+            <span className="truncate">{issueWhere(issue)}</span> {!issue.location_id && <NoLabelPill />}
           </div>
         </div>
         <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_PILLS[issue.status] ?? "bg-slate-100 text-slate-600"}`}>

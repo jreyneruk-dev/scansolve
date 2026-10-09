@@ -1,12 +1,9 @@
 import type { Issue, CreateIssueInput, IssueFilters, UpdateIssueInput } from "@/types/schema";
 
 /** A QR report (location_id) or a staff-logged issue (location_text + created_by). */
-export type NewIssue = Omit<CreateIssueInput, "uid"> & {
-  org_id: string;
-  location_id: string | null;
-  location_text?: string;
-  created_by?: string;
-};
+export type NewIssue = Omit<CreateIssueInput, "uid"> &
+  Pick<Issue, "org_id" | "location_id"> &
+  Partial<Pick<Issue, "location_text" | "created_by">>;
 
 export interface IDataAdapter {
   createIssue(data: NewIssue): Promise<Issue>;

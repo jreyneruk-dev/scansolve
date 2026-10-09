@@ -2,6 +2,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X, Camera, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
   orgId: string;
@@ -9,8 +11,6 @@ interface Props {
   categories: string[];
 }
 
-const input =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100";
 
 /** Staff log an issue without a QR label, describing where it is in words. */
 export function LogIssue({ orgId, categories }: Props) {
@@ -85,13 +85,13 @@ export function LogIssue({ orgId, categories }: Props) {
 
         <label className="block space-y-1.5">
           <span className="text-xs font-semibold text-slate-700">Where is it?</span>
-          <input className={input} value={where} onChange={(e) => setWhere(e.target.value)} required minLength={2} maxLength={200}
+          <Input className="h-11 rounded-xl" value={where} onChange={(e) => setWhere(e.target.value)} required minLength={2} maxLength={200}
             placeholder="e.g. Block C, 2nd floor, by the lifts" autoFocus />
         </label>
 
         <label className="block space-y-1.5">
           <span className="text-xs font-semibold text-slate-700">What kind of issue?</span>
-          <input className={input} value={category} onChange={(e) => setCategory(e.target.value)} required maxLength={50}
+          <Input className="h-11 rounded-xl" value={category} onChange={(e) => setCategory(e.target.value)} required maxLength={50}
             list="log-issue-categories" placeholder="e.g. Lighting" />
           <datalist id="log-issue-categories">
             {categories.map((c) => <option key={c} value={c} />)}
@@ -100,7 +100,7 @@ export function LogIssue({ orgId, categories }: Props) {
 
         <label className="block space-y-1.5">
           <span className="text-xs font-semibold text-slate-700">Details <span className="font-normal text-slate-400">(optional)</span></span>
-          <textarea className={`${input} min-h-[88px]`} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} />
+          <Textarea className="min-h-[88px] rounded-xl" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} />
         </label>
 
         <div>

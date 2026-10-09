@@ -10,7 +10,8 @@ import { createSign } from "node:crypto";
 
 interface ServiceAccount { project_id: string; client_email: string; private_key: string }
 
-let cached: { token: string; exp: number } | null = null;
+// Promise cache: parallel sends on a cold instance share one OAuth exchange.
+let cached: { token: Promise<string>; exp: number } | null = null;
 
 function account(): ServiceAccount {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -20,9 +21,16 @@ function account(): ServiceAccount {
 
 const b64url = (s: string | Buffer) => Buffer.from(s).toString("base64url");
 
-async function accessToken(sa: ServiceAccount): Promise<string> {
+function accessToken(sa: ServiceAccount): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   if (cached && cached.exp - 60 > now) return cached.token;
+  const token = fetchAccessToken(sa, now);
+  cached = { token, exp: now + 3500 };
+  token.catch(() => { cached = null; });
+  return token;
+}
+
+async function fetchAccessToken(sa: ServiceAccount, now: number): Promise<string> {
   const header = b64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
   const claims = b64url(JSON.stringify({
     iss: sa.client_email,
@@ -41,9 +49,7 @@ async function accessToken(sa: ServiceAccount): Promise<string> {
     }),
   });
   if (!res.ok) throw new Error(`FCM auth failed: ${res.status}`);
-  const json = (await res.json()) as { access_token: string; expires_in: number };
-  cached = { token: json.access_token, exp: now + json.expires_in };
-  return json.access_token;
+  return ((await res.json()) as { access_token: string }).access_token;
 }
 
 /** Returns { gone: true } when FCM says the token is dead and should be deleted. */

@@ -3,10 +3,11 @@ import { getAdapter } from "@/lib/db";
 import { getEffectivePlan } from "@/lib/plans";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { isNativeRequest } from "@/lib/native";
+import { isNativeUserAgent } from "@/lib/native";
 import Link from "next/link";
 import { BarChart3, Lock } from "lucide-react";
 import { InsightsExport } from "@/components/dashboard/InsightsExport";
+import { issueWhere } from "@/lib/issue-location";
 import type { Organization } from "@/types/schema";
 
 const DAY_MS = 86_400_000;
@@ -46,7 +47,7 @@ export default async function InsightsPage() {
 
   // Insights is a Prime feature. Pilots see it because they run on comp Prime.
   if (getEffectivePlan(org as unknown as Organization) === "free") {
-    const native = isNativeRequest(await headers());
+    const native = isNativeUserAgent((await headers()).get("user-agent"));
     return (
       <div className="space-y-6 animate-slide-in">
         <div className="flex items-center gap-3">
@@ -99,7 +100,7 @@ export default async function InsightsPage() {
     // Staff-logged issues have no label; group them as one "Unlabelled" row.
     const key = i.location_id ?? "unlabelled";
     if (!byLoc.has(key)) {
-      byLoc.set(key, { name: i.location_id ? (i.location?.name ?? "Unknown") : "Unlabelled", uid: i.location?.uid ?? "", total: 0, resolved: 0, resMs: [] });
+      byLoc.set(key, { name: i.location_id ? issueWhere(i) : "Unlabelled", uid: i.location?.uid ?? "", total: 0, resolved: 0, resMs: [] });
     }
     const row = byLoc.get(key)!;
     row.total++;
