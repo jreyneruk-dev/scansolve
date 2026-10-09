@@ -1,0 +1,7 @@
+ScanSolve is a business tool for facilities staff. Accounts are created at scansolve.co; the app is for managing issues reported in the customer's buildings.
+
+Demo sign-in: enter appreview@scansolve.co, tap Send Magic Code, then enter the code [REVIEW_CODE] and tap Verify & Sign In. No email is actually sent to this address.
+
+The demo organisation has four locations and five sample issues. To try the scanner, tap Scan and point it at the attached QR label image; it opens the label's setup page. To log an issue without a label, tap Log issue on the Issues page. Account deletion is in Settings, Delete account. Please test it last; we recreate the demo account afterwards.
+
+Subscriptions are bought on our website by the customer's organisation. The app has no purchasing and doesn't link to it.

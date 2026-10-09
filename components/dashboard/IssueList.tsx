@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import type { Issue } from "@/types/schema";
+import { issueWhere } from "@/lib/issue-location";
+import { NoLabelPill } from "./NoLabelPill";
 import { ClientDate } from "@/components/ui/ClientDate";
 import { MapPin, ChevronRight, Clock, AlertCircle, CheckCircle2, UserCheck, Wrench } from "lucide-react";
 
@@ -46,7 +48,7 @@ export function IssueList({ issues }: { issues: Issue[] }) {
               </div>
               <div className="flex items-center gap-1 mt-0.5 text-xs text-slate-400">
                 <MapPin className="h-3 w-3 shrink-0" />
-                <span className="truncate">{issue.location?.name ?? "Unknown"}</span>
+                <span className="truncate">{issueWhere(issue)}</span> {!issue.location_id && <NoLabelPill />}
                 <span className="shrink-0">·</span>
                 <Clock className="h-3 w-3 shrink-0" />
                 <span className="shrink-0"><ClientDate iso={issue.created_at} /></span>

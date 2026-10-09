@@ -28,7 +28,7 @@ const SUBPROCESSORS = [
   { name: "Vercel", role: "Application hosting and cookieless analytics", where: "Global edge network" },
   { name: "Resend", role: "Transactional email (magic links, notifications)", where: "EU / US" },
   { name: "Stripe", role: "Subscription payments", where: "EU / US" },
-  { name: "Google", role: "Gemini, for support chat and category suggestions", where: "EU / US" },
+  { name: "Google", role: "Gemini, for support chat and category suggestions; Firebase Cloud Messaging, for app notifications", where: "EU / US" },
   { name: "Upstash", role: "Rate limiting, where enabled", where: "EU" },
 ];
 
@@ -205,9 +205,10 @@ export default function TrustPage() {
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">Getting your data out, or deleted</h2>
             <p>
-              Issue data can be exported as CSV from the Insights page. If you want your organisation
-              and everything in it deleted, email us and we will do it and confirm when it is done.
-              There is no retention period we hold you to.
+              Issue data can be exported as CSV from the Insights page. An organisation owner can delete
+              the organisation and everything in it from Settings, at any time, on the web or in the app;
+              it happens immediately. If you would rather we did it, email us and we will confirm when it
+              is done. There is no retention period we hold you to.
             </p>
           </section>
 

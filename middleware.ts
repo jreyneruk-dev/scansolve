@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { isNativeUserAgent } from "@/lib/native";
 
 const isProd = process.env.NODE_ENV === "production";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Native apps: no marketing, pricing or checkout inside the store apps (Apple 3.1.1).
+  // The UI hides these too; this is the backstop for any link that slips through.
+  if (isNativeUserAgent(request.headers.get("user-agent"))) {
+    if (pathname.startsWith("/api/stripe/checkout")) {
+      return NextResponse.json({ error: "Not available in the app." }, { status: 403 });
+    }
+    if (pathname === "/" || pathname === "/pricing" || pathname.startsWith("/dashboard/billing")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Session refresh for Supabase auth (keeps cookies fresh)
   let response = NextResponse.next({ request });

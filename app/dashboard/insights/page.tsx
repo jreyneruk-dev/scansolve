@@ -2,9 +2,12 @@ import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { getAdapter } from "@/lib/db";
 import { getEffectivePlan } from "@/lib/plans";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { isNativeUserAgent } from "@/lib/native";
 import Link from "next/link";
 import { BarChart3, Lock } from "lucide-react";
 import { InsightsExport } from "@/components/dashboard/InsightsExport";
+import { issueWhere } from "@/lib/issue-location";
 import type { Organization } from "@/types/schema";
 
 const DAY_MS = 86_400_000;
@@ -44,6 +47,7 @@ export default async function InsightsPage() {
 
   // Insights is a Prime feature. Pilots see it because they run on comp Prime.
   if (getEffectivePlan(org as unknown as Organization) === "free") {
+    const native = isNativeUserAgent((await headers()).get("user-agent"));
     return (
       <div className="space-y-6 animate-slide-in">
         <div className="flex items-center gap-3">
@@ -59,16 +63,17 @@ export default async function InsightsPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 mb-4">
             <Lock className="h-5 w-5 text-indigo-500" />
           </div>
-          <h2 className="text-base font-semibold text-slate-900">Insights is a Prime feature</h2>
+          <h2 className="text-base font-semibold text-slate-900">{native ? "Insights isn't available" : "Insights is a Prime feature"}</h2>
           <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
-            See how many issues get reported and how fast they are resolved, broken down by location. Upgrade to Prime to unlock it.
+            See how many issues get reported and how fast they are resolved, broken down by location.
+            {native ? " It isn't turned on for your organisation." : " Upgrade to Prime to unlock it."}
           </p>
-          <Link
+          {!native && <Link
             href="/pricing"
             className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             Upgrade to Prime
-          </Link>
+          </Link>}
         </div>
       </div>
     );
@@ -92,9 +97,10 @@ export default async function InsightsPage() {
   type Agg = { name: string; uid: string; total: number; resolved: number; resMs: number[] };
   const byLoc = new Map<string, Agg>();
   for (const i of issues) {
-    const key = i.location_id;
+    // Staff-logged issues have no label; group them as one "Unlabelled" row.
+    const key = i.location_id ?? "unlabelled";
     if (!byLoc.has(key)) {
-      byLoc.set(key, { name: i.location?.name ?? "Unknown", uid: i.location?.uid ?? "", total: 0, resolved: 0, resMs: [] });
+      byLoc.set(key, { name: i.location_id ? issueWhere(i) : "Unlabelled", uid: i.location?.uid ?? "", total: 0, resolved: 0, resMs: [] });
     }
     const row = byLoc.get(key)!;
     row.total++;

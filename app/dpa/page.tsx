@@ -17,7 +17,7 @@ const SUBPROCESSORS = [
   { name: "Vercel", purpose: "Application hosting, cookieless analytics", location: "EU / US" },
   { name: "Resend", purpose: "Transactional email", location: "EU / US" },
   { name: "Stripe", purpose: "Payment processing", location: "EU / US" },
-  { name: "Google", purpose: "Gemini, support chat and category suggestions", location: "EU / US" },
+  { name: "Google", purpose: "Gemini, support chat and category suggestions; Firebase Cloud Messaging, app notifications", location: "EU / US" },
   { name: "Upstash", purpose: "Rate limiting, where enabled", location: "EU" },
 ];
 

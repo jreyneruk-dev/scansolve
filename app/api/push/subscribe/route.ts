@@ -14,6 +14,13 @@ function getServiceClient() {
   );
 }
 
+// Store-app device token (FCM registration token; FCM relays to APNs on iOS).
+const NativeSchema = z.object({
+  kind: z.literal("native"),
+  token: z.string().min(20).max(4096).regex(/^[\w:\-.]+$/),
+  platform: z.enum(["ios", "android"]),
+});
+
 const Schema = z.object({
   endpoint: z.string().url().max(1024),
   keys: z.object({
@@ -67,6 +74,22 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
+  const db = getServiceClient();
+
+  const native = NativeSchema.safeParse(body);
+  if (native.success) {
+    // Upsert by token: a phone that switches account/org is re-pointed, never duplicated.
+    const { error } = await db.from("native_push_tokens").upsert(
+      { org_id: orgId, user_id: user.id, token: native.data.token, platform: native.data.platform },
+      { onConflict: "token" }
+    );
+    if (error) {
+      console.error("[push/subscribe] native db error:", error.message);
+      return NextResponse.json({ error: "Could not save device." }, { status: 500 });
+    }
+    return NextResponse.json({ subscribed: true });
+  }
+
   const parsed = Schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid subscription." }, { status: 422 });
@@ -76,7 +99,6 @@ export async function POST(req: NextRequest) {
   if (!isAllowedPushEndpoint(endpoint)) {
     return NextResponse.json({ error: "Unsupported push endpoint." }, { status: 422 });
   }
-  const db = getServiceClient();
 
   // Upsert by endpoint so re-subscribing the same device doesn't duplicate,
   // and a device that moves orgs is re-pointed to the current one.

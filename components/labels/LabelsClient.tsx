@@ -4,6 +4,7 @@ import { Printer, Tag, Loader2, RefreshCw, History, ChevronDown, QrCode, ScanLin
 import { PrintPreviewModal } from "./PrintPreviewModal";
 import { PosterPreviewModal, type PosterLocation } from "@/components/posters/PosterPreviewModal";
 import { ClientDate } from "@/components/ui/ClientDate";
+import { useIsNative } from "@/components/native/NativeContext";
 import type { ConfiguredLabel } from "@/app/api/labels/configured/route";
 
 const ALL_SHEET_OPTIONS = [
@@ -117,6 +118,7 @@ function Section({
 
 // ── Main component ─────────────────────────────────────────────────────────
 export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsClientProps) {
+  const native = useIsNative();
   const SHEET_OPTIONS = ALL_SHEET_OPTIONS.map((o) => ({
     ...o,
     allowed: allowedSheetTypes.includes(o.value),
@@ -214,6 +216,19 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
   return (
     <div className="space-y-4">
 
+      {/* Printing needs a desktop browser (WKWebView / Android WebView can't print Avery sheets). */}
+      {native ? (
+        <div className="glass-card rounded-2xl p-5 flex items-start gap-3">
+          <Printer className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-slate-900">Print labels and posters from a computer</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Sign in at scansolve.co on a computer to print label sheets and posters. Use this app to scan and activate them.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
       {/* ── Print New Labels ─────────────────────────────────────── */}
       <Section
         icon={<Tag className="h-4 w-4 text-indigo-500" />}
@@ -286,6 +301,9 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
         </div>
       </Section>
 
+        </>
+      )}
+
       {/* ── Configured Labels ────────────────────────────────────── */}
       <Section
         icon={<QrCode className="h-4 w-4 text-emerald-500" />}
@@ -341,6 +359,8 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
         </div>
       </Section>
 
+      {!native && (
+        <>
       {/* ── Scan-to-report Posters ───────────────────────────────── */}
       <Section
         icon={<ScanLine className="h-4 w-4 text-violet-500" />}
@@ -402,6 +422,9 @@ export function LabelsClient({ orgNumber, appUrl, allowedSheetTypes }: LabelsCli
           )}
         </div>
       </Section>
+
+        </>
+      )}
 
       {/* ── Print History ────────────────────────────────────────── */}
       <Section

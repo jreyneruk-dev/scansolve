@@ -33,14 +33,14 @@ export default function PrivacyPage() {
         <header className="mb-10">
           <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest mb-3">Legal</p>
           <h1 className="text-4xl font-bold text-slate-900 mb-3">Privacy Policy</h1>
-          <p className="text-sm text-slate-400">Last updated: May 2025</p>
+          <p className="text-sm text-slate-400">Last updated: October 2026</p>
         </header>
 
         <div className="space-y-8 text-slate-600 leading-relaxed">
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">Who we are</h2>
             <p>
-              ScanSolve is a web-based facility issue reporting platform operated at scansolve.co. If you have any questions about this privacy policy, please contact us via the sign-in page at scansolve.co/auth.
+              ScanSolve is a facility issue reporting platform, available at scansolve.co and as iOS and Android apps for facility teams. If you have any questions about this privacy policy, email support@scansolve.co.
             </p>
           </section>
 
@@ -50,6 +50,12 @@ export default function PrivacyPage() {
             <ul className="list-disc list-inside space-y-1 ml-2 mb-4">
               <li>Email address — used for authentication and notifications</li>
               <li>Organisation name and location names — used to configure your account</li>
+              <li>Issues you log yourself, including the location you describe and an optional photo</li>
+            </ul>
+            <p className="mb-3"><strong>ScanSolve mobile apps (facility teams only):</strong></p>
+            <ul className="list-disc list-inside space-y-1 ml-2 mb-4">
+              <li>A push notification token for your device — only if you turn on alerts, and deleted when you turn them off or sign out</li>
+              <li>The camera is used on your phone to read QR labels. Camera images are not stored or sent to us</li>
             </ul>
             <p className="mb-3"><strong>Issue reporters (no account required):</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-2">
@@ -73,7 +79,7 @@ export default function PrivacyPage() {
               <li><strong>Vercel</strong> — application hosting and cookieless analytics</li>
               <li><strong>Resend</strong> — transactional email delivery</li>
               <li><strong>Stripe</strong> — subscription payments (we never see or store card details)</li>
-              <li><strong>Google</strong> — Gemini, used for the support chat and AI category suggestions</li>
+              <li><strong>Google</strong> — Gemini, used for the support chat and AI category suggestions; Firebase Cloud Messaging, used to deliver app notifications</li>
               <li><strong>Upstash</strong> — rate limiting, where enabled</li>
             </ul>
             <p className="mt-3">A full data processing agreement is available to organisation account holders on request.</p>
@@ -102,14 +108,27 @@ export default function PrivacyPage() {
               <li>Request deletion of your data</li>
               <li>Object to or restrict processing of your data</li>
             </ul>
-            <p className="mt-3">To exercise any of these rights, contact us via scansolve.co/auth.</p>
+            <p className="mt-3">To exercise any of these rights, email support@scansolve.co.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-slate-900 mb-3">Data retention</h2>
             <p>
-              Account data is retained for as long as your account is active. Issue reports are retained for as long as the associated organisation account is active. You may request deletion of your account and associated data at any time.
+              Account data is retained for as long as your account is active. Issue reports are retained for as long as the associated organisation account is active.
             </p>
+          </section>
+
+          <section id="delete-account">
+            <h2 className="text-xl font-bold text-slate-900 mb-3">Deleting your account</h2>
+            <p className="mb-3">
+              You can delete your account yourself at any time, on the web or in the app: sign in, open <strong>Settings</strong>, and choose <strong>Delete account</strong>.
+            </p>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>If you own the organisation, the organisation is deleted with you: every issue, location, label record, photo and logo. Any subscription is cancelled first.</li>
+              <li>If you are a team member, your account is deleted and you are removed from the organisation. The organisation&apos;s issues stay with it.</li>
+              <li>Deletion is immediate and permanent. Records we must keep by law, such as payment records held by Stripe, are kept only as long as required.</li>
+            </ul>
+            <p className="mt-3">If you can&apos;t sign in, email support@scansolve.co from your account&apos;s address and we will delete it for you.</p>
           </section>
 
           <section>

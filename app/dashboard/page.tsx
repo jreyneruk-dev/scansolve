@@ -2,6 +2,7 @@ import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { getAdapter } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { IssueList } from "@/components/dashboard/IssueList";
+import { LogIssue } from "@/components/dashboard/LogIssue";
 import { CheckCircle2 } from "lucide-react";
 import type { IssueStatus } from "@/types/schema";
 import { createClient } from "@supabase/supabase-js";
@@ -52,13 +53,17 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     redirect("/onboarding");
   }
 
+  // Category suggestions for "Log issue": just the arrays, fetched alongside the issues.
   const adapter = await getAdapter(org.id);
-  const issues = await adapter.getIssuesByOrg(org.id, {
-    status: status as IssueStatus | undefined,
-    limit: 50,
-  });
+  const [issues, { data: locs }] = await Promise.all([
+    adapter.getIssuesByOrg(org.id, { status: status as IssueStatus | undefined, limit: 50 }),
+    getServiceClient().from("locations").select("categories:survey_config->categories").eq("org_id", org.id).limit(500),
+  ]);
 
   const unresolvedCount = issues.filter((i) => i.status !== "resolved").length;
+  const categories = Array.from(
+    new Set((locs ?? []).flatMap((l) => (Array.isArray(l.categories) ? (l.categories as string[]) : [])))
+  ).sort();
 
   return (
     <div className="space-y-5">
@@ -70,16 +75,19 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Issues</h1>
           <p className="text-xs text-slate-400 mt-0.5">{org.name}</p>
         </div>
-        {unresolvedCount > 0 && (
-          <span className="rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-md shadow-indigo-500/20">
-            {unresolvedCount} open
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {unresolvedCount > 0 && (
+            <span className="rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-md shadow-indigo-500/20">
+              {unresolvedCount} open
+            </span>
+          )}
+          <LogIssue orgId={org.id} categories={categories} />
+        </div>
       </div>
 
       {/* Status filter */}

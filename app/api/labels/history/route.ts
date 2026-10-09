@@ -59,7 +59,7 @@ export async function GET() {
     uidStart: job.uid_start,
     uidEnd: job.uid_end,
     printedAt: job.printed_at,
-    printedBy: emailMap[job.user_id as string] ?? (job.user_id as string),
+    printedBy: job.user_id ? (emailMap[job.user_id as string] ?? (job.user_id as string)) : "Deleted user",
   }));
 
   return NextResponse.json({ jobs });

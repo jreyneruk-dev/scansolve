@@ -1,6 +1,7 @@
 import { requireAuth, getOrgForUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { OrgSetupForm } from "@/components/onboarding/OrgSetupForm";
+import { DeleteAccount } from "@/components/dashboard/DeleteAccount";
 import { QrCode } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -54,6 +55,13 @@ export default async function OnboardingPage() {
           </div>
         </div>
         <OrgSetupForm />
+        {/* Account deletion must be reachable before an organisation exists too. */}
+        <details className="pt-6 text-xs text-slate-400">
+          <summary className="cursor-pointer select-none">Changed your mind?</summary>
+          <div className="pt-3">
+            <DeleteAccount isOwner={false} confirmText={user.email ?? ""} />
+          </div>
+        </details>
       </div>
     </main>
   );

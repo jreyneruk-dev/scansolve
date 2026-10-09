@@ -686,7 +686,10 @@ I want to remove a team member:
 → There is currently no in-app way to remove team members. Email support@scansolve.co and they'll handle it.
 
 I want to delete my account or all my data:
-→ Email support@scansolve.co with your request.
+→ Go to Settings → Delete account and type the name shown to confirm. If you own the organisation, this deletes the whole organisation and cancels any subscription; a team member only removes themselves. It is immediate and can't be undone. If you can't sign in, email support@scansolve.co.
+
+I want to log an issue somewhere that has no QR label:
+→ On the Issues page, tap "Log issue", describe where it is in words, pick a category and add a photo if you like. It shows in the list with a "No label" tag.
 
 I forgot which email I used to sign up:
 → Try any work email you might have used. If none work, email support@scansolve.co.

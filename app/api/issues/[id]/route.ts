@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { issueWhere } from "@/lib/issue-location";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAdapter } from "@/lib/db";
 import { getOrgForUser } from "@/lib/auth";
@@ -66,7 +67,7 @@ export async function PATCH(
 
   const updated = await adapter.updateIssue(id, org.id, parsed.data);
 
-  const locationName = existing.location?.name ?? "Unknown location";
+  const locationName = issueWhere(existing);
   if (parsed.data.status === "assigned" && parsed.data.assigned_to) {
     sendIssueAssignmentEmail({
       to: parsed.data.assigned_to,

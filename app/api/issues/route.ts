@@ -1,89 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getAdapter } from "@/lib/db";
 import { getLocationByOrgAndUID } from "@/lib/locations";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeCategory } from "@/lib/sanitize";
-import { getEffectivePlan, getPlanLimits } from "@/lib/plans";
-import { sendPush } from "@/lib/push";
-import type { Organization } from "@/types/schema";
+import { notifyOrgOfNewIssue } from "@/lib/notify";
+import { signedPhotoUrl } from "@/lib/storage";
 import { z } from "zod";
-
-/**
- * Best-effort Prime push alert for a new issue. Never throws, never blocks the
- * reporter response. Gated on Prime, capped per org per day, and prunes dead
- * subscriptions returned by the push service.
- */
-async function notifyOrgOfNewIssue(orgId: string, locationName: string, category: string) {
-  try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    );
-
-    const { data: org } = await db
-      .from("organizations")
-      .select("plan, plan_expires_at")
-      .eq("id", orgId)
-      .single();
-    if (!org) return;
-    if (!getPlanLimits(getEffectivePlan(org as unknown as Organization)).hasSmsWhatsApp) return;
-
-    const { data: subs } = await db
-      .from("push_subscriptions")
-      .select("endpoint, p256dh, auth")
-      .eq("org_id", orgId);
-    if (!subs || subs.length === 0) return;
-
-    // Per-org daily cap (counts alert *events*, not per-device fan-out).
-    const cap = await checkRateLimit(`push_notify:org:${orgId}`, 200, 86400);
-    if (!cap.allowed) {
-      console.warn(`[issues] push cap reached for org ${orgId}`);
-      return;
-    }
-
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://scansolve.co";
-    const payload = {
-      title: "New issue reported",
-      body: `${category} at ${locationName}`,
-      url: `${appUrl}/dashboard`,
-    };
-
-    const results = await Promise.all(subs.map((s) => sendPush(s, payload)));
-    const dead = subs.filter((_, i) => results[i].gone).map((s) => s.endpoint);
-    if (dead.length > 0) {
-      await db.from("push_subscriptions").delete().in("endpoint", dead);
-    }
-  } catch (err) {
-    console.error("[issues] push notify failed:", err instanceof Error ? err.message : "unknown");
-  }
-}
 
 const CreateIssueSchema = z.object({
   uid: z.string().min(1).max(30).regex(/^\d+$/, "uid must be numeric"),
   org_number: z.number().int().positive(),
   category: z.string().min(1).max(100),
   description: z.string().max(2000).optional(),
-  // photo_url must be a Supabase signed URL — reject arbitrary URLs
-  photo_url: z
-    .string()
-    .url()
-    .refine(
-      (url) => {
-        try {
-          const { hostname, pathname } = new URL(url);
-          return (
-            hostname.endsWith(".supabase.co") &&
-            pathname.startsWith("/storage/v1/object/sign/")
-          );
-        } catch {
-          return false;
-        }
-      },
-      { message: "photo_url must be a Supabase signed storage URL" }
-    )
-    .optional(),
+  photo_url: signedPhotoUrl.optional(),
   contact_email: z.string().email().max(254).optional(),
 });
 
@@ -145,8 +74,7 @@ export async function POST(req: NextRequest) {
   };
 
   const adapter = await getAdapter(location.org_id);
-  await adapter.createIssue({
-    uid,
+  const issue = await adapter.createIssue({
     location_id: location.id,
     org_id: location.org_id,
     category: normalizedCategory,
@@ -157,8 +85,8 @@ export async function POST(req: NextRequest) {
     reporter_meta,
   });
 
-  // Best-effort Prime push alert — never blocks or fails the reporter response.
-  await notifyOrgOfNewIssue(location.org_id, location.name, normalizedCategory);
+  // Best-effort Prime push alert, sent after the response so reporters never wait on it.
+  after(() => notifyOrgOfNewIssue(location.org_id, location.name, normalizedCategory, issue.id));
 
   return NextResponse.json(
     { message: location.survey_config.success_message },
