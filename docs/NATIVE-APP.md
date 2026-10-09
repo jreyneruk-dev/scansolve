@@ -47,28 +47,60 @@ demo org, so a leaked code can't open customer data. Re-run the seed script befo
 submission: it is idempotent and resets the demo data. If a reviewer tests account
 deletion, the demo account is gone, and the seed script recreates it.
 
+## Building: Codemagic, not this Mac
+
+App Store uploads must be built with Xcode 26 or later (since 28 April 2026; Xcode 27 from
+April 2027), which needs macOS 15.6+. The development Mac (2015 MacBook Pro, macOS 14) can't
+run it, so both apps build on Codemagic's hosted Macs from `codemagic.yaml`. Pushing a tag
+that starts with `app-v` (for example `app-v1.0.0`) runs both workflows. iOS goes to
+TestFlight; Android goes to the Play closed-testing track as a draft.
+
+The iOS project was generated without CocoaPods, and `pod install` runs in CI. Push
+capability (`App/App.entitlements`), background push mode, the camera usage text, the
+privacy manifest and Firebase are already set up in the project, so you don't need to open
+Xcode.
+
 ## One-time setup
 
-1. Install Xcode (App Store) and Android Studio. CocoaPods is required: the ML Kit
-   scanner plugin doesn't support Swift Package Manager.
-2. Create a Firebase project and add two apps, both with id `co.scansolve.app`:
-   - Android: put `google-services.json` in `mobile/android/app/`.
-   - iOS: put `GoogleService-Info.plist` in `mobile/ios/App/App/` and add it to the Xcode
-     target.
-   - Upload an APNs auth key (.p8) under Project settings, Cloud Messaging.
-   - Create a service account with the "Firebase Cloud Messaging API Admin" role, and set
-     its JSON as `FIREBASE_SERVICE_ACCOUNT` in Vercel.
-3. In Xcode, under App target, Signing & Capabilities, add Push Notifications and
-   Background Modes (Remote notifications).
+1. Firebase: create a project and add two apps, both with id `co.scansolve.app`.
+   - Upload an APNs auth key (.p8, from developer.apple.com, Keys) under Project settings,
+     Cloud Messaging.
+   - Download `google-services.json` and `GoogleService-Info.plist`. Don't commit them.
+     Base64 them (`base64 -i file | pbcopy`) into the Codemagic environment group
+     `firebase` as `GOOGLE_SERVICES_JSON_B64` and `GOOGLE_SERVICE_INFO_PLIST_B64`.
+   - Create a service account with the "Firebase Cloud Messaging API Admin" role. Set its
+     JSON, on one line, as `FIREBASE_SERVICE_ACCOUNT` in Vercel.
+2. Apple: in App Store Connect, create the app (bundle id `co.scansolve.app`). Create an
+   App Store Connect API key (Users and Access, Integrations) with App Manager access, and
+   add it in Codemagic under Team integrations, named `scansolve_asc`. Codemagic then
+   creates the signing certificate and provisioning profile itself.
+3. Google: create the app in Play Console and register the package under developer
+   verification. Create an upload keystore with `keytool`. It needs a JDK; this Mac has
+   none, so install Temurin 21 from adoptium.net (~190 MB). Then run:
+
+   ```bash
+   keytool -genkeypair -v -keystore scansolve-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+   Upload it in Codemagic under Code signing identities, Android keystores, with reference
+   `scansolve_upload`. Keep a copy and its passwords somewhere safe. Play App Signing lets
+   Google reset a lost upload key, but that takes days. Create a Play service account with
+   release permissions, and add its JSON to the Codemagic group `google_play` as
+   `GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS`. Google requires the very first upload to be
+   made by hand in Play Console: download the `.aab` from the first Codemagic build and
+   upload it.
+4. Connect the GitHub repo in Codemagic, then push `app-v1.0.0`.
 
 ## Day-to-day
 
 ```bash
-npx cap sync           # after changing plugins or capacitor.config.ts
-npx cap open ios       # build and run from Xcode
-npx cap open android   # build and run from Android Studio
-node scripts/native/make-icons.mjs   # regenerate icon and splash sources in mobile/assets
+npx cap sync                          # after changing plugins or capacitor.config.ts
+node scripts/native/make-icons.mjs    # regenerate icon and splash sources in mobile/assets
+git tag app-v1.0.1 && git push origin app-v1.0.1   # build both apps on Codemagic
 ```
+
+Build numbers come from Codemagic's `BUILD_NUMBER`. The version shown in the stores is
+`MARKETING_VERSION` (iOS project) and `versionName` (set from the build number on Android).
 
 Gate checks live in `scripts/native/check-*.mjs`. They run against `npm run dev` on port 3000
 and the Supabase project in `.env.local`. They create throwaway users and organisations, and
@@ -149,7 +181,7 @@ page on a computer.
 
 - [ ] `REVIEW_*` and `FIREBASE_SERVICE_ACCOUNT` set in Vercel; seed script re-run.
 - [ ] Web PR merged and deployed (the app loads production).
-- [ ] Version bumped: iOS `MARKETING_VERSION` / build number; Android `versionCode` / `versionName`.
+- [ ] iOS `MARKETING_VERSION` bumped if it's a new version (build numbers are automatic).
 - [ ] Screenshots taken in the app, showing the issue list, an issue, the scanner and Log issue. No sign-in screen.
 - [ ] Google: a 14-day closed test with at least 12 testers is done (personal account rule).
 - [ ] Google: package `co.scansolve.app` registered under developer verification.

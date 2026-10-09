@@ -1,0 +1,108 @@
+# Cloud builds for the ScanSolve staff app (see docs/NATIVE-APP.md).
+# The app is a Capacitor shell over https://scansolve.co/dashboard, so there is no
+# web build step: `cap sync` only copies mobile/www (the offline page) and plugins.
+#
+# One-time setup in Codemagic:
+#   - Team integrations: an App Store Connect API key named "scansolve_asc".
+#   - Code signing: an Android upload keystore with reference "scansolve_upload".
+#   - Environment group "firebase":   GOOGLE_SERVICES_JSON_B64, GOOGLE_SERVICE_INFO_PLIST_B64
+#     (base64 of google-services.json and GoogleService-Info.plist from the Firebase console).
+#   - Environment group "google_play": GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS (JSON).
+
+workflows:
+  ios-release:
+    name: iOS → TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: scansolve_asc
+    environment:
+      groups:
+        - firebase
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: co.scansolve.app
+      vars:
+        XCODE_WORKSPACE: mobile/ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+      node: 22
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "app-v*"
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+      - name: Write Firebase config
+        script: |
+          if [ -z "$GOOGLE_SERVICE_INFO_PLIST_B64" ]; then
+            echo "GOOGLE_SERVICE_INFO_PLIST_B64 is not set (firebase group). Push needs it." && exit 1
+          fi
+          echo "$GOOGLE_SERVICE_INFO_PLIST_B64" | base64 --decode > mobile/ios/App/App/GoogleService-Info.plist
+      - name: Sync Capacitor and install pods
+        script: |
+          npx cap sync ios   # runs pod install
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Set build number
+        # BUILD_NUMBER is Codemagic's per-workflow counter; it only goes up.
+        script: cd mobile/ios/App && agvtool new-version -all $BUILD_NUMBER
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
+
+  android-release:
+    name: Android → Play closed testing
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        - firebase
+        - google_play
+      android_signing:
+        - scansolve_upload
+      node: 22
+      java: 21
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "app-v*"
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+      - name: Write Firebase config and SDK path
+        script: |
+          if [ -z "$GOOGLE_SERVICES_JSON_B64" ]; then
+            echo "GOOGLE_SERVICES_JSON_B64 is not set (firebase group). Push needs it." && exit 1
+          fi
+          echo "$GOOGLE_SERVICES_JSON_B64" | base64 --decode > mobile/android/app/google-services.json
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > mobile/android/local.properties
+      - name: Sync Capacitor
+        script: npx cap sync android
+      - name: Build release bundle
+        script: |
+          cd mobile/android
+          ./gradlew bundleRelease -PversionCode=$BUILD_NUMBER -PversionName=1.0.$BUILD_NUMBER
+    artifacts:
+      - mobile/android/app/build/outputs/**/*.aab
+      - mobile/android/app/build/outputs/mapping/release/mapping.txt
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha        # closed testing: the 14-day, 12-tester track for personal accounts
+        submit_as_draft: true
