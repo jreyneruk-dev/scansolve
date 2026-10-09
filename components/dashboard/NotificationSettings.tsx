@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight, Bell, BellOff, Loader2, Share, Plus, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { useIsNative } from "@/components/native/NativeContext";
 
 interface Props {
   isPrime: boolean;
@@ -20,6 +21,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 export function NotificationSettings({ isPrime }: Props) {
+  const native = useIsNative();
   const [supported, setSupported] = useState(true);
   const [iosNeedsInstall, setIosNeedsInstall] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -29,6 +31,12 @@ export function NotificationSettings({ isPrime }: Props) {
 
   useEffect(() => {
     if (!isPrime) { setChecking(false); return; }
+    if (native) {
+      import("@/lib/native-push")
+        .then((m) => setEnabled(m.nativePushRegistered()))
+        .finally(() => setChecking(false));
+      return;
+    }
 
     const ua = navigator.userAgent;
     const isIOS = /iphone|ipad|ipod/i.test(ua);
@@ -53,12 +61,17 @@ export function NotificationSettings({ isPrime }: Props) {
       .then((sub) => setEnabled(!!sub))
       .catch(() => {})
       .finally(() => setChecking(false));
-  }, [isPrime]);
+  }, [isPrime, native]);
 
   async function enable() {
     setError(null);
     setLoading(true);
     try {
+      if (native) {
+        await (await import("@/lib/native-push")).registerNativePush();
+        setEnabled(true);
+        return;
+      }
       if (!VAPID_PUBLIC_KEY) throw new Error("Push is not configured");
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
@@ -93,6 +106,11 @@ export function NotificationSettings({ isPrime }: Props) {
     setError(null);
     setLoading(true);
     try {
+      if (native) {
+        await (await import("@/lib/native-push")).unregisterNativePush();
+        setEnabled(false);
+        return;
+      }
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) {
@@ -109,6 +127,18 @@ export function NotificationSettings({ isPrime }: Props) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // ── Not Prime, in the store app → no upsell (Apple 3.1.1) ──
+  if (!isPrime && native) {
+    return (
+      <div>
+        <h2 className="text-sm font-semibold text-slate-700 mb-1">Instant alerts</h2>
+        <p className="text-xs text-slate-500 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+          Instant alerts aren&apos;t turned on for your organisation.
+        </p>
+      </div>
+    );
   }
 
   // ── Not Prime → upsell ──

@@ -29,6 +29,7 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
   const [useRecovery, setUseRecovery] = useState(false);
+  const [reviewLogin, setReviewLogin] = useState(false);
 
   async function handleSendMagicLink(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +82,7 @@ function AuthForm() {
     const data = await res.json().catch(() => ({}));
     setLoading(false);
     if (!res.ok) { setError(data.error ?? "Unable to send sign-in link. Please try again."); return; }
+    setReviewLogin(data.review === true);
     setStep("sent");
   }
 
@@ -88,6 +90,18 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    if (reviewLogin) {
+      const res = await fetch("/api/auth/review-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: otp }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setLoading(false);
+      if (!res.ok) { setError(data.error ?? "That code isn't right."); return; }
+      window.location.href = next;
+      return;
+    }
     const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: "email" });
     setLoading(false);
     if (error) { setError(error.message); return; }

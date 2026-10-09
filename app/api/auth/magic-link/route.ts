@@ -4,6 +4,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { sendMagicLinkEmail } from "@/lib/email";
 import { sameOriginUrl } from "@/lib/sanitize";
 import { z } from "zod";
+import { isReviewEmail } from "@/lib/review-account";
 
 /**
  * Passwordless sign-in / sign-up that sends the magic link + OTP via Resend
@@ -43,6 +44,11 @@ export async function POST(req: NextRequest) {
   }
   const { email, redirectTo } = parsed.data;
   const normalizedEmail = email.toLowerCase();
+
+  // App review account: no email is sent; the reviewer enters the code from the review notes.
+  if (isReviewEmail(normalizedEmail)) {
+    return NextResponse.json({ sent: true, review: true });
+  }
 
   // Rate limit: per IP and per email, to throttle abuse without blocking a
   // genuine user retrying from a new network.

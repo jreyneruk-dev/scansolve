@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { MouseSpotlight } from "@/components/ui/MouseSpotlight";
 import { SupportWidget } from "@/components/support/SupportWidget";
+import { WebOnly } from "@/components/native/WebOnly";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -141,7 +142,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} font-sans`}>
         <MouseSpotlight />
         <div className="relative z-10">{children}</div>
-        <SupportWidget />
+        {/* The support chat quotes prices, so it stays out of the store apps (Apple 3.1.1). */}
+        <WebOnly><SupportWidget /></WebOnly>
         <ServiceWorkerRegister />
         <Analytics />
       </body>

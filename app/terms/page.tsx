@@ -119,8 +119,9 @@ export default function TermsPage() {
               sets out that relationship and forms part of these terms.
             </p>
             <p>
-              You can export issue data as CSV at any time. If you ask us to delete your organisation
-              and its data, we will do so within 30 days and confirm when it is done. We may keep
+              You can export issue data as CSV at any time. An owner can delete the organisation and
+              its data from Settings, which takes effect immediately; if you ask us to do it, we will do
+              so within 30 days and confirm when it is done. We may keep
               backups and records we are required to keep, for no longer than necessary.
             </p>
           </section>

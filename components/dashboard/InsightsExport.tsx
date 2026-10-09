@@ -1,10 +1,13 @@
 "use client";
 import { Download } from "lucide-react";
+import { useIsNative } from "@/components/native/NativeContext";
 
 type Row = Record<string, string | number>;
 
 /** Client-side CSV download for the Insights report — no server round-trip. */
 export function InsightsExport({ rows, filename }: { rows: Row[]; filename: string }) {
+  // ponytail: WebViews can't save blob downloads; export from a computer. Add @capacitor/share if staff ask.
+  const native = useIsNative();
   function download() {
     if (!rows.length) return;
     const headers = Object.keys(rows[0]);
@@ -25,6 +28,8 @@ export function InsightsExport({ rows, filename }: { rows: Row[]; filename: stri
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  if (native) return null;
 
   return (
     <button

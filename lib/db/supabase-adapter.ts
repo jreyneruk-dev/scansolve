@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import type { IDataAdapter } from "./adapter";
-import type { Issue, CreateIssueInput, IssueFilters, UpdateIssueInput } from "@/types/schema";
+import type { IDataAdapter, NewIssue } from "./adapter";
+import type { Issue, IssueFilters, UpdateIssueInput } from "@/types/schema";
 
 function getServiceClient() {
   return createClient(
@@ -13,13 +13,13 @@ function getServiceClient() {
 export class SupabaseAdapter implements IDataAdapter {
   private client = getServiceClient();
 
-  async createIssue(
-    data: CreateIssueInput & { location_id: string; org_id: string }
-  ): Promise<Issue> {
+  async createIssue(data: NewIssue): Promise<Issue> {
     const { data: row, error } = await this.client
       .from("issues")
       .insert({
         location_id: data.location_id,
+        location_text: data.location_text,
+        created_by: data.created_by,
         org_id: data.org_id,
         category: data.category,
         description: data.description,

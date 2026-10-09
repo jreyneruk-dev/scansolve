@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isNativeRequest } from "@/lib/native";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { getOrgForUser } from "@/lib/auth";
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     if (currentCount >= limits.maxInvitees) {
       return NextResponse.json(
         {
-          error: `Your plan allows up to ${limits.maxInvitees} team member${limits.maxInvitees === 1 ? "" : "s"}. Upgrade to Prime to invite more.`,
+          error: `Your plan allows up to ${limits.maxInvitees} team member${limits.maxInvitees === 1 ? "" : "s"}.${isNativeRequest(req.headers) ? "" : " Upgrade to Prime to invite more."}`,
           code: "INVITE_LIMIT_REACHED",
         },
         { status: 403 }

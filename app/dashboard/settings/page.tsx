@@ -6,6 +6,7 @@ import { OrgNameSettings } from "@/components/dashboard/OrgNameSettings";
 import { RecoveryEmailSettings } from "@/components/dashboard/RecoveryEmailSettings";
 import { BrandingSettings } from "@/components/dashboard/BrandingSettings";
 import { NotificationSettings } from "@/components/dashboard/NotificationSettings";
+import { DeleteAccount } from "@/components/dashboard/DeleteAccount";
 import { getEffectivePlan } from "@/lib/plans";
 import type { Organization } from "@/types/schema";
 
@@ -29,6 +30,7 @@ export default async function SettingsPage() {
 
   const recoveryEmail = (user.user_metadata?.recovery_email as string | undefined) ?? null;
 
+  const ownerId = (org as Record<string, unknown>).owner_id as string | null;
   const [{ data: orgData }, { data: members }, { data: invites }] = await Promise.all([
     service.from("organizations").select("logo_url").eq("id", orgId).single(),
     service.from("org_members").select("id, role, created_at, user_id").eq("org_id", orgId),
@@ -68,6 +70,21 @@ export default async function SettingsPage() {
       <div className="border-t border-slate-100 pt-6">
         <NotificationSettings
           isPrime={getEffectivePlan(org as unknown as Organization) !== "free"}
+        />
+      </div>
+
+      <div className="border-t border-slate-100 pt-6">
+        <h2 className="text-sm font-semibold text-slate-700 mb-1">Help</h2>
+        <p className="text-xs text-slate-500">
+          Questions or problems? Email{" "}
+          <a href="mailto:support@scansolve.co" className="font-medium text-indigo-600">support@scansolve.co</a>.
+        </p>
+      </div>
+
+      <div className="border-t border-slate-100 pt-6">
+        <DeleteAccount
+          isOwner={ownerId === user.id || (members ?? []).some((m) => m.user_id === user.id && m.role === "owner")}
+          confirmText={orgName || (user.email ?? "")}
         />
       </div>
     </div>

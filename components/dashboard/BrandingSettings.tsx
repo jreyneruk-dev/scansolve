@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Upload, X, Sparkles, ArrowRight, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useIsNative } from "@/components/native/NativeContext";
 
 interface Props {
   isPrime: boolean;
@@ -10,11 +11,15 @@ interface Props {
 }
 
 export function BrandingSettings({ isPrime, initialLogoUrl }: Props) {
+  const native = useIsNative();
   const [logoUrl, setLogoUrl] = useState<string | null>(initialLogoUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Store app: no upsell (Apple 3.1.1), so a non-Prime org just doesn't see this section.
+  if (!isPrime && native) return null;
 
   if (!isPrime) {
     return (

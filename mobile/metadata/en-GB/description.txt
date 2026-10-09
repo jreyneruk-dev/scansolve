@@ -1,0 +1,13 @@
+ScanSolve is the staff app for facilities teams that use ScanSolve QR labels.
+
+When someone scans a label in your building and reports a fault, it lands in your issue list. You get a notification on your phone, assign it, and mark it fixed.
+
+In the app you can:
+- See every reported issue, filter by status and update it
+- Scan a new label to set it up at a location
+- Log an issue yourself when there's no label nearby, describing where it is
+- Get an alert the moment something is reported
+
+People reporting faults don't need the app or an account. They scan the label with their phone camera.
+
+You need a ScanSolve account to sign in. Sign up at scansolve.co.

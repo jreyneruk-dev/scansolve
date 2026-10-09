@@ -37,3 +37,7 @@ yarn-error.log*
 *.swp
 *.swo
 .env*.local
+
+# unlazy gate ledgers (local)
+.unlazy/
+autoresearch/

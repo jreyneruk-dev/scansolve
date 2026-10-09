@@ -11,7 +11,10 @@ function getServiceClient() {
   );
 }
 
-const Schema = z.object({ endpoint: z.string().url().max(1024) });
+const Schema = z.union([
+  z.object({ endpoint: z.string().url().max(1024) }),
+  z.object({ token: z.string().min(20).max(4096) }),
+]);
 
 // No plan gate: a device must always be able to unsubscribe.
 export async function POST(req: NextRequest) {
@@ -33,11 +36,9 @@ export async function POST(req: NextRequest) {
   const orgId = (org as Record<string, unknown>).id as string;
   const db = getServiceClient();
   // Scope delete to this org so a subscription can only be removed by its owner org.
-  const { error } = await db
-    .from("push_subscriptions")
-    .delete()
-    .eq("endpoint", parsed.data.endpoint)
-    .eq("org_id", orgId);
+  const { error } = "token" in parsed.data
+    ? await db.from("native_push_tokens").delete().eq("token", parsed.data.token).eq("org_id", orgId)
+    : await db.from("push_subscriptions").delete().eq("endpoint", parsed.data.endpoint).eq("org_id", orgId);
   if (error) {
     console.error("[push/unsubscribe] db error:", error.message);
     return NextResponse.json({ error: "Could not unsubscribe." }, { status: 500 });

@@ -44,7 +44,9 @@ export interface Location {
 
 export interface Issue {
   id: string;
-  location_id: string;
+  location_id: string | null; // null when staff logged it without a QR label
+  location_text?: string | null;
+  created_by?: string | null;
   org_id: string;
   status: IssueStatus;
   category: string;
